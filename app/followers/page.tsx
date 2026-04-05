@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
+import Link from "next/link";
 
 export default function FollowersPage() {
   const [users, setUsers] = useState<any[]>([]);
@@ -17,7 +18,6 @@ export default function FollowersPage() {
         return;
       }
 
-      // ★フォロワー取得（自分をフォローしてる人）
       const { data: follows, error } = await supabase
         .from("follows")
         .select("follower_id")
@@ -37,17 +37,10 @@ export default function FollowersPage() {
         return;
       }
 
-      // ★ユーザー情報取得
-      const { data: profiles, error: profileError } = await supabase
+      const { data: profiles } = await supabase
         .from("profiles")
-        .select("id, username")
+        .select("id, username, avatar_url")
         .in("id", ids);
-
-      if (profileError) {
-        console.error("プロフィール取得エラー:", profileError);
-        setLoading(false);
-        return;
-      }
 
       setUsers(profiles || []);
       setLoading(false);
@@ -61,23 +54,63 @@ export default function FollowersPage() {
   }
 
   return (
-    <main style={{ padding: "24px" }}>
-      <h1>フォロワー一覧</h1>
+    <main style={{
+      padding: "24px",
+      maxWidth: "700px",
+      margin: "0 auto",
+      paddingBottom: "80px",
+    }}>
+      <div style={{ marginBottom: "20px" }}>
+        <Link href="/" style={{ fontSize: "14px", color: "#2563eb" }}>
+          ← ホームに戻る
+        </Link>
+      </div>
+
+      <h1 style={{ fontSize: "20px", fontWeight: "700", color: "#111", marginBottom: "16px" }}>
+        フォロワー一覧
+      </h1>
 
       {users.length === 0 && (
-        <p>フォロワーはいません</p>
+        <p style={{ color: "#999", fontSize: "14px" }}>まだフォロワーはいません</p>
       )}
 
       {users.map((u) => (
-        <div
+        <Link
           key={u.id}
-          style={{
-            padding: "10px",
-            borderBottom: "1px solid #eee",
-          }}
+          href={`/users/${u.id}`}
+          style={{ textDecoration: "none" }}
         >
-          {u.username}
-        </div>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            padding: "12px 14px",
+            backgroundColor: "#fff",
+            border: "0.5px solid #eee",
+            borderRadius: "12px",
+            marginBottom: "8px",
+          }}>
+            <div style={{
+              width: "40px",
+              height: "40px",
+              borderRadius: "50%",
+              backgroundColor: "#f0f0f0",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "18px",
+              overflow: "hidden",
+              flexShrink: 0,
+            }}>
+              {u.avatar_url ? (
+                <img src={u.avatar_url} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              ) : "🍽️"}
+            </div>
+            <p style={{ fontSize: "14px", fontWeight: "500", color: "#111" }}>
+              {u.username || "未設定"}
+            </p>
+          </div>
+        </Link>
       ))}
     </main>
   );
