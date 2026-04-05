@@ -657,6 +657,7 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     borderRadius: "8px",
     border: "1px solid #ccc",
     boxSizing: "border-box",
+     color: "#111",
   }}
 />
 
@@ -672,6 +673,7 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     borderRadius: "8px",
     border: "1px solid #ccc",
     boxSizing: "border-box",
+     color: "#111",
   }}
 />
 
@@ -728,6 +730,7 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     borderRadius: "8px",
     border: "1px solid #ccc",
     boxSizing: "border-box",
+     color: "#111",
   }}
 />
 <p style={{ fontSize: "11px", color: "#aaa", textAlign: "right", marginBottom: "12px" }}>
@@ -907,6 +910,7 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
             borderRadius: "8px",
             border: "1px solid #ccc",
             boxSizing: "border-box",
+             color: "#111",
           }}
         />
 
@@ -922,6 +926,7 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
             borderRadius: "8px",
             border: "1px solid #ccc",
             boxSizing: "border-box",
+             color: "#111",
           }}
         />
 
