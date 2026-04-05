@@ -753,6 +753,7 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     boxSizing: "border-box",
     resize: "none",
     height: "80px",
+    color: "#111"
   }}
 />
 <p style={{ fontSize: "11px", color: "#aaa", textAlign: "right", marginBottom: "12px" }}>
