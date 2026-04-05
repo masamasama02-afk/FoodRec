@@ -1681,22 +1681,7 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
 {/* アフィリエイトリンク */}
 <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "10px" }}>
   
-    <a href={`https://tabelog.com/rstLst/?vs=1&sa=&sk=${encodeURIComponent(post.restaurant)}`}
-    target="_blank"
-    rel="noopener noreferrer"
-    style={{
-      display: "inline-block",
-      padding: "8px 14px",
-      borderRadius: "8px",
-      backgroundColor: "#f0956f",
-      color: "#fff",
-      fontSize: "12px",
-      fontWeight: "bold",
-      textDecoration: "none",
-    }}
-  >
-    🔍 食べログ
-  </a>
+    
   
 </div>
 
