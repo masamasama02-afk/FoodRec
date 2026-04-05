@@ -1456,8 +1456,6 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
 {/* アフィリエイトリンク */}
 <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "10px" }}>
   
-    
-  
     <a href={`https://tabelog.com/rstLst/?vs=1&sa=&sk=${encodeURIComponent(post.restaurant)}`}
     target="_blank"
     rel="noopener noreferrer"
@@ -1472,7 +1470,24 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
       textDecoration: "none",
     }}
   >
-    🔍 食べログで検索
+    🔍 食べログ
+  </a>
+  
+    <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(post.restaurant)}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    style={{
+      display: "inline-block",
+      padding: "8px 14px",
+      borderRadius: "8px",
+      backgroundColor: "#4285f4",
+      color: "#fff",
+      fontSize: "12px",
+      fontWeight: "bold",
+      textDecoration: "none",
+    }}
+  >
+    🗺️ Googleマップ
   </a>
 </div>
 
