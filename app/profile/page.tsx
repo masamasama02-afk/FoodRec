@@ -26,7 +26,9 @@ const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 const [posts, setPosts] = useState<Post[]>([]);
 const [loading, setLoading] = useState(true);
 const [editing, setEditing] = useState(false);
-
+const [editingPostId, setEditingPostId] = useState<number | null>(null);
+const [editRestaurant, setEditRestaurant] = useState("");
+const [editComment, setEditComment] = useState("");
   // プロフィール取得
   const fetchProfile = async (userId: string) => {
   const { data, error } = await supabase
@@ -65,7 +67,46 @@ const [editing, setEditing] = useState(false);
     }
   };
 
-  // ★プロフィール更新
+const startEdit = (post: Post) => {
+    setEditingPostId(post.id);
+    setEditRestaurant(post.restaurant);
+    setEditComment(post.comment);
+  };
+
+  const saveEdit = async (postId: number) => {
+    const { error } = await supabase
+      .from("posts")
+      .update({
+        restaurant: editRestaurant,
+        comment: editComment,
+      })
+      .eq("id", postId);
+
+    if (error) {
+      alert("更新失敗");
+      return;
+    }
+
+    setEditingPostId(null);
+    await fetchMyPosts(user.id);
+  };
+
+  const deletePost = async (postId: number) => {
+    if (!confirm("削除しますか？")) return;
+
+    const { error } = await supabase
+      .from("posts")
+      .delete()
+      .eq("id", postId);
+
+    if (error) {
+      alert("削除失敗");
+      return;
+    }
+
+    await fetchMyPosts(user.id);
+  };
+
   const updateProfile = async () => {
   if (!user) return;
 
@@ -304,36 +345,139 @@ const handleAvatar = (e: React.ChangeEvent<HTMLInputElement>) => {
 
         {posts.length === 0 && <p>まだ投稿がありません</p>}
 
-        {posts.map((post) => (
-          <div
-            key={post.id}
+       {posts.map((post) => (
+  <div
+    key={post.id}
+    style={{
+      border: "0.5px solid #eee",
+      borderRadius: "16px",
+      padding: "14px",
+      marginBottom: "12px",
+      backgroundColor: "#fff",
+    }}
+  >
+    {editingPostId === post.id ? (
+      // 編集モード
+      <div>
+        <input
+          value={editRestaurant}
+          onChange={(e) => setEditRestaurant(e.target.value)}
+          style={{
+            width: "100%",
+            padding: "8px",
+            marginBottom: "8px",
+            borderRadius: "8px",
+            border: "1px solid #ccc",
+            boxSizing: "border-box",
+            color: "#111",
+          }}
+        />
+        <textarea
+          value={editComment}
+          onChange={(e) => setEditComment(e.target.value)}
+          style={{
+            width: "100%",
+            padding: "8px",
+            marginBottom: "8px",
+            borderRadius: "8px",
+            border: "1px solid #ccc",
+            boxSizing: "border-box",
+            height: "80px",
+            color: "#111",
+          }}
+        />
+        <div style={{ display: "flex", gap: "8px" }}>
+          <button
+            onClick={() => saveEdit(post.id)}
             style={{
-              border: "1px solid #ddd",
-              borderRadius: "12px",
-              padding: "12px",
-              marginBottom: "12px",
+              padding: "8px 16px",
+              borderRadius: "20px",
+              border: "none",
+              backgroundColor: "#111",
+              color: "#fff",
+              fontSize: "13px",
+              cursor: "pointer",
             }}
           >
-            <h3>{post.restaurant}</h3>
-
-            <p>{"★".repeat(Number(post.rating))}</p>
-
-            <p style={{ fontSize: "12px", color: "#666" }}>
-              {post.created_at
-                ? new Date(post.created_at).toLocaleString("ja-JP")
-                : ""}
-            </p>
-
-            <p>{post.comment}</p>
-
-            {post.image && (
-              <img
-                src={post.image}
-                style={{ width: "100%", borderRadius: "8px" }}
-              />
-            )}
-          </div>
-        ))}
+            保存
+          </button>
+          <button
+            onClick={() => setEditingPostId(null)}
+            style={{
+              padding: "8px 16px",
+              borderRadius: "20px",
+              border: "0.5px solid #ddd",
+              backgroundColor: "#fff",
+              color: "#555",
+              fontSize: "13px",
+              cursor: "pointer",
+            }}
+          >
+            キャンセル
+          </button>
+        </div>
+      </div>
+    ) : (
+      // 表示モード
+      <div>
+        <h3 style={{ fontSize: "15px", fontWeight: "600", color: "#111", marginBottom: "4px" }}>
+          {post.restaurant}
+        </h3>
+        <p style={{ color: "#f5a623", fontSize: "14px", marginBottom: "4px" }}>
+          ★ {Number(post.rating).toFixed(1)}
+        </p>
+        <p style={{ fontSize: "12px", color: "#999", marginBottom: "8px" }}>
+          {post.created_at ? new Date(post.created_at).toLocaleString("ja-JP") : ""}
+        </p>
+        <p style={{ fontSize: "13px", color: "#111", lineHeight: 1.6, marginBottom: "8px" }}>
+          {post.comment}
+        </p>
+        {post.image && (
+          <img
+            src={post.image}
+            style={{
+              width: "100%",
+              maxHeight: "200px",
+              objectFit: "cover",
+              borderRadius: "10px",
+              marginBottom: "8px",
+            }}
+          />
+        )}
+        <div style={{ display: "flex", gap: "8px" }}>
+          <button
+            onClick={() => startEdit(post)}
+            style={{
+              padding: "6px 14px",
+              borderRadius: "20px",
+              border: "0.5px solid #ddd",
+              backgroundColor: "#fff",
+              color: "#111",
+              fontSize: "12px",
+              cursor: "pointer",
+            }}
+          >
+            編集
+          </button>
+          <button
+            onClick={() => deletePost(post.id)}
+            style={{
+              padding: "6px 14px",
+              borderRadius: "20px",
+              border: "0.5px solid #ffcccc",
+              backgroundColor: "#fff0f0",
+              color: "#cc0000",
+              fontSize: "12px",
+              cursor: "pointer",
+            }}
+          >
+            削除
+          </button>
+        </div>
+      </div>
+    )}
+  </div>
+))}
       </section>
     </main>
   );
