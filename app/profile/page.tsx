@@ -26,6 +26,8 @@ const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 const [posts, setPosts] = useState<Post[]>([]);
 const [loading, setLoading] = useState(true);
 const [editing, setEditing] = useState(false);
+const [followCount, setFollowCount] = useState(0);
+const [followerCount, setFollowerCount] = useState(0);
 const [editingPostId, setEditingPostId] = useState<number | null>(null);
 const [editRestaurant, setEditRestaurant] = useState("");
 const [editComment, setEditComment] = useState("");
@@ -66,7 +68,20 @@ const [editComment, setEditComment] = useState("");
       setPosts(data as Post[]);
     }
   };
+const fetchFollowCounts = async (userId: string) => {
+  const { count: followCount } = await supabase
+    .from("follows")
+    .select("*", { count: "exact", head: true })
+    .eq("follower_id", userId);
 
+  const { count: followerCount } = await supabase
+    .from("follows")
+    .select("*", { count: "exact", head: true })
+    .eq("following_id", userId);
+
+  setFollowCount(followCount || 0);
+  setFollowerCount(followerCount || 0);
+};
 const startEdit = (post: Post) => {
     setEditingPostId(post.id);
     setEditRestaurant(post.restaurant);
@@ -168,7 +183,8 @@ const handleAvatar = (e: React.ChangeEvent<HTMLInputElement>) => {
       setUser(data.user);
       await fetchProfile(data.user.id);
       await fetchMyPosts(data.user.id);
-      setLoading(false);
+await fetchFollowCounts(data.user.id);
+setLoading(false);
     };
 
     initialize();
@@ -334,8 +350,27 @@ const handleAvatar = (e: React.ChangeEvent<HTMLInputElement>) => {
 )}
 
 <div style={{ marginTop: "16px", borderTop: "1px solid #eee", paddingTop: "16px" }}>
-  <p style={{ fontSize: "13px", color: "#888" }}>メール: {user?.email}</p>
-  <p style={{ fontSize: "13px", color: "#888" }}>投稿数: {posts.length}</p>
+  <p style={{ fontSize: "13px", color: "#888", marginBottom: "12px" }}>メール: {user?.email}</p>
+  <div style={{ display: "flex", gap: "20px" }}>
+    <div style={{ textAlign: "center" }}>
+      <p style={{ fontSize: "18px", fontWeight: "700", color: "#111" }}>{posts.length}</p>
+      <p style={{ fontSize: "12px", color: "#999" }}>投稿</p>
+    </div>
+    <div
+      style={{ textAlign: "center", cursor: "pointer" }}
+      onClick={() => window.location.href = "/follows"}
+    >
+      <p style={{ fontSize: "18px", fontWeight: "700", color: "#111" }}>{followCount}</p>
+      <p style={{ fontSize: "12px", color: "#999" }}>フォロー</p>
+    </div>
+    <div
+      style={{ textAlign: "center", cursor: "pointer" }}
+      onClick={() => window.location.href = "/followers"}
+    >
+      <p style={{ fontSize: "18px", fontWeight: "700", color: "#111" }}>{followerCount}</p>
+      <p style={{ fontSize: "12px", color: "#999" }}>フォロワー</p>
+    </div>
+  </div>
 </div>
       </section>
 
