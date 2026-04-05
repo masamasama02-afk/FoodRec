@@ -1268,7 +1268,7 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
           <p style={{ marginBottom: "12px", lineHeight: 1.6, color: "#111" }}>
             {post.comment}
           </p>
-
+{console.log("image:", post.image, "images:", post.images, "length:", post.images?.length)}
           {(post.images && post.images.length > 0 ? post.images : post.image && post.image !== "" ? [post.image] : []).map((url, index) => (
   <img
     key={index}
