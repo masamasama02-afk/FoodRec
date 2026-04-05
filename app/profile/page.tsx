@@ -353,21 +353,21 @@ setLoading(false);
   <p style={{ fontSize: "13px", color: "#888", marginBottom: "12px" }}>メール: {user?.email}</p>
   <div style={{ display: "flex", gap: "20px" }}>
     <div style={{ textAlign: "center" }}>
-      <p style={{ fontSize: "18px", fontWeight: "700", color: "#111", backgroundColor: "#fff", padding: "4px 8px", borderRadius: "8px" }}>{posts.length}</p>
+     <p style={{ fontSize: "18px", fontWeight: "700", color: "#111" }}>{posts.length}</p>
       <p style={{ fontSize: "12px", color: "#999" }}>投稿</p>
     </div>
     <div
       style={{ textAlign: "center", cursor: "pointer" }}
       onClick={() => window.location.href = "/follows"}
     >
-     <p style={{ fontSize: "18px", fontWeight: "700", color: "#111", backgroundColor: "#fff", padding: "4px 8px", borderRadius: "8px" }}>{posts.length}</p>
+    <p style={{ fontSize: "18px", fontWeight: "700", color: "#111" }}>{posts.length}</p>
       <p style={{ fontSize: "12px", color: "#999" }}>フォロー</p>
     </div>
     <div
       style={{ textAlign: "center", cursor: "pointer" }}
       onClick={() => window.location.href = "/followers"}
     >
-      <p style={{ fontSize: "18px", fontWeight: "700", color: "#111", backgroundColor: "#fff", padding: "4px 8px", borderRadius: "8px" }}>{posts.length}</p>
+     <p style={{ fontSize: "18px", fontWeight: "700", color: "#111" }}>{posts.length}</p>
       <p style={{ fontSize: "12px", color: "#999" }}>フォロワー</p>
     </div>
   </div>
