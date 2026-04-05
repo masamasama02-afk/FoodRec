@@ -1479,22 +1479,6 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     🔍 食べログ
   </a>
   
-    <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(post.restaurant)}`}
-    target="_blank"
-    rel="noopener noreferrer"
-    style={{
-      display: "inline-block",
-      padding: "8px 14px",
-      borderRadius: "8px",
-      backgroundColor: "#4285f4",
-      color: "#fff",
-      fontSize: "12px",
-      fontWeight: "bold",
-      textDecoration: "none",
-    }}
-  >
-    🗺️ Googleマップ
-  </a>
 </div>
 
 {user && post.user_id === user.id && (
