@@ -1306,7 +1306,13 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
   )}
 </div>
 
-          <h3 style={{ marginBottom: "8px", color: "#111" }}>{post.restaurant}</h3>
+        <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(post.restaurant)}`}
+  target="_blank"
+  rel="noopener noreferrer"
+  style={{ textDecoration: "none" }}
+>
+  <h3 style={{ marginBottom: "8px", color: "#111" }}>{post.restaurant}</h3>
+</a>
 
 {post.genres && post.genres.length > 0 && (
   <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginBottom: "8px" }}>
