@@ -24,6 +24,7 @@ type Post = {
   rating: number;
   image: string;
   images?: string[];
+  genres?: string[];
   created_at?: string;
   user_id?: string;
   username?: string;
@@ -55,6 +56,7 @@ const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const restaurantInputRef = useRef<HTMLInputElement>(null);
   const [image, setImage] = useState<string | null>(null);
 const [images, setImages] = useState<string[]>([]);
+const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [rating, setRating] = useState(5.0);
   const [mapUrl, setMapUrl] = useState("");
 
@@ -561,6 +563,7 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
       rating: rating,
       image: images[0] ?? "",
       images: images,
+      genres: selectedGenres,
       user_id: userData.user.id,
       username: displayName,
       map_url: mapLink,
@@ -583,6 +586,7 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setComment("");
     setImage(null);
     setImages([]);
+    setSelectedGenres([]);
     setRating(5);
     setMapUrl("");
 
@@ -1013,7 +1017,59 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     </span>
   </div>
 </div>
-
+{/* ジャンル選択 */}
+<div style={{ marginBottom: "16px" }}>
+  <p style={{ fontSize: "13px", color: "#111", marginBottom: "8px" }}>シーン</p>
+  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
+    {["🌞 ランチ", "🌙 ディナー", "☕ カフェ", "🍺 飲み", "👫 デート", "👥 グループ"].map((genre) => (
+      <button
+        key={genre}
+        onClick={() => setSelectedGenres(
+          selectedGenres.includes(genre)
+            ? selectedGenres.filter(g => g !== genre)
+            : [...selectedGenres, genre]
+        )}
+        style={{
+          padding: "6px 14px",
+          borderRadius: "20px",
+          border: "0.5px solid #ddd",
+          backgroundColor: selectedGenres.includes(genre) ? "#111" : "#fff",
+          color: selectedGenres.includes(genre) ? "#fff" : "#666",
+          fontSize: "12px",
+          fontWeight: "500",
+          cursor: "pointer",
+        }}
+      >
+        {genre}
+      </button>
+    ))}
+  </div>
+  <p style={{ fontSize: "13px", color: "#111", marginBottom: "8px" }}>料理ジャンル</p>
+  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+    {["🍣 和食", "🍝 洋食", "🍜 中華", "🌮 エスニック", "🍖 焼肉", "🍕 イタリアン", "🥗 ヘルシー", "🍔 ファストフード", "🍰 スイーツ"].map((genre) => (
+      <button
+        key={genre}
+        onClick={() => setSelectedGenres(
+          selectedGenres.includes(genre)
+            ? selectedGenres.filter(g => g !== genre)
+            : [...selectedGenres, genre]
+        )}
+        style={{
+          padding: "6px 14px",
+          borderRadius: "20px",
+          border: "0.5px solid #ddd",
+          backgroundColor: selectedGenres.includes(genre) ? "#111" : "#fff",
+          color: selectedGenres.includes(genre) ? "#fff" : "#666",
+          fontSize: "12px",
+          fontWeight: "500",
+          cursor: "pointer",
+        }}
+      >
+        {genre}
+      </button>
+    ))}
+  </div>
+</div>
         <input
   type="file"
   accept="image/*"
@@ -1252,7 +1308,26 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
 
           <h3 style={{ marginBottom: "8px", color: "#111" }}>{post.restaurant}</h3>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "2px", marginBottom: "4px" }}>
+{post.genres && post.genres.length > 0 && (
+  <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginBottom: "8px" }}>
+    {post.genres.map((genre) => (
+      <span
+        key={genre}
+        style={{
+          padding: "3px 10px",
+          borderRadius: "20px",
+          fontSize: "11px",
+          backgroundColor: "#f0f0f0",
+          color: "#555",
+        }}
+      >
+        {genre}
+      </span>
+    ))}
+  </div>
+)}
+
+<div style={{ display: "flex", alignItems: "center", gap: "2px", marginBottom: "4px" }}>
   {[1, 2, 3, 4, 5].map((star) => {
     const filled = Math.min(Math.max(Number(post.rating) - (star - 1), 0), 1);
     return (

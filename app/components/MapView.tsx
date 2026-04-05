@@ -12,11 +12,13 @@ type Post = {
   lat: number
   lng: number
   username?: string
+  genres?: string[]
 }
 
 type Props = {
   posts: Post[]
   minRating: number
+  selectedGenres: string[]
 }
 
 const getIcon = (rating: number) => {
@@ -98,8 +100,15 @@ function LocationButton() {
   )
 }
 
-export default function MapView({ posts, minRating }: Props) {
-  const filtered = posts.filter(p => Number(p.rating) >= minRating)
+export default function MapView({ posts, minRating, selectedGenres }: Props) {
+  const filtered = posts.filter(p => {
+    if (Number(p.rating) < minRating) return false;
+    if (selectedGenres.length > 0) {
+      if (!p.genres || p.genres.length === 0) return false;
+      return selectedGenres.some(g => p.genres?.includes(g));
+    }
+    return true;
+  })
 
   return (
     <MapContainer
