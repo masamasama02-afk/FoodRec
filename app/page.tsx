@@ -1311,7 +1311,7 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
   rel="noopener noreferrer"
   style={{ textDecoration: "none" }}
 >
-  <h3 style={{ marginBottom: "8px", color: "#111" }}>{post.restaurant}</h3>
+  <h3 style={{ marginBottom: "8px", color: "#2563eb", textDecoration: "underline" }}>{post.restaurant}</h3>
 </a>
 
 {post.genres && post.genres.length > 0 && (
