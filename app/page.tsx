@@ -1,9 +1,12 @@
 "use client";
 
+"use client";
+
 import { supabase } from "../lib/supabase";
 import toast from "react-hot-toast";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import heic2any from "heic2any";
 declare const google: any;
 
 type Comment = {
@@ -481,10 +484,30 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
   const uploadedUrls: string[] = [];
 
   for (const file of filesToUpload) {
-    const fileName = `${Date.now()}_${file.name}`;
+    let uploadFile: File | Blob = file;
+    let fileName = `${Date.now()}_${file.name}`;
+
+    // HEICファイルをJPEGに変換
+    if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
+      try {
+        const converted = await heic2any({
+          blob: file,
+          toType: "image/jpeg",
+          quality: 0.8,
+        });
+        uploadFile = Array.isArray(converted) ? converted[0] : converted;
+        fileName = `${Date.now()}_converted.jpg`;
+        toast("HEICをJPEGに変換しました");
+      } catch (e) {
+        console.error("HEIC変換エラー:", e);
+        toast("画像の変換に失敗しました");
+        continue;
+      }
+    }
+
     const { error } = await supabase.storage
       .from("images")
-      .upload(fileName, file);
+      .upload(fileName, uploadFile);
 
     if (error) {
       console.error("画像アップロードエラー:", error);
@@ -1269,7 +1292,7 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
             {post.comment}
           </p>
 {console.log("image:", post.image, "images:", post.images, "length:", post.images?.length)}
-          {(post.images && post.images.length > 0 ? post.images : post.image && post.image !== "" ? [post.image] : []).map((url, index) => (
+          {(post.images && post.images.length > 0 ? post.images : (post.image && post.image !== "") ? [post.image] : []).map((url, index) => (
   <img
     key={index}
     src={url}
