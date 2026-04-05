@@ -6,7 +6,7 @@ import { supabase } from "../lib/supabase";
 import toast from "react-hot-toast";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import heic2any from "heic2any";
+
 declare const google: any;
 
 type Comment = {
@@ -487,9 +487,10 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     let uploadFile: File | Blob = file;
     let fileName = `${Date.now()}_${file.name}`;
 
-    // HEICファイルをJPEGに変換
+   // HEICファイルをJPEGに変換（動的インポート）
     if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
       try {
+        const heic2any = (await import("heic2any")).default;
         const converted = await heic2any({
           blob: file,
           toType: "image/jpeg",
