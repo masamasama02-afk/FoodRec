@@ -560,6 +560,36 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     let uploadFile: File | Blob = file;
     let fileName = `${Date.now()}_${file.name}`;
 
+    // 画像を圧縮する
+    const compressImage = (blob: Blob): Promise<Blob> => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        const url = URL.createObjectURL(blob);
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const maxSize = 1200;
+          let width = img.width;
+          let height = img.height;
+          if (width > maxSize || height > maxSize) {
+            if (width > height) {
+              height = Math.round((height * maxSize) / width);
+              width = maxSize;
+            } else {
+              width = Math.round((width * maxSize) / height);
+              height = maxSize;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d")!;
+          ctx.drawImage(img, 0, 0, width, height);
+          canvas.toBlob((result) => resolve(result!), "image/jpeg", 0.8);
+          URL.revokeObjectURL(url);
+        };
+        img.src = url;
+      });
+    };
+
    // HEICファイルをJPEGに変換（動的インポート）
     if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
       try {
@@ -577,6 +607,12 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
         toast("画像の変換に失敗しました");
         continue;
       }
+    }
+
+    // 圧縮実行
+    if (uploadFile.type !== "image/heic") {
+      uploadFile = await compressImage(uploadFile);
+      fileName = `${Date.now()}_compressed.jpg`;
     }
 
     const { error } = await supabase.storage
