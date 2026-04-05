@@ -51,7 +51,7 @@ const [selectedGenres, setSelectedGenres] = useState<string[]>([])
   flexDirection: "column",
   gap: "8px",
   boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-  zIndex: 10,
+  zIndex: 1000,
   maxWidth: "90vw",
   overflowX: "auto",
   scrollbarWidth: "none",

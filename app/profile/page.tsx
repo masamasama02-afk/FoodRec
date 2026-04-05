@@ -10,6 +10,7 @@ type Post = {
   comment: string;
   rating: number;
   image: string;
+  genres?: string[];
   created_at?: string;
   user_id?: string;
   username?: string;
@@ -31,6 +32,7 @@ const [followerCount, setFollowerCount] = useState(0);
 const [editingPostId, setEditingPostId] = useState<number | null>(null);
 const [editRestaurant, setEditRestaurant] = useState("");
 const [editComment, setEditComment] = useState("");
+const [editGenres, setEditGenres] = useState<string[]>([]);
   // プロフィール取得
   const fetchProfile = async (userId: string) => {
   const { data, error } = await supabase
@@ -86,6 +88,7 @@ const startEdit = (post: Post) => {
     setEditingPostId(post.id);
     setEditRestaurant(post.restaurant);
     setEditComment(post.comment);
+    setEditGenres(post.genres || []);
   };
 
   const saveEdit = async (postId: number) => {
@@ -94,6 +97,7 @@ const startEdit = (post: Post) => {
       .update({
         restaurant: editRestaurant,
         comment: editComment,
+        genres: editGenres,
       })
       .eq("id", postId);
 
@@ -421,6 +425,58 @@ setLoading(false);
             color: "#111",
           }}
         />
+        {/* ジャンル選択 */}
+        <div style={{ marginBottom: "10px" }}>
+          <p style={{ fontSize: "12px", color: "#666", marginBottom: "6px" }}>シーン</p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "8px" }}>
+            {["🌞 ランチ", "🌙 ディナー", "☕ カフェ", "🍺 飲み", "👫 デート", "👥 グループ"].map((genre) => (
+              <button
+                key={genre}
+                onClick={() => setEditGenres(
+                  editGenres.includes(genre)
+                    ? editGenres.filter(g => g !== genre)
+                    : [...editGenres, genre]
+                )}
+                style={{
+                  padding: "4px 10px",
+                  borderRadius: "20px",
+                  border: "none",
+                  backgroundColor: editGenres.includes(genre) ? "#111" : "#f0f0f0",
+                  color: editGenres.includes(genre) ? "#fff" : "#666",
+                  fontSize: "11px",
+                  cursor: "pointer",
+                }}
+              >
+                {genre}
+              </button>
+            ))}
+          </div>
+          <p style={{ fontSize: "12px", color: "#666", marginBottom: "6px" }}>料理ジャンル</p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+            {["🍣 和食", "🍝 洋食", "🍜 中華", "🌮 エスニック", "🍖 焼肉", "🍕 イタリアン", "🥗 ヘルシー", "🍔 ファストフード", "🍰 スイーツ"].map((genre) => (
+              <button
+                key={genre}
+                onClick={() => setEditGenres(
+                  editGenres.includes(genre)
+                    ? editGenres.filter(g => g !== genre)
+                    : [...editGenres, genre]
+                )}
+                style={{
+                  padding: "4px 10px",
+                  borderRadius: "20px",
+                  border: "none",
+                  backgroundColor: editGenres.includes(genre) ? "#111" : "#f0f0f0",
+                  color: editGenres.includes(genre) ? "#fff" : "#666",
+                  fontSize: "11px",
+                  cursor: "pointer",
+                }}
+              >
+                {genre}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div style={{ display: "flex", gap: "8px" }}>
           <button
             onClick={() => saveEdit(post.id)}
