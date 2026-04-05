@@ -1167,7 +1167,7 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
   )}
 </div>
 
-          <h3 style={{ marginBottom: "8px" }}>{post.restaurant}</h3>
+          <h3 style={{ marginBottom: "8px", color: "#111" }}>{post.restaurant}</h3>
 
           <div style={{ display: "flex", alignItems: "center", gap: "2px", marginBottom: "4px" }}>
   {[1, 2, 3, 4, 5].map((star) => {
@@ -1206,7 +1206,7 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
               : ""}
           </p>
 
-          <p style={{ marginBottom: "12px", lineHeight: 1.6 }}>
+          <p style={{ marginBottom: "12px", lineHeight: 1.6, color: "#111" }}>
             {post.comment}
           </p>
 
@@ -1298,22 +1298,7 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
 {/* アフィリエイトリンク */}
 <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "10px" }}>
   
-    <a href={`${process.env.NEXT_PUBLIC_HOTPEPPER_AFFILIATE_URL}${encodeURIComponent(post.restaurant)}`}
-    target="_blank"
-    rel="noopener noreferrer"
-    style={{
-      display: "inline-block",
-      padding: "8px 14px",
-      borderRadius: "8px",
-      backgroundColor: "#ff6b6b",
-      color: "#fff",
-      fontSize: "12px",
-      fontWeight: "bold",
-      textDecoration: "none",
-    }}
-  >
-    🍽️ ホットペッパーで予約
-  </a>
+    
   
     <a href={`https://tabelog.com/rstLst/?vs=1&sa=&sk=${encodeURIComponent(post.restaurant)}`}
     target="_blank"
