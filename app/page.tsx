@@ -20,6 +20,7 @@ type Post = {
   comment: string;
   rating: number;
   image: string;
+  images?: string[];
   created_at?: string;
   user_id?: string;
   username?: string;
@@ -50,6 +51,7 @@ const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [comment, setComment] = useState("");
   const restaurantInputRef = useRef<HTMLInputElement>(null);
   const [image, setImage] = useState<string | null>(null);
+const [images, setImages] = useState<string[]>([]);
   const [rating, setRating] = useState(5.0);
   const [mapUrl, setMapUrl] = useState("");
 
@@ -464,13 +466,22 @@ const handleAvatar = (e: React.ChangeEvent<HTMLInputElement>) => {
   reader.readAsDataURL(file);
 }; 
 const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const files = Array.from(e.target.files || []);
+  if (files.length === 0) return;
 
-    setUploading(true);
+  const remaining = 3 - images.length;
+  if (remaining <= 0) {
+    toast("画像は最大3枚までです");
+    return;
+  }
 
+  const filesToUpload = files.slice(0, remaining);
+  setUploading(true);
+
+  const uploadedUrls: string[] = [];
+
+  for (const file of filesToUpload) {
     const fileName = `${Date.now()}_${file.name}`;
-
     const { error } = await supabase.storage
       .from("images")
       .upload(fileName, file);
@@ -478,17 +489,20 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (error) {
       console.error("画像アップロードエラー:", error);
       toast("画像アップロードに失敗しました");
-      setUploading(false);
-      return;
+      continue;
     }
 
     const { data: urlData } = supabase.storage
       .from("images")
       .getPublicUrl(fileName);
 
-    setImage(urlData.publicUrl);
-    setUploading(false);
-  };
+    uploadedUrls.push(urlData.publicUrl);
+  }
+
+  setImages((prev) => [...prev, ...uploadedUrls]);
+  if (uploadedUrls.length > 0) setImage(uploadedUrls[0]);
+  setUploading(false);
+};
 
   const addPost = async () => {
     if (!restaurant.trim()) {
@@ -521,7 +535,8 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
       restaurant: restaurant,
       comment: comment,
       rating: rating,
-      image: image ?? "",
+      image: images[0] ?? "",
+      images: images,
       user_id: userData.user.id,
       username: displayName,
       map_url: mapLink,
@@ -543,6 +558,7 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setRestaurant("");
     setComment("");
     setImage(null);
+    setImages([]);
     setRating(5);
     setMapUrl("");
 
@@ -932,7 +948,7 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
         />
 
         <div style={{ marginTop: "10px", marginBottom: "16px" }}>
-  <p style={{ marginBottom: "8px" }}>評価：</p>
+  <p style={{ marginBottom: "8px",color:"#111" }}>評価：</p>
   <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
     {[1, 2, 3, 4, 5].map((star) => {
       const filled = Math.min(Math.max(rating - (star - 1), 0), 1);
@@ -974,29 +990,66 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
   </div>
 </div>
 
-        <input type="file" onChange={handleImage} />
+        <input
+  type="file"
+  accept="image/*"
+  multiple
+  onChange={handleImage}
+  style={{ color: "#111" }}
+/>
+<p style={{ fontSize: "11px", color: "#aaa", marginTop: "4px" }}>
+  最大3枚まで選択できます（{images.length}/3）
+</p>
 
-        {uploading && (
-          <p style={{ color: "#666", marginTop: "8px" }}>
-            画像をアップロード中...
-          </p>
-        )}
+{uploading && (
+  <p style={{ color: "#666", marginTop: "8px" }}>
+    画像をアップロード中...
+  </p>
+)}
 
-        {image && (
-          <div style={{ marginTop: "16px" }}>
-            <p style={{ marginBottom: "8px" }}>画像プレビュー</p>
-            <img
-              src={image}
-              alt="preview"
-              style={{
-                width: "100%",
-                maxWidth: "300px",
-                borderRadius: "12px",
-                border: "1px solid #ddd",
-              }}
-            />
-          </div>
-        )}
+{images.length > 0 && (
+  <div style={{ marginTop: "16px" }}>
+    <p style={{ marginBottom: "8px", color: "#111" }}>画像プレビュー</p>
+    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+      {images.map((url, index) => (
+        <div key={index} style={{ position: "relative" }}>
+          <img
+            src={url}
+            alt={`preview-${index}`}
+            style={{
+              width: "100px",
+              height: "100px",
+              objectFit: "cover",
+              borderRadius: "8px",
+              border: "1px solid #ddd",
+            }}
+          />
+          <button
+            onClick={() => setImages(images.filter((_, i) => i !== index))}
+            style={{
+              position: "absolute",
+              top: "4px",
+              right: "4px",
+              width: "20px",
+              height: "20px",
+              borderRadius: "50%",
+              border: "none",
+              backgroundColor: "rgba(0,0,0,0.5)",
+              color: "#fff",
+              fontSize: "12px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            ×
+          </button>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
 
         <button
           onClick={addPost}
@@ -1216,23 +1269,23 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
             {post.comment}
           </p>
 
-          {post.image && (
+          {(post.images && post.images.length > 0 ? post.images : post.image ? [post.image] : []).map((url, index) => (
   <img
-    src={post.image}
-    alt={post.restaurant}
+    key={index}
+    src={url}
+    alt={`${post.restaurant}-${index}`}
     style={{
-      width: "100%",
+      width: post.images && post.images.length > 1 ? "calc(50% - 4px)" : "100%",
       maxHeight: "300px",
       objectFit: "cover",
       borderRadius: "12px",
-      marginBottom: "12px",
+      marginBottom: "8px",
       border: "1px solid #eee",
+      display: "inline-block",
+      marginRight: index % 2 === 0 && post.images && post.images.length > 1 ? "8px" : "0",
     }}
   />
-)}
-
-        
-
+))}
           <div
             style={{
               display: "flex",
