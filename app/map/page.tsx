@@ -95,7 +95,13 @@ export default function MapPage() {
                 flexShrink: 0,
               }}
             >
-              {emoji}
+              
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1px" }}>
+                <span style={{ fontSize: "14px" }}>{emoji}</span>
+                <span style={{ fontSize: "9px", color: selectedGenres.includes(genre) ? "#fff" : "#999" }}>
+                  {genre.replace(/^[^\s]+\s/, "")}
+                </span>
+              </div>
             </button>
           );
         })}
