@@ -1,6 +1,5 @@
 "use client";
 
-"use client";
 
 import { supabase } from "../lib/supabase";
 import toast from "react-hot-toast";
@@ -71,6 +70,9 @@ const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [rankingPosts, setRankingPosts] = useState<Post[]>([]);
   const [lat, setLat] = useState<number | null>(null)
   const [lng, setLng] = useState<number | null>(null)
+  const [notifications, setNotifications] = useState<any[]>([]);
+const [unreadCount, setUnreadCount] = useState(0);
+const [showNotifications, setShowNotifications] = useState(false);
 
   const fetchProfile = async (userId: string) => {
     const { data, error } = await supabase
@@ -327,6 +329,20 @@ const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
 
   setWishlistPostIds((wishlist || []).map((w) => w.post_id));
 };
+const fetchNotifications = async () => {
+  const { data } = await supabase.auth.getUser();
+  if (!data.user) return;
+
+  const { data: notifs } = await supabase
+    .from("notifications")
+    .select("*")
+    .eq("user_id", data.user.id)
+    .order("created_at", { ascending: false })
+    .limit(20);
+
+  setNotifications(notifs || []);
+  setUnreadCount((notifs || []).filter(n => !n.is_read).length);
+};
   const toggleWishlist = async (postId: number) => {
   const { data } = await supabase.auth.getUser();
 
@@ -410,14 +426,27 @@ const addComment = async (postId: number) => {
     return
   }
 
-  setCommentInputs({
+ setCommentInputs({
     ...commentInputs,
     [postId]: ""
   })
 
+  // 投稿者に通知を送る
+  const post = posts.find(p => p.id === postId);
+  if (post && post.user_id && post.user_id !== data.user.id) {
+    await supabase.from("notifications").insert({
+      user_id: post.user_id,
+      from_user_id: data.user.id,
+      from_username: displayName,
+      post_id: postId,
+      restaurant: post.restaurant,
+      type: "comment",
+      message: text,
+    });
+  }
+
   await fetchComments()
 }
-
   const signIn = async () => {
     if (!email.trim() || !password.trim()) {
       toast("メールアドレスとパスワードを入力してください");
@@ -460,6 +489,7 @@ useEffect(() => {
       await fetchProfile(data.user.id);
       await fetchLikes(data.user.id);
       await fetchWishlist();
+      await fetchNotifications();
     }
     await fetchRanking();
     await fetchComments();
@@ -703,19 +733,116 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
   borderBottom: "0.5px solid #eee",
   marginBottom: "24px",
   paddingBottom: "16px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
 }}>
-  <h1 style={{
-    fontSize: "26px",
-    fontWeight: "700",
-    letterSpacing: "-0.5px",
-    color: "#111",
-    marginBottom: "2px",
-  }}>
-    FoodRec
-  </h1>
-  <p style={{ fontSize: "12px", color: "#bbb" }}>
-    Recommendation & Record
-  </p>
+  <div>
+    <h1 style={{
+      fontSize: "26px",
+      fontWeight: "700",
+      letterSpacing: "-0.5px",
+      color: "#111",
+      marginBottom: "2px",
+    }}>
+      FoodRec
+    </h1>
+    <p style={{ fontSize: "12px", color: "#bbb" }}>
+      Recommendation & Record
+    </p>
+  </div>
+
+  {/* 通知ベル */}
+  {user && (
+    <div style={{ position: "relative" }}>
+      <button
+        onClick={() => {
+          setShowNotifications(!showNotifications);
+          if (!showNotifications && unreadCount > 0) {
+            supabase
+              .from("notifications")
+              .update({ is_read: true })
+              .eq("user_id", user.id)
+              .eq("is_read", false)
+              .then(() => setUnreadCount(0));
+          }
+        }}
+        style={{
+          background: "none",
+          border: "none",
+          fontSize: "22px",
+          cursor: "pointer",
+          position: "relative",
+          padding: "4px",
+        }}
+      >
+        🔔
+        {unreadCount > 0 && (
+          <span style={{
+            position: "absolute",
+            top: "0px",
+            right: "0px",
+            background: "#e74c3c",
+            color: "#fff",
+            borderRadius: "50%",
+            width: "16px",
+            height: "16px",
+            fontSize: "10px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontWeight: "700",
+          }}>
+            {unreadCount}
+          </span>
+        )}
+      </button>
+
+      {/* 通知一覧 */}
+      {showNotifications && (
+        <div style={{
+          position: "absolute",
+          right: 0,
+          top: "40px",
+          width: "280px",
+          backgroundColor: "#fff",
+          border: "0.5px solid #eee",
+          borderRadius: "12px",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+          zIndex: 100,
+          maxHeight: "300px",
+          overflowY: "auto",
+        }}>
+          <p style={{ fontSize: "13px", fontWeight: "600", color: "#111", padding: "12px 14px", borderBottom: "0.5px solid #eee" }}>
+            通知
+          </p>
+          {notifications.length === 0 && (
+            <p style={{ fontSize: "13px", color: "#999", padding: "12px 14px" }}>通知はありません</p>
+          )}
+          {notifications.map((notif) => (
+            <div
+              key={notif.id}
+              style={{
+                padding: "10px 14px",
+                borderBottom: "0.5px solid #f0f0f0",
+                backgroundColor: notif.is_read ? "#fff" : "#f0f7ff",
+              }}
+            >
+              <p style={{ fontSize: "13px", color: "#111", marginBottom: "2px" }}>
+                <strong>{notif.from_username}</strong> が <strong>{notif.restaurant}</strong> にコメントしました
+              </p>
+              <p style={{ fontSize: "12px", color: "#666", marginBottom: "2px" }}>
+                「{notif.message}」
+              </p>
+              <p style={{ fontSize: "11px", color: "#bbb" }}>
+                {new Date(notif.created_at).toLocaleString("ja-JP")}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )}
 </div>
 
       {!user && (
