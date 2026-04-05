@@ -66,6 +66,7 @@ const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
 
   const [likedPostIds, setLikedPostIds] = useState<number[]>([]);
+  const [wishlistPostIds, setWishlistPostIds] = useState<number[]>([]);
   const [likeCounts, setLikeCounts] = useState<Record<number, number>>({});
   const [rankingPosts, setRankingPosts] = useState<Post[]>([]);
   const [lat, setLat] = useState<number | null>(null)
@@ -288,7 +289,7 @@ const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
     .select("*")
     .in("post_id", postIds);
 
-    if (error) {
+   if (error) {
       console.error("いいね取得エラー:", error);
       return;
     }
@@ -314,6 +315,45 @@ const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
       setLikedPostIds([]);
     }
   };
+
+  const fetchWishlist = async () => {
+  const { data } = await supabase.auth.getUser();
+  if (!data.user) return;
+
+  const { data: wishlist } = await supabase
+    .from("wishlists")
+    .select("post_id")
+    .eq("user_id", data.user.id);
+
+  setWishlistPostIds((wishlist || []).map((w) => w.post_id));
+};
+  const toggleWishlist = async (postId: number) => {
+  const { data } = await supabase.auth.getUser();
+
+  if (!data.user) {
+    toast("ログインしてください");
+    return;
+  }
+
+  const alreadyAdded = wishlistPostIds.includes(postId);
+
+  if (alreadyAdded) {
+    await supabase
+      .from("wishlists")
+      .delete()
+      .eq("user_id", data.user.id)
+      .eq("post_id", postId);
+
+    setWishlistPostIds(wishlistPostIds.filter((id) => id !== postId));
+  } else {
+    await supabase.from("wishlists").insert({
+      user_id: data.user.id,
+      post_id: postId,
+    });
+
+    setWishlistPostIds([...wishlistPostIds, postId]);
+  }
+};
   const fetchComments = async () => {
 
   const { data, error } = await supabase
@@ -419,6 +459,7 @@ useEffect(() => {
     if (data.user) {
       await fetchProfile(data.user.id);
       await fetchLikes(data.user.id);
+      await fetchWishlist();
     }
     await fetchRanking();
     await fetchComments();
@@ -1392,33 +1433,48 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
   />
 ))}
           <div
-            style={{
-              display: "flex",
-              gap: "12px",
-              alignItems: "center",
-              flexWrap: "wrap",
-              marginBottom: "12px",
-            }}
-          >
-            <button
-              onClick={() => toggleLike(post.id)}
-              style={{
-                padding: "8px 14px",
-                borderRadius: "8px",
-                border: "1px solid #ccc",
-                backgroundColor: likedPostIds.includes(post.id)
-                  ? "#ffe4e6"
-                  : "#fff",
-                cursor: "pointer",
-              }}
-            >
-              {likedPostIds.includes(post.id) ? "❤️ いいね済み" : "🤍 いいね"}
-            </button>
+  style={{
+    display: "flex",
+    gap: "8px",
+    alignItems: "center",
+    flexWrap: "wrap",
+    marginBottom: "12px",
+  }}
+>
+  <button
+    onClick={() => toggleLike(post.id)}
+    style={{
+      padding: "8px 14px",
+      borderRadius: "20px",
+      border: "0.5px solid #ffc0c5",
+      backgroundColor: likedPostIds.includes(post.id) ? "#ffe4e6" : "#fff",
+      cursor: "pointer",
+      fontSize: "12px",
+    }}
+  >
+    {likedPostIds.includes(post.id) ? "❤️ いいね済み" : "🤍 いいね"}
+  </button>
 
-            <span style={{ fontSize: "14px", color: "#666" }}>
-              いいね {likeCounts[post.id] || 0} 件
-            </span>
-          </div>
+  <span style={{ fontSize: "13px", color: "#999" }}>
+    {likeCounts[post.id] || 0}件
+  </span>
+
+  <button
+    onClick={() => toggleWishlist(post.id)}
+    style={{
+      padding: "8px 14px",
+      borderRadius: "20px",
+      border: wishlistPostIds.includes(post.id) ? "0.5px solid #f5d060" : "0.5px solid #ddd",
+      backgroundColor: wishlistPostIds.includes(post.id) ? "#fff8e1" : "#fff",
+      color: wishlistPostIds.includes(post.id) ? "#f5a623" : "#666",
+      cursor: "pointer",
+      fontSize: "12px",
+      fontWeight: "500",
+    }}
+  >
+    {wishlistPostIds.includes(post.id) ? "🔖 行きたい済み" : "🔖 行きたい"}
+  </button>
+</div>
           <div style={{ marginTop: "10px" }}>
 
   {(comments[post.id] || []).map((c) => (

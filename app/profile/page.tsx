@@ -27,6 +27,8 @@ const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 const [posts, setPosts] = useState<Post[]>([]);
 const [loading, setLoading] = useState(true);
 const [editing, setEditing] = useState(false);
+const [wishlist, setWishlist] = useState<any[]>([]);
+const [activeTab, setActiveTab] = useState<"posts" | "wishlist">("posts");
 const [followCount, setFollowCount] = useState(0);
 const [followerCount, setFollowerCount] = useState(0);
 const [editingPostId, setEditingPostId] = useState<number | null>(null);
@@ -70,6 +72,15 @@ const [editGenres, setEditGenres] = useState<string[]>([]);
       setPosts(data as Post[]);
     }
   };
+  const fetchWishlist = async (userId: string) => {
+  const { data } = await supabase
+    .from("wishlists")
+    .select("post_id, posts(id, restaurant, rating, username, comment)")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+
+  setWishlist(data || []);
+};
 const fetchFollowCounts = async (userId: string) => {
   const { count: followCount } = await supabase
     .from("follows")
@@ -188,6 +199,7 @@ const handleAvatar = (e: React.ChangeEvent<HTMLInputElement>) => {
       await fetchProfile(data.user.id);
       await fetchMyPosts(data.user.id);
 await fetchFollowCounts(data.user.id);
+await fetchWishlist(data.user.id);
 setLoading(false);
     };
 
@@ -378,11 +390,45 @@ setLoading(false);
 </div>
       </section>
 
+      {/* タブ */}
+      <div style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
+        <button
+          onClick={() => setActiveTab("posts")}
+          style={{
+            padding: "8px 20px",
+            borderRadius: "20px",
+            border: "none",
+            backgroundColor: activeTab === "posts" ? "#111" : "#f0f0f0",
+            color: activeTab === "posts" ? "#fff" : "#666",
+            fontSize: "13px",
+            fontWeight: "500",
+            cursor: "pointer",
+          }}
+        >
+          投稿一覧
+        </button>
+        <button
+          onClick={() => setActiveTab("wishlist")}
+          style={{
+            padding: "8px 20px",
+            borderRadius: "20px",
+            border: "none",
+            backgroundColor: activeTab === "wishlist" ? "#111" : "#f0f0f0",
+            color: activeTab === "wishlist" ? "#fff" : "#666",
+            fontSize: "13px",
+            fontWeight: "500",
+            cursor: "pointer",
+          }}
+        >
+          🔖 行きたいリスト
+        </button>
+      </div>
+
       {/* 投稿一覧 */}
       <section>
-        <h2>自分の投稿</h2>
-
-        {posts.length === 0 && <p>まだ投稿がありません</p>}
+        {activeTab === "posts" && (
+          <>
+            {posts.length === 0 && <p style={{ color: "#999", fontSize: "14px" }}>まだ投稿がありません</p>}
 
        {posts.map((post) => (
   <div
@@ -569,6 +615,64 @@ setLoading(false);
     )}
   </div>
 ))}
+      </>
+        )}
+
+        {/* 行きたいリスト */}
+        {activeTab === "wishlist" && (
+          <>
+            {wishlist.length === 0 && (
+              <p style={{ color: "#999", fontSize: "14px" }}>まだ行きたいリストがありません</p>
+            )}
+            {wishlist.map((item) => (
+              <div
+                key={item.post_id}
+                style={{
+                  backgroundColor: "#fff",
+                  border: "0.5px solid #eee",
+                  borderRadius: "16px",
+                  padding: "14px",
+                  marginBottom: "12px",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div style={{ flex: 1 }}>
+                    <p style={{ fontSize: "15px", fontWeight: "600", color: "#2563eb", textDecoration: "underline", marginBottom: "4px" }}>
+                      {item.posts?.restaurant}
+                    </p>
+                    <p style={{ fontSize: "13px", color: "#f5a623", marginBottom: "4px" }}>
+                      ★ {Number(item.posts?.rating).toFixed(1)}
+                    </p>
+                    <p style={{ fontSize: "12px", color: "#999" }}>
+                      {item.posts?.username} のおすすめ
+                    </p>
+                  </div>
+                  <button
+                    onClick={async () => {
+                      await supabase
+                        .from("wishlists")
+                        .delete()
+                        .eq("post_id", item.post_id)
+                        .eq("user_id", user.id);
+                      await fetchWishlist(user.id);
+                    }}
+                    style={{
+                      padding: "6px 12px",
+                      borderRadius: "20px",
+                      border: "0.5px solid #eee",
+                      backgroundColor: "#fff",
+                      color: "#999",
+                      fontSize: "12px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    削除
+                  </button>
+                </div>
+              </div>
+            ))}
+          </>
+        )}
       </section>
     </main>
   );
