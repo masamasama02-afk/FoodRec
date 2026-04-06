@@ -1187,7 +1187,7 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
 <div style={{ marginBottom: "16px" }}>
   <p style={{ fontSize: "13px", color: "#111", marginBottom: "8px" }}>シーン</p>
   <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
-    {["🌞 ランチ", "🌙 ディナー", "☕ カフェ", "🍺 飲み", "👫 デート", "👥 グループ"].map((genre) => (
+    {["🌞 ランチ", "🌙 ディナー", "☕ カフェ", "🍺 飲み", "👫 デート", "👥 グループ", "🥂 2次会"].map((genre) => (
       <button
         key={genre}
         onClick={() => setSelectedGenres(
@@ -1212,7 +1212,7 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
   </div>
   <p style={{ fontSize: "13px", color: "#111", marginBottom: "8px" }}>料理ジャンル</p>
   <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-    {["🍣 和食", "🍝 洋食", "🍜 中華", "🌮 エスニック", "🍖 焼肉", "🍕 イタリアン", "🥗 ヘルシー", "🍔 ファストフード", "🍰 スイーツ"].map((genre) => (
+    {["🍣 和食", "🍜 ラーメン", "🍱 鮨", "🦞 海鮮", "🍝 洋食", "🍕 イタリアン", "🍷 ビストロ", "🍜 中華", "🌮 エスニック", "🍖 焼肉", "🦌 ジビエ", "🥗 ヘルシー", "🍔 ファストフード", "🍰 スイーツ", "🍺 クラフトビール"].map((genre) => (
       <button
         key={genre}
         onClick={() => setSelectedGenres(

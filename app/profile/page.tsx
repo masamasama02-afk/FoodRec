@@ -546,7 +546,7 @@ setLoading(false);
         <div style={{ marginBottom: "10px" }}>
           <p style={{ fontSize: "12px", color: "#666", marginBottom: "6px" }}>シーン</p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "8px" }}>
-            {["🌞 ランチ", "🌙 ディナー", "☕ カフェ", "🍺 飲み", "👫 デート", "👥 グループ"].map((genre) => (
+           {["🌞 ランチ", "🌙 ディナー", "☕ カフェ", "🍺 飲み", "👫 デート", "👥 グループ", "🥂 2次会"].map((genre) => (
               <button
                 key={genre}
                 onClick={() => setEditGenres(
@@ -570,7 +570,7 @@ setLoading(false);
           </div>
           <p style={{ fontSize: "12px", color: "#666", marginBottom: "6px" }}>料理ジャンル</p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-            {["🍣 和食", "🍝 洋食", "🍜 中華", "🌮 エスニック", "🍖 焼肉", "🍕 イタリアン", "🥗 ヘルシー", "🍔 ファストフード", "🍰 スイーツ"].map((genre) => (
+           {["🍣 和食", "🍜 ラーメン", "🍱 鮨", "🦞 海鮮", "🍝 洋食", "🍕 イタリアン", "🍷 ビストロ", "🍜 中華", "🌮 エスニック", "🍖 焼肉", "🦌 ジビエ", "🥗 ヘルシー", "🍔 ファストフード", "🍰 スイーツ", "🍺 クラフトビール"].map((genre) => (
               <button
                 key={genre}
                 onClick={() => setEditGenres(
