@@ -533,10 +533,10 @@ useEffect(() => {
 
   // 逆ジオコーディングでエリアを取得
   const geocoder = new google.maps.Geocoder()
-  geocoder.geocode({ location: { lat, lng } }, (results: any, status: any) => {
+ geocoder.geocode({ location: { lat, lng } }, (results: any, status: any) => {
+    console.log("Geocoder status:", status, results)
     if (status === "OK" && results[0]) {
       const components = results[0].address_components
-      // 区・町名を取得（sublocality_level_1 or locality）
       const area =
         components.find((c: any) => c.types.includes("sublocality_level_2"))?.long_name ||
         components.find((c: any) => c.types.includes("sublocality_level_1"))?.long_name ||
