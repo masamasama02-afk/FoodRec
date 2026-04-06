@@ -515,7 +515,7 @@ useEffect(() => {
     restaurantInputRef.current,
     {
       types: ["restaurant"],
-      fields: ["name", "geometry"]
+      fields: ["name", "geometry", "address_components"]
     }
   );
 
