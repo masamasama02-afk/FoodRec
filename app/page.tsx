@@ -24,6 +24,7 @@ type Post = {
   image: string;
   images?: string[];
   genres?: string[];
+  area?: string;
   created_at?: string;
   user_id?: string;
   username?: string;
@@ -71,6 +72,7 @@ const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [rankingPosts, setRankingPosts] = useState<Post[]>([]);
   const [lat, setLat] = useState<number | null>(null)
   const [lng, setLng] = useState<number | null>(null)
+  const [area, setArea] = useState("");
   const [notifications, setNotifications] = useState<any[]>([]);
 const [unreadCount, setUnreadCount] = useState(0);
 const [showNotifications, setShowNotifications] = useState(false);
@@ -518,17 +520,32 @@ useEffect(() => {
   );
 
   autocomplete.addListener("place_changed", () => {
+  const place = autocomplete.getPlace()
 
-    const place = autocomplete.getPlace()
+  if (!place.name || !place.geometry) return
 
-if (!place.name || !place.geometry) return
+  setRestaurant(place.name)
 
-setRestaurant(place.name)
+  const lat = place.geometry.location.lat()
+  const lng = place.geometry.location.lng()
+  setLat(lat)
+  setLng(lng)
 
-setLat(place.geometry.location.lat())
-setLng(place.geometry.location.lng())
-
-  });
+  // 逆ジオコーディングでエリアを取得
+  const geocoder = new google.maps.Geocoder()
+  geocoder.geocode({ location: { lat, lng } }, (results: any, status: any) => {
+    if (status === "OK" && results[0]) {
+      const components = results[0].address_components
+      // 区・町名を取得（sublocality_level_1 or locality）
+      const area =
+        components.find((c: any) => c.types.includes("sublocality_level_2"))?.long_name ||
+        components.find((c: any) => c.types.includes("sublocality_level_1"))?.long_name ||
+        components.find((c: any) => c.types.includes("locality"))?.long_name ||
+        ""
+      setArea(area)
+    }
+  })
+});
 
 }, []);
 
@@ -672,6 +689,7 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
       image: images[0] ?? "",
       images: images,
       genres: selectedGenres,
+      area: area,
       user_id: userData.user.id,
       username: displayName,
       map_url: mapLink,
@@ -695,6 +713,7 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setImage(null);
     setImages([]);
     setSelectedGenres([]);
+    setArea("");
     setRating(5);
     setMapUrl("");
 
@@ -1487,13 +1506,28 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
   )}
 </div>
 
-        <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(post.restaurant)}`}
-  target="_blank"
-  rel="noopener noreferrer"
-  style={{ textDecoration: "none" }}
->
-  <h3 style={{ marginBottom: "8px", color: "#2563eb", textDecoration: "underline" }}>{post.restaurant}</h3>
-</a>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px", flexWrap: "wrap" }}>
+  <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(post.restaurant)}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    style={{ textDecoration: "none" }}
+  >
+    <h3 style={{ margin: 0, color: "#2563eb", textDecoration: "underline" }}>{post.restaurant}</h3>
+  </a>
+  {post.area && (
+    <span style={{
+      padding: "2px 8px",
+      borderRadius: "4px",
+      backgroundColor: "#f0f0f0",
+      color: "#555",
+      fontSize: "11px",
+      fontWeight: "500",
+      whiteSpace: "nowrap",
+    }}>
+      📍 {post.area}
+    </span>
+  )}
+</div>
 
 {post.genres && post.genres.length > 0 && (
   <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginBottom: "8px" }}>
