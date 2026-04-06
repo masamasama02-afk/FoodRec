@@ -520,7 +520,9 @@ useEffect(() => {
   );
 
   autocomplete.addListener("place_changed", () => {
+  console.log("place_changed 発火!")
   const place = autocomplete.getPlace()
+  console.log("place:", place)
 
   if (!place.name || !place.geometry) return
 
