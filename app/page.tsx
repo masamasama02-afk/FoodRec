@@ -542,6 +542,7 @@ useEffect(() => {
         components.find((c: any) => c.types.includes("sublocality_level_1"))?.long_name ||
         components.find((c: any) => c.types.includes("locality"))?.long_name ||
         ""
+      console.log("取得したエリア:", area)
       setArea(area)
     }
   })
