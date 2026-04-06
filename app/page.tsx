@@ -1236,14 +1236,29 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     ))}
   </div>
 </div>
-        <input
-  type="file"
-  accept="image/*"
-  multiple
-  onChange={handleImage}
-  style={{ color: "#111" }}
-/>
-<p style={{ fontSize: "11px", color: "#aaa", marginTop: "4px" }}>
+        <label style={{
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "6px",
+  padding: "8px 16px",
+  borderRadius: "20px",
+  border: "0.5px solid #ddd",
+  backgroundColor: "#fff",
+  color: "#555",
+  fontSize: "13px",
+  fontWeight: "500",
+  cursor: "pointer",
+}}>
+  📷 写真を追加
+  <input
+    type="file"
+    accept="image/*"
+    multiple
+    onChange={handleImage}
+    style={{ display: "none" }}
+  />
+</label>
+<p style={{ fontSize: "11px", color: "#aaa", marginTop: "6px" }}>
   最大3枚まで選択できます（{images.length}/3）
 </p>
 

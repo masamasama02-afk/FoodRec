@@ -10,13 +10,13 @@ type Post = {
   comment: string;
   rating: number;
   image: string;
+  images?: string[];
   genres?: string[];
   created_at?: string;
   user_id?: string;
   username?: string;
   map_url?: string;
 };
-
 export default function ProfilePage() {
   const [user, setUser] = useState<any>(null);
 const [username, setUsername] = useState("");
@@ -35,6 +35,7 @@ const [editingPostId, setEditingPostId] = useState<number | null>(null);
 const [editRestaurant, setEditRestaurant] = useState("");
 const [editComment, setEditComment] = useState("");
 const [editGenres, setEditGenres] = useState<string[]>([]);
+const [editImages, setEditImages] = useState<string[]>([]);
   // プロフィール取得
   const fetchProfile = async (userId: string) => {
   const { data, error } = await supabase
@@ -96,21 +97,24 @@ const fetchFollowCounts = async (userId: string) => {
   setFollowerCount(followerCount || 0);
 };
 const startEdit = (post: Post) => {
-    setEditingPostId(post.id);
-    setEditRestaurant(post.restaurant);
-    setEditComment(post.comment);
-    setEditGenres(post.genres || []);
-  };
+  setEditingPostId(post.id);
+  setEditRestaurant(post.restaurant);
+  setEditComment(post.comment);
+  setEditGenres(post.genres || []);
+  setEditImages(post.images || (post.image ? [post.image] : []));
+};
 
   const saveEdit = async (postId: number) => {
-    const { error } = await supabase
-      .from("posts")
-      .update({
-        restaurant: editRestaurant,
-        comment: editComment,
-        genres: editGenres,
-      })
-      .eq("id", postId);
+  const { error } = await supabase
+    .from("posts")
+    .update({
+      restaurant: editRestaurant,
+      comment: editComment,
+      genres: editGenres,
+      images: editImages,
+      image: editImages[0] ?? "",
+    })
+    .eq("id", postId);
 
     if (error) {
       alert("更新失敗");
@@ -120,6 +124,73 @@ const startEdit = (post: Post) => {
     setEditingPostId(null);
     await fetchMyPosts(user.id);
   };
+  const handleEditImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const files = Array.from(e.target.files || []);
+  if (files.length === 0) return;
+
+  const remaining = 3 - editImages.length;
+  if (remaining <= 0) {
+    alert("画像は最大3枚までです");
+    return;
+  }
+
+  const filesToUpload = files.slice(0, remaining);
+  const uploadedUrls: string[] = [];
+
+  for (const file of filesToUpload) {
+    let uploadFile: File | Blob = file;
+    let fileName = `${Date.now()}_${file.name}`;
+
+    // HEIC変換
+    if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
+      try {
+        const heic2any = (await import("heic2any")).default;
+        const converted = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.8 });
+        uploadFile = Array.isArray(converted) ? converted[0] : converted;
+        fileName = `${Date.now()}_converted.jpg`;
+      } catch (e) {
+        alert("画像の変換に失敗しました");
+        continue;
+      }
+    }
+
+    // 圧縮
+    const compressImage = (blob: Blob): Promise<Blob> => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        const url = URL.createObjectURL(blob);
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const maxSize = 1200;
+          let width = img.width;
+          let height = img.height;
+          if (width > maxSize || height > maxSize) {
+            if (width > height) { height = Math.round((height * maxSize) / width); width = maxSize; }
+            else { width = Math.round((width * maxSize) / height); height = maxSize; }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d")!;
+          ctx.drawImage(img, 0, 0, width, height);
+          canvas.toBlob((result) => resolve(result!), "image/jpeg", 0.8);
+          URL.revokeObjectURL(url);
+        };
+        img.src = url;
+      });
+    };
+
+    uploadFile = await compressImage(uploadFile);
+    fileName = `${Date.now()}_compressed.jpg`;
+
+    const { error } = await supabase.storage.from("images").upload(fileName, uploadFile);
+    if (error) { alert("アップロード失敗"); continue; }
+
+    const { data: urlData } = supabase.storage.from("images").getPublicUrl(fileName);
+    uploadedUrls.push(urlData.publicUrl);
+  }
+
+  setEditImages((prev) => [...prev, ...uploadedUrls]);
+};
 
   const deletePost = async (postId: number) => {
     if (!confirm("削除しますか？")) return;
@@ -520,6 +591,41 @@ setLoading(false);
                 {genre}
               </button>
             ))}
+          </div>
+        </div>
+
+        {/* 画像 */}
+        <div style={{ marginBottom: "10px" }}>
+          <p style={{ fontSize: "12px", color: "#666", marginBottom: "6px" }}>画像（最大3枚）</p>
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "8px" }}>
+            {editImages.map((url, index) => (
+              <div key={index} style={{ position: "relative" }}>
+                <img
+                  src={url}
+                  style={{ width: "80px", height: "80px", objectFit: "cover", borderRadius: "8px", border: "1px solid #ddd" }}
+                />
+                <button
+                  onClick={() => setEditImages(editImages.filter((_, i) => i !== index))}
+                  style={{
+                    position: "absolute", top: "2px", right: "2px",
+                    width: "18px", height: "18px", borderRadius: "50%",
+                    border: "none", backgroundColor: "rgba(0,0,0,0.5)",
+                    color: "#fff", fontSize: "10px", cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}
+                >×</button>
+              </div>
+            ))}
+            {editImages.length < 3 && (
+              <label style={{
+                width: "80px", height: "80px", borderRadius: "8px",
+                border: "1px dashed #ccc", display: "flex", alignItems: "center",
+                justifyContent: "center", cursor: "pointer", fontSize: "24px", color: "#ccc",
+              }}>
+                +
+                <input type="file" accept="image/*" multiple onChange={handleEditImage} style={{ display: "none" }} />
+              </label>
+            )}
           </div>
         </div>
 
