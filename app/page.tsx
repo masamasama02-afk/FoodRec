@@ -41,6 +41,7 @@ export default function Home() {
   const [comments, setComments] = useState<Record<number, Comment[]>>({})
   const [commentInputs, setCommentInputs] = useState<Record<number, string>>({})
   const [email, setEmail] = useState("");
+  const [authTab, setAuthTab] = useState<"login" | "signup">("login");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState<any>(null);
 
@@ -881,163 +882,124 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
   )}
 </div>
 
-      {!user && (
-        <section
-          style={{
-            backgroundColor: "#fff",
-            border: "1px solid #ddd",
-            borderRadius: "16px",
-            padding: "20px",
-            marginBottom: "30px",
-            boxShadow: "0 4px 10px rgba(0,0,0,0.05)",
-          }}
-        >
-          <h2 style={{ marginBottom: "16px" }}>ログイン / 新規登録</h2>
+    {!user && (
+  <section style={{
+    backgroundColor: "#fff",
+    border: "0.5px solid #eee",
+    borderRadius: "20px",
+    padding: "28px 24px",
+    marginBottom: "24px",
+  }}>
+    <div style={{ textAlign: "center", marginBottom: "24px" }}>
+      <p style={{ fontSize: "13px", color: "#999" }}>友達のおすすめを記録・共有するグルメSNS</p>
+    </div>
 
-<input
-  placeholder="メールアドレス"
-  value={email}
-  onChange={(e) => setEmail(e.target.value)}
-  style={{
-    width: "100%",
-    padding: "10px",
-    marginBottom: "12px",
-    borderRadius: "8px",
-    border: "1px solid #ccc",
-    boxSizing: "border-box",
-     color: "#111",
-  }}
-/>
-
-<input
-  type="password"
-  placeholder="パスワード"
-  value={password}
-  onChange={(e) => setPassword(e.target.value)}
-  style={{
-    width: "100%",
-    padding: "10px",
-    marginBottom: "12px",
-    borderRadius: "8px",
-    border: "1px solid #ccc",
-    boxSizing: "border-box",
-     color: "#111",
-  }}
-/>
-
-{/* 新規登録用プロフィール設定 */}
-<hr style={{ border: "none", borderTop: "1px solid #eee", margin: "16px 0" }} />
-<p style={{ fontSize: "13px", color: "#888", marginBottom: "12px" }}>
-  新規登録の方はプロフィールも設定できます
-</p>
-
-{/* アイコン画像 */}
-<div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "16px" }}>
-  <div
-    onClick={() => document.getElementById("avatar-input")?.click()}
-    style={{
-      width: "80px",
-      height: "80px",
-      borderRadius: "50%",
-      backgroundColor: "#f0f0f0",
-      border: "1px solid #ddd",
+    <div style={{
       display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      cursor: "pointer",
-      overflow: "hidden",
-      marginBottom: "8px",
-    }}
-  >
-    {avatarPreview ? (
-      <img src={avatarPreview} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-    ) : (
-      <span style={{ fontSize: "32px" }}>🍽️</span>
+      background: "#f0f0f0",
+      borderRadius: "12px",
+      padding: "4px",
+      marginBottom: "24px",
+    }}>
+      <button
+        onClick={() => setAuthTab("login")}
+        style={{
+          flex: 1, padding: "8px", borderRadius: "8px", border: "none",
+          backgroundColor: authTab === "login" ? "#fff" : "transparent",
+          color: authTab === "login" ? "#111" : "#888",
+          fontSize: "13px", fontWeight: "500", cursor: "pointer",
+          boxShadow: authTab === "login" ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
+        }}
+      >ログイン</button>
+      <button
+        onClick={() => setAuthTab("signup")}
+        style={{
+          flex: 1, padding: "8px", borderRadius: "8px", border: "none",
+          backgroundColor: authTab === "signup" ? "#fff" : "transparent",
+          color: authTab === "signup" ? "#111" : "#888",
+          fontSize: "13px", fontWeight: "500", cursor: "pointer",
+          boxShadow: authTab === "signup" ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
+        }}
+      >新規登録</button>
+    </div>
+
+    <div style={{ marginBottom: "12px" }}>
+      <label style={{ fontSize: "12px", color: "#666", display: "block", marginBottom: "6px", fontWeight: "500" }}>メールアドレス</label>
+      <input
+        placeholder="example@email.com"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        style={{ width: "100%", padding: "10px 14px", borderRadius: "10px", border: "0.5px solid #e0e0e0", backgroundColor: "#fafafa", boxSizing: "border-box", fontSize: "14px", color: "#111" }}
+      />
+    </div>
+
+    <div style={{ marginBottom: "16px" }}>
+      <label style={{ fontSize: "12px", color: "#666", display: "block", marginBottom: "6px", fontWeight: "500" }}>パスワード</label>
+      <input
+        type="password"
+        placeholder={authTab === "login" ? "パスワードを入力" : "8文字以上"}
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        style={{ width: "100%", padding: "10px 14px", borderRadius: "10px", border: "0.5px solid #e0e0e0", backgroundColor: "#fafafa", boxSizing: "border-box", fontSize: "14px", color: "#111" }}
+      />
+    </div>
+
+    {authTab === "signup" && (
+      <>
+        <hr style={{ border: "none", borderTop: "0.5px solid #eee", margin: "16px 0" }} />
+        <p style={{ fontSize: "12px", color: "#888", marginBottom: "14px" }}>プロフィールを設定しましょう</p>
+
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "16px" }}>
+          <div
+            onClick={() => document.getElementById("avatar-input")?.click()}
+            style={{ width: "72px", height: "72px", borderRadius: "50%", backgroundColor: "#f0f0f0", border: "0.5px solid #ddd", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", overflow: "hidden", marginBottom: "6px" }}
+          >
+            {avatarPreview ? (
+              <img src={avatarPreview} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            ) : (
+              <span style={{ fontSize: "28px" }}>🍽️</span>
+            )}
+          </div>
+          <input id="avatar-input" type="file" accept="image/*" onChange={handleAvatar} style={{ display: "none" }} />
+          <span style={{ fontSize: "11px", color: "#bbb" }}>タップして画像を選択</span>
+        </div>
+
+        <div style={{ marginBottom: "4px" }}>
+          <label style={{ fontSize: "12px", color: "#666", display: "block", marginBottom: "6px", fontWeight: "500" }}>
+            表示名 <span style={{ color: "#e74c3c", fontSize: "10px" }}>必須</span>
+          </label>
+          <input
+            placeholder="例: 食いしん坊たろう"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            maxLength={20}
+            style={{ width: "100%", padding: "10px 14px", borderRadius: "10px", border: "0.5px solid #e0e0e0", backgroundColor: "#fafafa", boxSizing: "border-box", fontSize: "14px", color: "#111" }}
+          />
+        </div>
+        <p style={{ fontSize: "11px", color: "#bbb", textAlign: "right", marginBottom: "12px" }}>{username.length} / 20</p>
+
+        <div style={{ marginBottom: "4px" }}>
+          <label style={{ fontSize: "12px", color: "#666", display: "block", marginBottom: "6px", fontWeight: "500" }}>自己紹介</label>
+          <textarea
+            placeholder={"自己紹介（任意）\n食べログより友達の味覚を信じています"}
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            maxLength={100}
+            style={{ width: "100%", padding: "10px 14px", borderRadius: "10px", border: "0.5px solid #e0e0e0", backgroundColor: "#fafafa", boxSizing: "border-box", resize: "none", height: "70px", fontSize: "14px", color: "#111" }}
+          />
+        </div>
+        <p style={{ fontSize: "11px", color: "#bbb", textAlign: "right", marginBottom: "16px" }}>{bio.length} / 100</p>
+      </>
     )}
-  </div>
-  <input
-    id="avatar-input"
-    type="file"
-    accept="image/*"
-    onChange={handleAvatar}
-    style={{ display: "none" }}
-  />
-  <span style={{ fontSize: "12px", color: "#aaa" }}>タップして画像を選択</span>
-</div>
 
-{/* 表示名 */}
-<input
-  placeholder="表示名（必須）"
-  value={username}
-  onChange={(e) => setUsername(e.target.value)}
-  maxLength={20}
-  style={{
-    width: "100%",
-    padding: "10px",
-    marginBottom: "4px",
-    borderRadius: "8px",
-    border: "1px solid #ccc",
-    boxSizing: "border-box",
-     color: "#111",
-  }}
-/>
-<p style={{ fontSize: "11px", color: "#aaa", textAlign: "right", marginBottom: "12px" }}>
-  {username.length} / 20
-</p>
-
-{/* 自己紹介 */}
-<textarea
-  placeholder={"自己紹介（任意）\n食べログより友達の味覚を信じています"}
-
-    value={bio}
-  onChange={(e) => setBio(e.target.value)}
-  maxLength={100}
-  style={{
-    width: "100%",
-    padding: "10px",
-    marginBottom: "4px",
-    borderRadius: "8px",
-    border: "1px solid #ccc",
-    boxSizing: "border-box",
-    resize: "none",
-    height: "80px",
-    color: "#111"
-  }}
-/>
-<p style={{ fontSize: "11px", color: "#aaa", textAlign: "right", marginBottom: "12px" }}>
-  {bio.length} / 100
-</p>
-
-<div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-  <button
-    onClick={signIn}
-    style={{
-      padding: "10px 16px",
-      borderRadius: "10px",
-      border: "none",
-      backgroundColor: "#111",
-      color: "#fff",
-      cursor: "pointer",
-    }}
-  >
-    ログイン
-  </button>
-
-  <button
-    onClick={signUp}
-    style={{
-      padding: "10px 16px",
-      borderRadius: "10px",
-      border: "1px solid #ccc",
-      backgroundColor: "#fff",
-      cursor: "pointer",
-    }}
-  >
-    新規登録
-  </button>
-</div>
-        </section>
-      )}
+    <button
+      onClick={authTab === "login" ? signIn : signUp}
+      style={{ width: "100%", padding: "13px", borderRadius: "12px", border: "none", backgroundColor: "#111", color: "#fff", fontSize: "14px", fontWeight: "600", cursor: "pointer" }}
+    >
+      {authTab === "login" ? "ログイン" : "アカウントを作成"}
+    </button>
+  </section>
+)}
 
       {user && (
   <section style={{
