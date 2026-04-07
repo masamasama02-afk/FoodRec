@@ -803,11 +803,9 @@ const addPost = async () => {
 
     const displayName =
       username.trim() || userData.user.email?.split("@")[0] || "user";
- const mapLink =
-  "https://www.google.com/maps/embed/v1/search?key=" +
-  process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY +
-  "&q=" +
-  encodeURIComponent(restaurant);
+ const mapLink = lat && lng
+  ? `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
+  : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(restaurant)}`;
 
   const { error } = await supabase.from("posts").insert([
     {
