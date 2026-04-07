@@ -58,6 +58,7 @@ const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [image, setImage] = useState<string | null>(null);
 const [images, setImages] = useState<string[]>([]);
 const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+const [price, setPrice] = useState<number>(3000)
   const [rating, setRating] = useState(5.0);
   const [mapUrl, setMapUrl] = useState("");
 
@@ -658,7 +659,116 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
   setUploading(false);
 };
 
-  const addPost = async () => {
+  const updateBadges = async (userId: string) => {
+  // 投稿データを取得
+  const { data: posts } = await supabase
+    .from("posts")
+    .select("*")
+    .eq("user_id", userId);
+
+  if (!posts) return;
+
+  const totalPosts = posts.length;
+  const totalLikes = await supabase
+    .from("likes")
+    .select("id", { count: "exact" })
+    .in("post_id", posts.map((p) => p.id));
+  const likeCount = totalLikes.count ?? 0;
+
+  const { data: wishlists } = await supabase
+    .from("wishlists")
+    .select("id", { count: "exact" })
+    .in("post_id", posts.map((p) => p.id));
+  const wishlistCount = wishlists?.length ?? 0;
+
+  const areas = [...new Set(posts.map((p) => p.area).filter(Boolean))];
+  const areaCount = areas.length;
+
+  // ランクバッジ
+  let rankBadge = "First Bite";
+  if (totalPosts >= 300) rankBadge = "食の探求者";
+  else if (totalPosts >= 100) rankBadge = "グルメ通";
+  else if (totalPosts >= 50) rankBadge = "フーディー";
+  else if (totalPosts >= 10) rankBadge = "ビギナーグルメ";
+  else if (totalPosts >= 1) rankBadge = "First Bite";
+
+  // 実績バッジ
+  const newBadges: string[] = [];
+
+  if (totalPosts >= 1) newBadges.push("🍴 First Bite");
+  if (likeCount >= 10) newBadges.push("🍽️❤️ 人気の一皿");
+  if (likeCount >= 30) newBadges.push("🔥 バズグルメ");
+  if (wishlistCount >= 50) newBadges.push("🤖 行きたい製造機");
+  if (areaCount >= 3) newBadges.push("📍 街歩きビギナー");
+  if (areaCount >= 10) newBadges.push("👣 エリアハンター");
+  if (areaCount >= 30) newBadges.push("🧭 探検家");
+
+  // 価格系
+  const highEnd = posts.filter((p) => p.price >= 8001).length;
+  const premium = posts.filter((p) => p.price >= 15001).length;
+  const cheap = posts.filter((p) => p.price <= 1000).length;
+  if (highEnd >= 5) newBadges.push("🍷 ブルジョワジー");
+  if (premium >= 20) newBadges.push("💎 ラグジュアリーマスター");
+  if (cheap >= 20) newBadges.push("🪙 コスパ神");
+
+  // ジャンル系
+  const lunchPosts = posts.filter((p) => p.genres?.includes("🌞 ランチ")).length;
+  const sushiPosts = posts.filter((p) => p.genres?.includes("🍣 和食")).length;
+  const ramenPosts = posts.filter((p) => p.genres?.includes("🍜 ラーメン")).length;
+  const yakinikuPosts = posts.filter((p) => p.genres?.includes("🍖 焼肉")).length;
+  const cafePosts = posts.filter((p) => p.genres?.includes("☕ カフェ")).length;
+  const italianPosts = posts.filter((p) => p.genres?.includes("🍕 イタリアン")).length;
+  const izakayaPosts = posts.filter((p) => p.genres?.includes("🍺 飲み")).length;
+
+  if (lunchPosts >= 20) newBadges.push("☀️ ランチハンター");
+  if (sushiPosts >= 10) newBadges.push("🍣 寿司職人");
+  if (ramenPosts >= 15) newBadges.push("🍜 ラーメン中毒");
+  if (yakinikuPosts >= 10) newBadges.push("🥩 焼肉奉行");
+  if (cafePosts >= 20) newBadges.push("☕ カフェ巡礼者");
+  if (italianPosts >= 10) newBadges.push("🍝 パスタ貴族");
+  if (izakayaPosts >= 20) newBadges.push("🍺 飲み歩き職人");
+
+  // 現在のバッジを取得して新しいバッジだけ通知
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("badges, rank_badge")
+    .eq("id", userId)
+    .single();
+
+  const currentBadges = profile?.badges ?? [];
+  const currentRank = profile?.rank_badge ?? "";
+  const addedBadges = newBadges.filter((b) => !currentBadges.includes(b));
+
+  // バッジ更新
+  await supabase
+    .from("profiles")
+    .update({ rank_badge: rankBadge, badges: newBadges })
+    .eq("id", userId);
+
+  // 通知送信
+  for (const badge of addedBadges) {
+    await supabase.from("notifications").insert({
+      user_id: userId,
+      from_user_id: userId,
+      from_username: "システム",
+      type: "badge",
+      message: `🎉 バッジ「${badge}」を獲得しました！`,
+      is_read: false,
+    });
+  }
+  if (rankBadge !== currentRank) {
+    await supabase.from("notifications").insert({
+      user_id: userId,
+      from_user_id: userId,
+      from_username: "システム",
+      type: "badge",
+      message: `🏅 ランクが「${rankBadge}」になりました！`,
+      is_read: false,
+    });
+  }
+};
+
+const addPost = async () => {
     if (!restaurant.trim()) {
       toast("レストラン名を入力してください");
       return;
@@ -693,6 +803,7 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
       images: images,
       genres: selectedGenres,
       area: area,
+      price: price,
       user_id: userData.user.id,
       username: displayName,
       map_url: mapLink,
@@ -710,6 +821,7 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     await fetchPosts();
     await fetchLikes(userData.user.id);
     await fetchRanking();
+    await updateBadges(userData.user.id);
 
     setRestaurant("");
     setComment("");
@@ -1258,6 +1370,36 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     ))}
   </div>
 </div>
+       {/* 価格帯 */}
+<div style={{ marginBottom: "16px" }}>
+  <p style={{ fontSize: "13px", color: "#111", marginBottom: "8px" }}>
+    💰 価格帯（1人あたり）
+  </p>
+  <div style={{ padding: "0 4px" }}>
+    <input
+      type="range"
+      min={500}
+      max={30000}
+      step={500}
+      value={price}
+      onChange={(e) => setPrice(Number(e.target.value))}
+      style={{ width: "100%", accentColor: "#111" }}
+    />
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "6px" }}>
+      <span style={{ fontSize: "12px", color: "#999" }}>¥500</span>
+      <span style={{ fontSize: "15px", fontWeight: "600", color: "#111" }}>
+        {price >= 30000 ? "¥30,000+" : `¥${price.toLocaleString()}`}
+      </span>
+      <span style={{ fontSize: "12px", color: "#999" }}>¥30,000+</span>
+    </div>
+    <div style={{ display: "flex", justifyContent: "center", marginTop: "4px" }}>
+      <span style={{ fontSize: "12px", color: "#999" }}>
+        {price <= 1000 ? "コスパ飯" : price <= 3000 ? "普通" : price <= 8000 ? "ちょっと良い" : price <= 15000 ? "高め" : "プレミアム"}
+      </span>
+    </div>
+  </div>
+</div>
+
         <label style={{
   display: "inline-flex",
   alignItems: "center",
