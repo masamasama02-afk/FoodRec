@@ -33,6 +33,7 @@ const [followCount, setFollowCount] = useState(0);
 const [followerCount, setFollowerCount] = useState(0);
 const [rankBadge, setRankBadge] = useState("");
 const [badges, setBadges] = useState<string[]>([]);
+const [totalLikes, setTotalLikes] = useState(0);
 const [editingPostId, setEditingPostId] = useState<number | null>(null);
 const [editRestaurant, setEditRestaurant] = useState("");
 const [editComment, setEditComment] = useState("");
@@ -99,6 +100,26 @@ const fetchFollowCounts = async (userId: string) => {
   setFollowCount(followCount || 0);
   setFollowerCount(followerCount || 0);
 };
+const fetchTotalLikes = async (userId: string) => {
+  const { data: myPosts } = await supabase
+    .from("posts")
+    .select("id")
+    .eq("user_id", userId);
+
+  if (!myPosts || myPosts.length === 0) {
+    setTotalLikes(0);
+    return;
+  }
+
+  const postIds = myPosts.map((p) => p.id);
+  const { count } = await supabase
+    .from("likes")
+    .select("*", { count: "exact", head: true })
+    .in("post_id", postIds);
+
+  setTotalLikes(count || 0);
+};
+
 const startEdit = (post: Post) => {
   setEditingPostId(post.id);
   setEditRestaurant(post.restaurant);
@@ -273,6 +294,7 @@ const handleAvatar = (e: React.ChangeEvent<HTMLInputElement>) => {
       await fetchProfile(data.user.id);
       await fetchMyPosts(data.user.id);
 await fetchFollowCounts(data.user.id);
+await fetchTotalLikes(data.user.id);
 await fetchWishlist(data.user.id);
 setLoading(false);
     };
@@ -469,6 +491,10 @@ setLoading(false);
     <div style={{ textAlign: "center" }}>
      <p style={{ fontSize: "18px", fontWeight: "700", color: "#111" }}>{posts.length}</p>
       <p style={{ fontSize: "12px", color: "#999" }}>投稿</p>
+    </div>
+    <div style={{ textAlign: "center" }}>
+      <p style={{ fontSize: "18px", fontWeight: "700", color: "#111" }}>❤️ {totalLikes}</p>
+      <p style={{ fontSize: "12px", color: "#999" }}>いいね</p>
     </div>
    <div
       style={{ textAlign: "center", cursor: "pointer" }}
