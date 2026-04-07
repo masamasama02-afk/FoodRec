@@ -30,6 +30,8 @@ type Post = {
   username?: string;
   map_url?: string;
   profiles?: { avatar_url?: string; rank_badge?: string };
+  lat?: number;
+  lng?: number;
 };
 
 type Like = {
@@ -1723,7 +1725,9 @@ const addPost = async () => {
 </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px", flexWrap: "wrap" }}>
-  <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(post.restaurant)}`}
+  <a href={post.lat && post.lng
+    ? `https://www.google.com/maps/search/?api=1&query=${post.lat},${post.lng}`
+    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(post.restaurant)}`}
     target="_blank"
     rel="noopener noreferrer"
     style={{ textDecoration: "none" }}
