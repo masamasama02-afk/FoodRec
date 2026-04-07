@@ -1041,6 +1041,10 @@ const addPost = async () => {
                 <p style={{ fontSize: "13px", color: "#111", marginBottom: "2px" }}>
                   🔖 <strong>{notif.from_username}</strong> が <strong>{notif.restaurant}</strong> を行きたいリストに追加しました
                 </p>
+              ) : notif.type === "follow" ? (
+                <p style={{ fontSize: "13px", color: "#111", marginBottom: "2px" }}>
+                  👤 <strong>{notif.from_username}</strong> がフォローしました
+                </p>
               ) : (
                 <>
                   <p style={{ fontSize: "13px", color: "#111", marginBottom: "2px" }}>

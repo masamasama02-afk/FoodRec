@@ -75,6 +75,22 @@ export default function UserPage() {
         following_id: userId,
       });
       setIsFollowing(true);
+
+      // フォロー通知
+      const { data: myProfile } = await supabase
+        .from("profiles")
+        .select("username")
+        .eq("id", currentUserId)
+        .maybeSingle();
+      const myName = myProfile?.username || "ユーザー";
+
+      await supabase.from("notifications").insert({
+        user_id: userId,
+        from_user_id: currentUserId,
+        from_username: myName,
+        type: "follow",
+        message: `${myName}さんがフォローしました`,
+      });
     }
   };
 
