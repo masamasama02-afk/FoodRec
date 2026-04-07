@@ -29,7 +29,7 @@ type Post = {
   user_id?: string;
   username?: string;
   map_url?: string;
-  profiles?: { avatar_url?: string };
+  profiles?: { avatar_url?: string; rank_badge?: string };
 };
 
 type Like = {
@@ -243,7 +243,7 @@ const [showNotifications, setShowNotifications] = useState(false);
 
     const { data, error } = await supabase
   .from("posts")
-  .select("*, profiles(avatar_url)")
+ .select("*, profiles(avatar_url, rank_badge)")
   .order(column, { ascending: false });
 
     if (error) {
@@ -274,7 +274,7 @@ const [showNotifications, setShowNotifications] = useState(false);
 
     const { data, error } = await supabase
   .from("posts")
-  .select("*, profiles(avatar_url)")
+  .select("*, profiles(avatar_url, rank_badge)")
   .in("user_id", followingIds)
   .order(column, { ascending: false });
 
@@ -1606,6 +1606,7 @@ const addPost = async () => {
   }}
 >
   {/* アイコン */}
+  <div style={{ position: "relative", flexShrink: 0 }}>
   <div
     style={{
       width: "36px",
@@ -1614,7 +1615,6 @@ const addPost = async () => {
       backgroundColor: "#f0f0f0",
       border: "1px solid #eee",
       overflow: "hidden",
-      flexShrink: 0,
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -1630,6 +1630,29 @@ const addPost = async () => {
     ) : (
       "🍽️"
     )}
+  </div>
+  {post.profiles?.rank_badge && (
+    <div style={{
+      position: "absolute",
+      bottom: "-2px",
+      right: "-2px",
+      fontSize: "10px",
+      backgroundColor: "#fff",
+      borderRadius: "50%",
+      width: "16px",
+      height: "16px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      border: "1px solid #eee",
+    }}>
+      {post.profiles.rank_badge === "First Bite" ? "🍴" :
+       post.profiles.rank_badge === "ビギナーグルメ" ? "🍽️" :
+       post.profiles.rank_badge === "フーディー" ? "🥘" :
+       post.profiles.rank_badge === "グルメ通" ? "🥇" :
+       post.profiles.rank_badge === "食の探求者" ? "👑" : "🍴"}
+    </div>
+  )}
   </div>
 
   {/* ユーザー名 */}
