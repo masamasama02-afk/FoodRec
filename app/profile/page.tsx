@@ -31,6 +31,8 @@ const [wishlist, setWishlist] = useState<any[]>([]);
 const [activeTab, setActiveTab] = useState<"posts" | "wishlist">("posts");
 const [followCount, setFollowCount] = useState(0);
 const [followerCount, setFollowerCount] = useState(0);
+const [rankBadge, setRankBadge] = useState("");
+const [badges, setBadges] = useState<string[]>([]);
 const [editingPostId, setEditingPostId] = useState<number | null>(null);
 const [editRestaurant, setEditRestaurant] = useState("");
 const [editComment, setEditComment] = useState("");
@@ -40,10 +42,9 @@ const [editImages, setEditImages] = useState<string[]>([]);
   const fetchProfile = async (userId: string) => {
   const { data, error } = await supabase
     .from("profiles")
-    .select("username, bio, avatar_url")
+    .select("username, bio, avatar_url, rank_badge, badges")
     .eq("id", userId)
     .maybeSingle();
-
   if (error) {
     console.error("プロフィール取得エラー:", error);
     return;
@@ -53,6 +54,8 @@ const [editImages, setEditImages] = useState<string[]>([]);
     setUsername(data.username ?? "");
     setBio(data.bio ?? "");
     setAvatarUrl(data.avatar_url ?? "");
+    setRankBadge(data.rank_badge ?? "");
+    setBadges(data.badges ?? []);
   }
 };
 
@@ -312,7 +315,8 @@ setLoading(false);
 
 {/* アイコン */}
 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "20px" }}>
-  <div
+  <div style={{ position: "relative", display: "inline-block", marginBottom: "8px" }}>
+<div
     onClick={() => editing && document.getElementById("avatar-input")?.click()}
     style={{
       width: "80px",
@@ -337,6 +341,29 @@ setLoading(false);
       "🍽️"
     )}
   </div>
+  {rankBadge && (
+    <div style={{
+      position: "absolute",
+      bottom: "0px",
+      right: "0px",
+      fontSize: "18px",
+      backgroundColor: "#fff",
+      borderRadius: "50%",
+      width: "24px",
+      height: "24px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      border: "1px solid #eee",
+    }}>
+      {rankBadge === "First Bite" ? "🍴" :
+       rankBadge === "ビギナーグルメ" ? "🍽️" :
+       rankBadge === "フーディー" ? "🥘" :
+       rankBadge === "グルメ通" ? "🥇" :
+       rankBadge === "食の探求者" ? "👑" : "🍴"}
+    </div>
+  )}
+</div>
   {editing && (
     <>
       <input
@@ -459,6 +486,28 @@ setLoading(false);
     </div>
   </div>
 </div>
+      {badges.length > 0 && (
+  <div style={{ marginTop: "16px", borderTop: "1px solid #eee", paddingTop: "16px" }}>
+    <p style={{ fontSize: "13px", color: "#888", marginBottom: "10px" }}>🏅 獲得バッジ</p>
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+      {badges.map((badge) => (
+        <div
+          key={badge}
+          style={{
+            padding: "6px 12px",
+            borderRadius: "20px",
+            backgroundColor: "#f8f8f8",
+            border: "0.5px solid #eee",
+            fontSize: "12px",
+            color: "#333",
+          }}
+        >
+          {badge}
+        </div>
+      ))}
+    </div>
+  </div>
+)}
       </section>
 
       {/* タブ */}
