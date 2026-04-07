@@ -1731,7 +1731,7 @@ const addPost = async () => {
 
         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px", flexWrap: "wrap" }}>
  <a href={post.place_id
-    ? `https://www.google.com/maps/place/?q=place_id:${post.place_id}`
+    ? `https://maps.google.com/?q=place_id:${post.place_id}`
     : post.lat && post.lng
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(post.restaurant)}&center=${post.lat},${post.lng}`
     : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(post.restaurant)}`}
