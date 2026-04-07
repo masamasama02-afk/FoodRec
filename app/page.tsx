@@ -372,6 +372,21 @@ const fetchNotifications = async () => {
     });
 
     setWishlistPostIds([...wishlistPostIds, postId]);
+
+    // 投稿者に通知
+    const post = posts.find(p => p.id === postId);
+    if (post && post.user_id && post.user_id !== data.user.id) {
+      const displayName = username || data.user.email?.split("@")[0] || "user";
+      await supabase.from("notifications").insert({
+        user_id: post.user_id,
+        from_user_id: data.user.id,
+        from_username: displayName,
+        post_id: postId,
+        restaurant: post.restaurant,
+        type: "wishlist",
+        message: `${displayName}さんが「${post.restaurant}」を行きたいリストに追加しました`,
+      });
+    }
   }
 };
   const fetchComments = async () => {
@@ -870,6 +885,21 @@ const addPost = async () => {
         toast("いいねに失敗しました");
         return;
       }
+
+      // 投稿者に通知
+      const post = posts.find(p => p.id === postId);
+      if (post && post.user_id && post.user_id !== data.user.id) {
+        const displayName = username || data.user.email?.split("@")[0] || "user";
+        await supabase.from("notifications").insert({
+          user_id: post.user_id,
+          from_user_id: data.user.id,
+          from_username: displayName,
+          post_id: postId,
+          restaurant: post.restaurant,
+          type: "like",
+          message: `${displayName}さんが「${post.restaurant}」にいいねしました`,
+        });
+      }
     }
 
     await fetchLikes(data.user.id);
@@ -999,12 +1029,28 @@ const addPost = async () => {
                 backgroundColor: notif.is_read ? "#fff" : "#f0f7ff",
               }}
             >
-              <p style={{ fontSize: "13px", color: "#111", marginBottom: "2px" }}>
-                <strong>{notif.from_username}</strong> が <strong>{notif.restaurant}</strong> にコメントしました
-              </p>
-              <p style={{ fontSize: "12px", color: "#666", marginBottom: "2px" }}>
-                「{notif.message}」
-              </p>
+              {notif.type === "badge" ? (
+                <p style={{ fontSize: "13px", color: "#111", marginBottom: "2px" }}>
+                  {notif.message}
+                </p>
+              ) : notif.type === "like" ? (
+                <p style={{ fontSize: "13px", color: "#111", marginBottom: "2px" }}>
+                  ❤️ <strong>{notif.from_username}</strong> が <strong>{notif.restaurant}</strong> にいいねしました
+                </p>
+              ) : notif.type === "wishlist" ? (
+                <p style={{ fontSize: "13px", color: "#111", marginBottom: "2px" }}>
+                  🔖 <strong>{notif.from_username}</strong> が <strong>{notif.restaurant}</strong> を行きたいリストに追加しました
+                </p>
+              ) : (
+                <>
+                  <p style={{ fontSize: "13px", color: "#111", marginBottom: "2px" }}>
+                    💬 <strong>{notif.from_username}</strong> が <strong>{notif.restaurant}</strong> にコメントしました
+                  </p>
+                  <p style={{ fontSize: "12px", color: "#666", marginBottom: "2px" }}>
+                    「{notif.message}」
+                  </p>
+                </>
+              )}
               <p style={{ fontSize: "11px", color: "#bbb" }}>
                 {new Date(notif.created_at).toLocaleString("ja-JP")}
               </p>
