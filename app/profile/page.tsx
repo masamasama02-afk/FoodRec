@@ -486,28 +486,58 @@ setLoading(false);
     </div>
   </div>
 </div>
-      {badges.length > 0 && (
-  <div style={{ marginTop: "16px", borderTop: "1px solid #eee", paddingTop: "16px" }}>
-    <p style={{ fontSize: "13px", color: "#888", marginBottom: "10px" }}>🏅 獲得バッジ</p>
-    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-      {badges.map((badge) => (
-        <div
-          key={badge}
-          style={{
-            padding: "6px 12px",
-            borderRadius: "20px",
-            backgroundColor: "#f8f8f8",
-            border: "0.5px solid #eee",
-            fontSize: "12px",
-            color: "#333",
-          }}
-        >
-          {badge}
-        </div>
-      ))}
+      {(() => {
+  const allBadges = [
+    { key: "🍴 First Bite", label: "First Bite", icon: "🍴" },
+    { key: "🍽️❤️ 人気の一皿", label: "人気の一皿", icon: "🍽️❤️" },
+    { key: "🔥 バズグルメ", label: "バズグルメ", icon: "🔥" },
+    { key: "🤖 行きたい製造機", label: "行きたい製造機", icon: "🤖" },
+    { key: "📍 街歩きビギナー", label: "街歩きビギナー", icon: "📍" },
+    { key: "👣 エリアハンター", label: "エリアハンター", icon: "👣" },
+    { key: "🧭 探検家", label: "探検家", icon: "🧭" },
+    { key: "🍷 ブルジョワジー", label: "ブルジョワジー", icon: "🍷" },
+    { key: "💎 ラグジュアリーマスター", label: "ラグジュアリーマスター", icon: "💎" },
+    { key: "🪙 コスパ神", label: "コスパ神", icon: "🪙" },
+    { key: "☀️ ランチハンター", label: "ランチハンター", icon: "☀️" },
+    { key: "🍣 寿司職人", label: "寿司職人", icon: "🍣" },
+    { key: "🍜 ラーメン中毒", label: "ラーメン中毒", icon: "🍜" },
+    { key: "🥩 焼肉奉行", label: "焼肉奉行", icon: "🥩" },
+    { key: "☕ カフェ巡礼者", label: "カフェ巡礼者", icon: "☕" },
+    { key: "🍝 パスタ貴族", label: "パスタ貴族", icon: "🍝" },
+    { key: "🍺 飲み歩き職人", label: "飲み歩き職人", icon: "🍺" },
+  ];
+  return (
+    <div style={{ marginTop: "16px", borderTop: "1px solid #eee", paddingTop: "16px" }}>
+      <p style={{ fontSize: "13px", color: "#888", marginBottom: "10px" }}>🏅 バッジ</p>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+        {allBadges.map((badge) => {
+          const earned = badges.includes(badge.key);
+          return (
+            <div
+              key={badge.key}
+              style={{
+                padding: "6px 12px",
+                borderRadius: "20px",
+                backgroundColor: earned ? "#f8f8f8" : "transparent",
+                border: earned ? "0.5px solid #ddd" : "0.5px dashed #ddd",
+                fontSize: "12px",
+                color: earned ? "#333" : "#ccc",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+              }}
+            >
+              <span style={{ filter: earned ? "none" : "grayscale(1) opacity(0.3)" }}>
+                {badge.icon}
+              </span>
+              {badge.label}
+            </div>
+          );
+        })}
+      </div>
     </div>
-  </div>
-)}
+  );
+})()}
       </section>
 
       {/* タブ */}
