@@ -32,6 +32,7 @@ type Post = {
   profiles?: { avatar_url?: string; rank_badge?: string };
   lat?: number;
   lng?: number;
+  place_id?: string;
 };
 
 type Like = {
@@ -76,6 +77,7 @@ const [price, setPrice] = useState<number>(3000)
   const [lat, setLat] = useState<number | null>(null)
   const [lng, setLng] = useState<number | null>(null)
   const [area, setArea] = useState("");
+  const [placeId, setPlaceId] = useState("")
   const [notifications, setNotifications] = useState<any[]>([]);
 const [unreadCount, setUnreadCount] = useState(0);
 const [showNotifications, setShowNotifications] = useState(false);
@@ -533,7 +535,7 @@ useEffect(() => {
     restaurantInputRef.current,
     {
       types: ["restaurant"],
-      fields: ["name", "geometry", "address_components"]
+      fields: ["name", "geometry", "address_components", "place_id"]
     }
   );
 
@@ -545,6 +547,7 @@ useEffect(() => {
   if (!place.name || !place.geometry) return
 
   setRestaurant(place.name)
+  setPlaceId(place.place_id ?? "")
 
   const lat = place.geometry.location.lat()
   const lng = place.geometry.location.lng()
@@ -819,6 +822,7 @@ const addPost = async () => {
       genres: selectedGenres,
       area: area,
       price: price,
+      place_id: placeId,
       user_id: userData.user.id,
       username: displayName,
       map_url: mapLink,
@@ -844,6 +848,7 @@ const addPost = async () => {
     setImages([]);
     setSelectedGenres([]);
     setArea("");
+    setPlaceId("");
     setRating(5);
     setMapUrl("");
 
@@ -1725,7 +1730,9 @@ const addPost = async () => {
 </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px", flexWrap: "wrap" }}>
- <a href={post.lat && post.lng
+ <a href={post.place_id
+    ? `https://www.google.com/maps/place/?q=place_id:${post.place_id}`
+    : post.lat && post.lng
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(post.restaurant)}&center=${post.lat},${post.lng}`
     : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(post.restaurant)}`}
     target="_blank"
