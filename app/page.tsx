@@ -609,7 +609,7 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const url = URL.createObjectURL(blob);
         img.onload = () => {
           const canvas = document.createElement("canvas");
-          const maxSize = 1200;
+          const maxSize = 800;
           let width = img.width;
           let height = img.height;
           if (width > maxSize || height > maxSize) {
@@ -625,7 +625,7 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
           canvas.height = height;
           const ctx = canvas.getContext("2d")!;
           ctx.drawImage(img, 0, 0, width, height);
-          canvas.toBlob((result) => resolve(result!), "image/jpeg", 0.8);
+          canvas.toBlob((result) => resolve(result!), "image/jpeg", 0.7);
           URL.revokeObjectURL(url);
         };
         img.src = url;
@@ -1144,7 +1144,9 @@ const addPost = async () => {
             style={{ width: "72px", height: "72px", borderRadius: "50%", backgroundColor: "#f0f0f0", border: "0.5px solid #ddd", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", overflow: "hidden", marginBottom: "6px" }}
           >
             {avatarPreview ? (
-              <img src={avatarPreview} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <img src={avatarPreview} alt="avatar" 
+              loading="lazy"
+              style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             ) : (
               <span style={{ fontSize: "28px" }}>🍽️</span>
             )}
@@ -1179,7 +1181,7 @@ const addPost = async () => {
         </div>
         <p style={{ fontSize: "11px", color: "#bbb", textAlign: "right", marginBottom: "16px" }}>{bio.length} / 100</p>
       </>
-    )}
+    )}c
 
     <button
       onClick={authTab === "login" ? signIn : signUp}
@@ -1680,6 +1682,7 @@ const addPost = async () => {
       <img
         src={post.profiles.avatar_url}
         alt="avatar"
+        loading="lazy"
         style={{ width: "100%", height: "100%", objectFit: "cover" }}
       />
     ) : (
@@ -1821,6 +1824,7 @@ const addPost = async () => {
     key={index}
     src={url}
     alt={`${post.restaurant}-${index}`}
+    loading="lazy"
     style={{
       width: post.images && post.images.length > 1 ? "calc(50% - 4px)" : "100%",
       maxHeight: "300px",

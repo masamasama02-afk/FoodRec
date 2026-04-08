@@ -185,7 +185,7 @@ const startEdit = (post: Post) => {
         const url = URL.createObjectURL(blob);
         img.onload = () => {
           const canvas = document.createElement("canvas");
-          const maxSize = 1200;
+          const maxSize = 800;
           let width = img.width;
           let height = img.height;
           if (width > maxSize || height > maxSize) {
@@ -196,7 +196,7 @@ const startEdit = (post: Post) => {
           canvas.height = height;
           const ctx = canvas.getContext("2d")!;
           ctx.drawImage(img, 0, 0, width, height);
-          canvas.toBlob((result) => resolve(result!), "image/jpeg", 0.8);
+          canvas.toBlob((result) => resolve(result!), "image/jpeg", 0.7);
           URL.revokeObjectURL(url);
         };
         img.src = url;
