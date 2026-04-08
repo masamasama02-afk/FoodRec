@@ -117,6 +117,7 @@ export default function UserPage() {
         marginBottom: "20px",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
+          <div style={{ position: "relative", flexShrink: 0 }}>
           <div style={{
             width: "56px",
             height: "56px",
@@ -127,11 +128,33 @@ export default function UserPage() {
             justifyContent: "center",
             fontSize: "24px",
             overflow: "hidden",
-            flexShrink: 0,
           }}>
             {profile?.avatar_url ? (
               <img src={profile.avatar_url} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             ) : "🍽️"}
+          </div>
+          {profile?.rank_badge && (
+            <div style={{
+              position: "absolute",
+              bottom: "-2px",
+              right: "-2px",
+              fontSize: "12px",
+              backgroundColor: "#fff",
+              borderRadius: "50%",
+              width: "20px",
+              height: "20px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              border: "1px solid #eee",
+            }}>
+              {profile.rank_badge === "First Bite" ? "🍴" :
+               profile.rank_badge === "ビギナーグルメ" ? "🍽️" :
+               profile.rank_badge === "フーディー" ? "🥘" :
+               profile.rank_badge === "グルメ通" ? "🥇" :
+               profile.rank_badge === "食の探求者" ? "👑" : "🍴"}
+            </div>
+          )}
           </div>
           <div style={{ flex: 1 }}>
             <p style={{ fontSize: "16px", fontWeight: "600", color: "#111" }}>
@@ -161,10 +184,63 @@ export default function UserPage() {
         </div>
 
         {profile?.bio && (
-          <p style={{ fontSize: "13px", color: "#555", lineHeight: 1.6 }}>
+          <p style={{ fontSize: "13px", color: "#555", lineHeight: 1.6, marginBottom: "12px" }}>
             {profile.bio}
           </p>
         )}
+        {(() => {
+          const allBadges = [
+            { key: "🍴 First Bite", label: "First Bite", icon: "🍴" },
+            { key: "🍽️❤️ 人気の一皿", label: "人気の一皿", icon: "🍽️❤️" },
+            { key: "🔥 バズグルメ", label: "バズグルメ", icon: "🔥" },
+            { key: "🤖 行きたい製造機", label: "行きたい製造機", icon: "🤖" },
+            { key: "📍 街歩きビギナー", label: "街歩きビギナー", icon: "📍" },
+            { key: "👣 エリアハンター", label: "エリアハンター", icon: "👣" },
+            { key: "🧭 探検家", label: "探検家", icon: "🧭" },
+            { key: "🍷 ブルジョワジー", label: "ブルジョワジー", icon: "🍷" },
+            { key: "💎 ラグジュアリーマスター", label: "ラグジュアリーマスター", icon: "💎" },
+            { key: "🪙 コスパ神", label: "コスパ神", icon: "🪙" },
+            { key: "☀️ ランチハンター", label: "ランチハンター", icon: "☀️" },
+            { key: "🍣 寿司職人", label: "寿司職人", icon: "🍣" },
+            { key: "🍜 ラーメン中毒", label: "ラーメン中毒", icon: "🍜" },
+            { key: "🥩 焼肉奉行", label: "焼肉奉行", icon: "🥩" },
+            { key: "☕ カフェ巡礼者", label: "カフェ巡礼者", icon: "☕" },
+            { key: "🍝 パスタ貴族", label: "パスタ貴族", icon: "🍝" },
+            { key: "🍺 飲み歩き職人", label: "飲み歩き職人", icon: "🍺" },
+          ];
+          const earnedBadges = profile?.badges ?? [];
+          return (
+            <div style={{ marginTop: "12px", borderTop: "1px solid #eee", paddingTop: "12px" }}>
+              <p style={{ fontSize: "13px", color: "#888", marginBottom: "10px" }}>🏅 バッジ</p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                {allBadges.map((badge) => {
+                  const earned = earnedBadges.includes(badge.key);
+                  return (
+                    <div
+                      key={badge.key}
+                      style={{
+                        padding: "6px 12px",
+                        borderRadius: "20px",
+                        backgroundColor: earned ? "#f8f8f8" : "transparent",
+                        border: earned ? "0.5px solid #ddd" : "0.5px dashed #ddd",
+                        fontSize: "12px",
+                        color: earned ? "#333" : "#ccc",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px",
+                      }}
+                    >
+                      <span style={{ filter: earned ? "none" : "grayscale(1) opacity(0.3)" }}>
+                        {badge.icon}
+                      </span>
+                      {badge.label}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
       </div>
 
       {/* 投稿一覧 */}
