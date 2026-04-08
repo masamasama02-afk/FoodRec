@@ -13,6 +13,7 @@ type Post = {
   lng: number
   username?: string
   genres?: string[]
+  place_id?: string
 }
 
 type Props = {
@@ -137,12 +138,15 @@ export default function MapView({ posts, minRating, selectedGenres }: Props) {
                 {post.username}
               </p>
               
-             <span
-                onClick={() => window.location.href = `/posts/${post.id}`}
-                style={{ fontSize: "12px", color: "#2563eb", cursor: "pointer" }}
+            <a href={post.place_id
+                  ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(post.restaurant)}&query_place_id=${post.place_id}`
+                  : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(post.restaurant)}&center=${post.lat},${post.lng}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize: "12px", color: "#2563eb" }}
               >
-                詳細を見る →
-              </span>
+                Google Mapで見る →
+              </a>
             </div>
           </Popup>
         </Marker>

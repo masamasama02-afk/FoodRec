@@ -657,21 +657,22 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
       fileName = `${Date.now()}_compressed.jpg`;
     }
 
-    const { error } = await supabase.storage
-      .from("images")
-      .upload(fileName, uploadFile);
+   const formData = new FormData();
+    formData.append("file", uploadFile);
+    formData.append("fileName", fileName);
 
-    if (error) {
-      console.error("画像アップロードエラー:", error);
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!res.ok) {
       toast("画像アップロードに失敗しました");
       continue;
     }
 
-    const { data: urlData } = supabase.storage
-      .from("images")
-      .getPublicUrl(fileName);
-
-    uploadedUrls.push(urlData.publicUrl);
+    const { url } = await res.json();
+    uploadedUrls.push(url);
   }
 
   setImages((prev) => [...prev, ...uploadedUrls]);
