@@ -120,6 +120,80 @@ const fetchTotalLikes = async (userId: string) => {
   setTotalLikes(count || 0);
 };
 
+const updateBadges = async (userId: string) => {
+  const { data: posts } = await supabase
+    .from("posts")
+    .select("*")
+    .eq("user_id", userId);
+
+  if (!posts) return;
+
+  const totalPosts = posts.length;
+
+  const { count: likeCount } = await supabase
+    .from("likes")
+    .select("*", { count: "exact", head: true })
+    .in("post_id", posts.map((p) => p.id));
+
+  const { data: wishlists } = await supabase
+    .from("wishlists")
+    .select("id")
+    .in("post_id", posts.map((p) => p.id));
+  const wishlistCount = wishlists?.length ?? 0;
+
+  const areas = [...new Set(posts.map((p) => p.area).filter(Boolean))];
+  const areaCount = areas.length;
+
+  // ランクバッジ
+  let newRankBadge = "First Bite";
+  if (totalPosts >= 300) newRankBadge = "食の探求者";
+  else if (totalPosts >= 100) newRankBadge = "グルメ通";
+  else if (totalPosts >= 50) newRankBadge = "フーディー";
+  else if (totalPosts >= 10) newRankBadge = "ビギナーグルメ";
+  else if (totalPosts >= 1) newRankBadge = "First Bite";
+
+  // 実績バッジ
+  const newBadges: string[] = [];
+  if (totalPosts >= 1) newBadges.push("🍴 First Bite");
+  if ((likeCount ?? 0) >= 10) newBadges.push("🍽️❤️ 人気の一皿");
+  if ((likeCount ?? 0) >= 30) newBadges.push("🔥 バズグルメ");
+  if (wishlistCount >= 50) newBadges.push("🤖 行きたい製造機");
+  if (areaCount >= 3) newBadges.push("📍 街歩きビギナー");
+  if (areaCount >= 10) newBadges.push("👣 エリアハンター");
+  if (areaCount >= 30) newBadges.push("🧭 探検家");
+
+  const highEnd = posts.filter((p) => p.price >= 8001).length;
+  const premium = posts.filter((p) => p.price >= 15001).length;
+  const cheap = posts.filter((p) => p.price <= 1000 && p.price > 0).length;
+  if (highEnd >= 5) newBadges.push("🍷 ブルジョワジー");
+  if (premium >= 20) newBadges.push("💎 ラグジュアリーマスター");
+  if (cheap >= 20) newBadges.push("🪙 コスパ神");
+
+  const lunchPosts = posts.filter((p) => p.genres?.includes("🌞 ランチ")).length;
+  const sushiPosts = posts.filter((p) => p.genres?.includes("🍣 和食")).length;
+  const ramenPosts = posts.filter((p) => p.genres?.includes("🍜 ラーメン")).length;
+  const yakinikuPosts = posts.filter((p) => p.genres?.includes("🍖 焼肉")).length;
+  const cafePosts = posts.filter((p) => p.genres?.includes("☕ カフェ")).length;
+  const italianPosts = posts.filter((p) => p.genres?.includes("🍕 イタリアン")).length;
+  const izakayaPosts = posts.filter((p) => p.genres?.includes("🍺 飲み")).length;
+
+  if (lunchPosts >= 20) newBadges.push("☀️ ランチハンター");
+  if (sushiPosts >= 10) newBadges.push("🍣 寿司職人");
+  if (ramenPosts >= 15) newBadges.push("🍜 ラーメン中毒");
+  if (yakinikuPosts >= 10) newBadges.push("🥩 焼肉奉行");
+  if (cafePosts >= 20) newBadges.push("☕ カフェ巡礼者");
+  if (italianPosts >= 10) newBadges.push("🍝 パスタ貴族");
+  if (izakayaPosts >= 20) newBadges.push("🍺 飲み歩き職人");
+
+  await supabase
+    .from("profiles")
+    .update({ rank_badge: newRankBadge, badges: newBadges })
+    .eq("id", userId);
+
+  setRankBadge(newRankBadge);
+  setBadges(newBadges);
+};
+
 const startEdit = (post: Post) => {
   setEditingPostId(post.id);
   setEditRestaurant(post.restaurant);
@@ -293,9 +367,10 @@ const handleAvatar = (e: React.ChangeEvent<HTMLInputElement>) => {
       setUser(data.user);
       await fetchProfile(data.user.id);
       await fetchMyPosts(data.user.id);
-await fetchFollowCounts(data.user.id);
-await fetchTotalLikes(data.user.id);
-await fetchWishlist(data.user.id);
+      await fetchFollowCounts(data.user.id);
+      await fetchTotalLikes(data.user.id);
+      await updateBadges(data.user.id);
+      await fetchWishlist(data.user.id);
 setLoading(false);
     };
 
