@@ -1116,8 +1116,14 @@ const addPost = async () => {
     padding: "28px 24px",
     marginBottom: "24px",
   }}>
-    <div style={{ textAlign: "center", marginBottom: "24px" }}>
-      <p style={{ fontSize: "13px", color: "#999" }}>友達のおすすめを記録・共有するグルメSNS</p>
+   <div style={{ textAlign: "center", marginBottom: "24px" }}>
+      <p style={{ fontSize: "18px", fontWeight: "700", color: "#111", marginBottom: "6px" }}>FoodRec</p>
+      <p style={{ fontSize: "13px", color: "#999", marginBottom: "16px" }}>グルメ情報をRecordして、友達にRecommend</p>
+      <div style={{ display: "flex", flexDirection: "column", gap: "8px", textAlign: "left", backgroundColor: "#f8f8f8", borderRadius: "12px", padding: "14px 16px", marginBottom: "8px" }}>
+        <p style={{ fontSize: "13px", color: "#444", margin: 0 }}>📍 友達がどこで何を食べたか</p>
+        <p style={{ fontSize: "13px", color: "#444", margin: 0 }}>❤️ お気に入りの店をいいね・行きたいリストに保存</p>
+        <p style={{ fontSize: "13px", color: "#444", margin: 0 }}>🏅 投稿するたびにバッジを獲得</p>
+      </div>
     </div>
 
     <div style={{
@@ -1218,7 +1224,7 @@ const addPost = async () => {
         </div>
         <p style={{ fontSize: "11px", color: "#bbb", textAlign: "right", marginBottom: "16px" }}>{bio.length} / 100</p>
       </>
-    )}c
+    )}
 
     <button
       onClick={authTab === "login" ? signIn : signUp}
