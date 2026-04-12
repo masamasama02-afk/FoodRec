@@ -533,8 +533,7 @@ useEffect(() => {
 
   const autocomplete = new google.maps.places.Autocomplete(
     restaurantInputRef.current,
-    {
-      types: ["establishment"],
+    
       fields: ["name", "geometry", "address_components", "place_id"]
     }
   );
