@@ -298,10 +298,11 @@ const [likeUsers, setLikeUsers] = useState<Record<number, {user_id: string, user
   const { data: postsData } = await supabase.from("posts").select("id");
   const postIds = (postsData ?? []).map((p) => p.id);
 
-  const { data, error } = await supabase
+ const { data, error } = await supabase
     .from("likes")
     .select("*, profiles(username)")
-    .in("post_id", postIds);
+    .in("post_id", postIds)
+    .not("post_id", "is", null);
 
    if (error) {
       console.error("いいね取得エラー:", error);
