@@ -78,6 +78,8 @@ const [price, setPrice] = useState<number>(3000)
   const [lng, setLng] = useState<number | null>(null)
   const [area, setArea] = useState("");
   const [placeId, setPlaceId] = useState("")
+  const [searchResults, setSearchResults] = useState<any[]>([])
+const [showResults, setShowResults] = useState(false)
   const [notifications, setNotifications] = useState<any[]>([]);
 const [unreadCount, setUnreadCount] = useState(0);
 const [showNotifications, setShowNotifications] = useState(false);
@@ -526,52 +528,54 @@ useEffect(() => {
 }, [sortBy, timelineType]);
 
 
-    useEffect(() => {
-
-  if (!restaurantInputRef.current) return;
-   if (typeof google === "undefined") return;
-
-  const autocomplete = new google.maps.places.Autocomplete(
-    restaurantInputRef.current,
-    {
-      
-      fields: ["name", "geometry", "address_components", "place_id"]
+   const searchPlaces = async (query: string) => {
+    if (!query.trim()) {
+      setSearchResults([])
+      setShowResults(false)
+      return
     }
-  );
+    if (typeof google === "undefined") return
 
-  autocomplete.addListener("place_changed", () => {
-  console.log("place_changed 発火!")
-  const place = autocomplete.getPlace()
-  console.log("place:", place)
+    const service = new google.maps.places.PlacesService(
+      document.createElement("div")
+    )
 
-  if (!place.name || !place.geometry) return
+    service.textSearch(
+      { query, type: "restaurant" },
+      (results: any[], status: any) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+          setSearchResults(results.slice(0, 10))
+          setShowResults(true)
+        } else {
+          setSearchResults([])
+          setShowResults(false)
+        }
+      }
+    )
+  }
 
-  setRestaurant(place.name)
-  setPlaceId(place.place_id ?? "")
+  const selectPlace = (place: any) => {
+    setRestaurant(place.name)
+    setPlaceId(place.place_id ?? "")
+    setLat(place.geometry.location.lat())
+    setLng(place.geometry.location.lng())
 
-  const lat = place.geometry.location.lat()
-  const lng = place.geometry.location.lng()
-  setLat(lat)
-  setLng(lng)
+    const geocoder = new google.maps.Geocoder()
+    geocoder.geocode({ location: place.geometry.location }, (results: any, status: any) => {
+      if (status === "OK" && results[0]) {
+        const components = results[0].address_components
+        const area =
+          components.find((c: any) => c.types.includes("sublocality_level_2"))?.long_name ||
+          components.find((c: any) => c.types.includes("sublocality_level_1"))?.long_name ||
+          components.find((c: any) => c.types.includes("locality"))?.long_name ||
+          ""
+        setArea(area)
+      }
+    })
+    setShowResults(false)
+  }
 
-  // 逆ジオコーディングでエリアを取得
-  const geocoder = new google.maps.Geocoder()
- geocoder.geocode({ location: { lat, lng } }, (results: any, status: any) => {
-    console.log("Geocoder status:", status, results)
-    if (status === "OK" && results[0]) {
-      const components = results[0].address_components
-      const area =
-        components.find((c: any) => c.types.includes("sublocality_level_2"))?.long_name ||
-        components.find((c: any) => c.types.includes("sublocality_level_1"))?.long_name ||
-        components.find((c: any) => c.types.includes("locality"))?.long_name ||
-        ""
-      console.log("取得したエリア:", area)
-      setArea(area)
-    }
-  })
-});
-
-}, []);
+    useEffect(() => {}, []);
 
 const handleAvatar = (e: React.ChangeEvent<HTMLInputElement>) => {
   const file = e.target.files?.[0];
@@ -1302,20 +1306,67 @@ const addPost = async () => {
     ✏️ 投稿する
   </h2>
 
-        <input
-            ref={restaurantInputRef}
-  placeholder="レストラン名を検索"
-  value={restaurant}
-  onChange={(e) => setRestaurant(e.target.value)}style={{
-            width: "100%",
-            padding: "10px",
-            marginBottom: "12px",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
-            boxSizing: "border-box",
-             color: "#111",
+        <div style={{ position: "relative", marginBottom: "12px" }}>
+  <input
+    ref={restaurantInputRef}
+    placeholder="レストラン名を検索"
+    value={restaurant}
+    onChange={(e) => {
+      setRestaurant(e.target.value)
+      searchPlaces(e.target.value)
+    }}
+    style={{
+      width: "100%",
+      padding: "10px",
+      borderRadius: "8px",
+      border: "1px solid #ccc",
+      boxSizing: "border-box",
+      color: "#111",
+    }}
+  />
+  {showResults && searchResults.length > 0 && (
+    <div style={{
+      position: "absolute",
+      top: "100%",
+      left: 0,
+      right: 0,
+      backgroundColor: "#fff",
+      border: "1px solid #ddd",
+      borderRadius: "8px",
+      maxHeight: "240px",
+      overflowY: "auto",
+      zIndex: 1000,
+      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+    }}>
+      {searchResults.map((place, index) => (
+        <div
+          key={index}
+          onClick={() => selectPlace(place)}
+          style={{
+            padding: "10px 12px",
+            borderBottom: "0.5px solid #f0f0f0",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
           }}
-        />
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#f8f8f8")}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#fff")}
+        >
+          <span style={{ fontSize: "16px" }}>📍</span>
+          <div>
+            <p style={{ margin: 0, fontSize: "13px", color: "#111", fontWeight: "500" }}>
+              {place.name}
+            </p>
+            <p style={{ margin: 0, fontSize: "11px", color: "#999" }}>
+              {place.formatted_address}
+            </p>
+          </div>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
 
         <textarea
           placeholder="コメント"
