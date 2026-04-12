@@ -83,6 +83,7 @@ const [showResults, setShowResults] = useState(false)
   const [notifications, setNotifications] = useState<any[]>([]);
 const [unreadCount, setUnreadCount] = useState(0);
 const [showNotifications, setShowNotifications] = useState(false);
+const [followingIds, setFollowingIds] = useState<string[]>([]);
 
   const fetchProfile = async (userId: string) => {
     const { data, error } = await supabase
@@ -493,6 +494,11 @@ const addComment = async (postId: number) => {
       await fetchProfile(data.user.id);
       await fetchPosts();
       await fetchLikes(data.user.id);
+      const { data: follows } = await supabase
+        .from("follows")
+        .select("following_id")
+        .eq("follower_id", data.user.id);
+      setFollowingIds((follows || []).map((f) => f.following_id));
       toast("ログインしました");
     }
   };
@@ -510,11 +516,16 @@ useEffect(() => {
   const initAuth = async () => {
     const { data } = await supabase.auth.getUser();
     setUser(data.user);
-    if (data.user) {
+   if (data.user) {
       await fetchProfile(data.user.id);
       await fetchLikes(data.user.id);
       await fetchWishlist();
       await fetchNotifications();
+      const { data: follows } = await supabase
+        .from("follows")
+        .select("following_id")
+        .eq("follower_id", data.user.id);
+      setFollowingIds((follows || []).map((f) => f.following_id));
     }
     await fetchRanking();
     await fetchComments();
@@ -888,7 +899,39 @@ const addPost = async () => {
     toast("投稿しました");
   };
 
-  const toggleLike = async (postId: number) => {
+  const toggleFollowFromCard = async (targetUserId: string) => {
+  if (!user) return;
+  const isFollowing = followingIds.includes(targetUserId);
+  if (isFollowing) {
+    await supabase.from("follows").delete()
+      .eq("follower_id", user.id)
+      .eq("following_id", targetUserId);
+    setFollowingIds(followingIds.filter((id) => id !== targetUserId));
+  } else {
+    await supabase.from("follows").insert({
+      follower_id: user.id,
+      following_id: targetUserId,
+    });
+    setFollowingIds([...followingIds, targetUserId]);
+
+    // フォロー通知
+    const { data: myProfile } = await supabase
+      .from("profiles")
+      .select("username")
+      .eq("id", user.id)
+      .maybeSingle();
+    const myName = myProfile?.username || "ユーザー";
+    await supabase.from("notifications").insert({
+      user_id: targetUserId,
+      from_user_id: user.id,
+      from_username: myName,
+      type: "follow",
+      message: `${myName}さんがフォローしました`,
+    });
+  }
+};
+
+const toggleLike = async (postId: number) => {
   const { data } = await supabase.auth.getUser();
 
   if (!data.user) {
@@ -1120,9 +1163,9 @@ const addPost = async () => {
       <p style={{ fontSize: "18px", fontWeight: "700", color: "#111", marginBottom: "6px" }}>FoodRec</p>
       <p style={{ fontSize: "13px", color: "#999", marginBottom: "16px" }}>グルメ情報をRecordして、友達にRecommend</p>
       <div style={{ display: "flex", flexDirection: "column", gap: "8px", textAlign: "left", backgroundColor: "#f8f8f8", borderRadius: "12px", padding: "14px 16px", marginBottom: "8px" }}>
-        <p style={{ fontSize: "13px", color: "#444", margin: 0 }}>📍 友達がどこで何を食べたか</p>
-        <p style={{ fontSize: "13px", color: "#444", margin: 0 }}>❤️ お気に入りの店をいいね・行きたいリストに保存</p>
-        <p style={{ fontSize: "13px", color: "#444", margin: 0 }}>🏅 投稿するたびにバッジを獲得</p>
+        <p style={{ fontSize: "13px", color: "#444", margin: 0 }}>📍 友達がどこで何を食べたかが一目でわかる</p>
+        <p style={{ fontSize: "13px", color: "#444", margin: 0 }}>❤️ お気に入りの店をいいね・行きたいリストに保存できる</p>
+        <p style={{ fontSize: "13px", color: "#444", margin: 0 }}>🏅 投稿するたびにバッジを獲得しよう</p>
       </div>
     </div>
 
@@ -1804,22 +1847,44 @@ const addPost = async () => {
   </div>
 
   {/* ユーザー名 */}
-  {post.user_id ? (
-    <Link
-      href={`/users/${post.user_id}`}
-      style={{
-        fontSize: "13px",
-        color: "#2563eb",
-        textDecoration: "underline",
-      }}
-    >
-      {post.username || "不明"}
-    </Link>
-  ) : (
-    <span style={{ fontSize: "13px", color: "#666" }}>
-      {post.username || "不明"}
-    </span>
-  )}
+  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+    {post.user_id ? (
+      <Link
+        href={`/users/${post.user_id}`}
+        style={{
+          fontSize: "13px",
+          color: "#2563eb",
+          textDecoration: "underline",
+        }}
+      >
+        {post.username || "不明"}
+      </Link>
+    ) : (
+      <span style={{ fontSize: "13px", color: "#666" }}>
+        {post.username || "不明"}
+      </span>
+    )}
+    {user && post.user_id && post.user_id !== user.id && (
+      followingIds.includes(post.user_id) ? (
+        <span style={{ fontSize: "11px", color: "#999" }}>✓ フォロー中</span>
+      ) : (
+        <button
+          onClick={() => toggleFollowFromCard(post.user_id!)}
+          style={{
+            padding: "2px 8px",
+            borderRadius: "20px",
+            border: "0.5px solid #ddd",
+            backgroundColor: "#fff",
+            fontSize: "11px",
+            color: "#111",
+            cursor: "pointer",
+          }}
+        >
+          フォロー
+        </button>
+      )
+    )}
+  </div>
 </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px", flexWrap: "wrap" }}>
