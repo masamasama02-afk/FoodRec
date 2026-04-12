@@ -84,6 +84,7 @@ const [showResults, setShowResults] = useState(false)
 const [unreadCount, setUnreadCount] = useState(0);
 const [showNotifications, setShowNotifications] = useState(false);
 const [followingIds, setFollowingIds] = useState<string[]>([]);
+const [likeUsers, setLikeUsers] = useState<Record<number, {user_id: string, username: string}[]>>({});
 
   const fetchProfile = async (userId: string) => {
     const { data, error } = await supabase
@@ -299,7 +300,7 @@ const [followingIds, setFollowingIds] = useState<string[]>([]);
 
   const { data, error } = await supabase
     .from("likes")
-    .select("*")
+    .select("*, profiles(username)")
     .in("post_id", postIds);
 
    if (error) {
@@ -316,6 +317,16 @@ const [followingIds, setFollowingIds] = useState<string[]>([]);
       counts[like.post_id] = (counts[like.post_id] || 0) + 1;
     });
     setLikeCounts(counts);
+
+    const likeUsersMap: Record<number, {user_id: string, username: string}[]> = {};
+    likes.forEach((like: any) => {
+      if (!likeUsersMap[like.post_id]) likeUsersMap[like.post_id] = [];
+      likeUsersMap[like.post_id].push({
+        user_id: like.user_id,
+        username: like.profiles?.username || "ユーザー",
+      });
+    });
+    setLikeUsers(likeUsersMap);
 
     const targetUserId = currentUserId ?? user?.id;
 
@@ -2015,9 +2026,24 @@ const toggleLike = async (postId: number) => {
     {likedPostIds.includes(post.id) ? "❤️ いいね済み" : "🤍 いいね"}
   </button>
 
-  <span style={{ fontSize: "13px", color: "#999" }}>
-    {likeCounts[post.id] || 0}件
-  </span>
+  <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+    <span style={{ fontSize: "13px", color: "#999" }}>
+      {likeCounts[post.id] || 0}件
+    </span>
+    {likeUsers[post.id] && likeUsers[post.id].length > 0 && (
+      <span style={{ fontSize: "11px", color: "#bbb" }}>
+        {(() => {
+          const users = likeUsers[post.id];
+          const followingUsers = users.filter(u => followingIds.includes(u.user_id) && u.user_id !== user?.id);
+          const displayUsers = followingUsers.length > 0 ? followingUsers : users.filter(u => u.user_id !== user?.id);
+          if (displayUsers.length === 0) return null;
+          const names = displayUsers.slice(0, 2).map(u => u.username).join("、");
+          const rest = displayUsers.length - 2;
+          return rest > 0 ? `${names}、他${rest}人` : names;
+        })()}
+      </span>
+    )}
+  </div>
 
   <button
     onClick={() => toggleWishlist(post.id)}
