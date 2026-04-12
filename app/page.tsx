@@ -847,6 +847,34 @@ const addPost = async () => {
     await fetchRanking();
     await updateBadges(userData.user.id);
 
+    await fetchPosts();
+    await fetchLikes(userData.user.id);
+    await fetchRanking();
+    await updateBadges(userData.user.id);
+
+    // ★4以上の場合フォロワーに通知
+    if (rating >= 4) {
+      const genreText = selectedGenres.length > 0 ? selectedGenres[0].replace(/^[^\s]+\s/, "") : "飲食店";
+      const areaText = area || "近くのエリア";
+
+      const { data: followers } = await supabase
+        .from("follows")
+        .select("follower_id")
+        .eq("following_id", userData.user.id);
+
+      if (followers && followers.length > 0) {
+        const notifications = followers.map((f) => ({
+          user_id: f.follower_id,
+          from_user_id: userData.user.id,
+          from_username: displayName,
+          type: "new_post",
+          message: `${displayName}さんが${areaText}でお気に入りの${genreText}のお店を見つけました！`,
+        }));
+
+        await supabase.from("notifications").insert(notifications);
+      }
+    }
+
     setRestaurant("");
     setComment("");
     setImage(null);
@@ -1054,6 +1082,10 @@ const addPost = async () => {
               ) : notif.type === "follow" ? (
                 <p style={{ fontSize: "13px", color: "#111", marginBottom: "2px" }}>
                   👤 <strong>{notif.from_username}</strong> がフォローしました
+                </p>
+                   ) : notif.type === "new_post" ? (
+                <p style={{ fontSize: "13px", color: "#111", marginBottom: "2px" }}>
+                  🍽️ {notif.message}
                 </p>
               ) : (
                 <>
