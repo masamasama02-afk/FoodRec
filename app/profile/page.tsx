@@ -587,6 +587,28 @@ setLoading(false);
     </div>
   </div>
 </div>
+{/* 招待リンク */}
+<div style={{ marginTop: "16px", borderTop: "1px solid #eee", paddingTop: "16px" }}>
+  <p style={{ fontSize: "13px", color: "#888", marginBottom: "8px" }}>👥 友達を招待</p>
+  <button
+    onClick={() => {
+      const url = `https://food-rec-omega.vercel.app?ref=${user?.id}`;
+      navigator.clipboard.writeText(url);
+      alert("招待リンクをコピーしました！");
+    }}
+    style={{
+      padding: "8px 16px",
+      borderRadius: "20px",
+      border: "0.5px solid #ddd",
+      backgroundColor: "#fff",
+      fontSize: "13px",
+      cursor: "pointer",
+      color: "#111",
+    }}
+  >
+    🔗 招待リンクをコピー
+  </button>
+</div>
       {(() => {
   const allBadges = [
     { key: "🍴 First Bite", label: "First Bite", icon: "🍴" },
