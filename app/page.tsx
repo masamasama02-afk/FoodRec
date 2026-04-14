@@ -1988,24 +1988,31 @@ const toggleLike = async (postId: number) => {
             {post.comment}
           </p>
 {console.log("image:", post.image, "images:", post.images, "length:", post.images?.length)}
-          {(post.images && post.images.length > 0 ? post.images : (post.image && post.image !== "") ? [post.image] : []).map((url, index) => (
-  <img
-    key={index}
-    src={url}
-    alt={`${post.restaurant}-${index}`}
-    loading="lazy"
-    style={{
-      width: post.images && post.images.length > 1 ? "calc(50% - 4px)" : "100%",
-      maxHeight: "300px",
-      objectFit: "cover",
-      borderRadius: "12px",
-      marginBottom: "8px",
-      border: "1px solid #eee",
-      display: "inline-block",
-      marginRight: index % 2 === 0 && post.images && post.images.length > 1 ? "8px" : "0",
-    }}
-  />
-))}
+  <div style={{
+  display: "flex",
+  overflowX: "auto",
+  gap: "8px",
+  marginBottom: "8px",
+  scrollbarWidth: "none",
+}}>
+  {(post.images && post.images.length > 0 ? post.images : (post.image && post.image !== "") ? [post.image] : []).map((url, index) => (
+    <img
+      key={index}
+      src={url}
+      alt={`${post.restaurant}-${index}`}
+      loading="lazy"
+      style={{
+        width: post.images && post.images.length > 1 ? "260px" : "100%",
+        minWidth: post.images && post.images.length > 1 ? "260px" : "auto",
+        height: "200px",
+        objectFit: "cover",
+        borderRadius: "12px",
+        border: "1px solid #eee",
+        flexShrink: 0,
+      }}
+    />
+  ))}
+</div>
           <div
   style={{
     display: "flex",
