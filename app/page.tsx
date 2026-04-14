@@ -69,6 +69,7 @@ const [price, setPrice] = useState<number>(3000)
   const [sortBy, setSortBy] = useState("new");
   const [timelineType, setTimelineType] = useState("all");
   const [uploading, setUploading] = useState(false);
+  const [posting, setPosting] = useState(false);
 
   const [likedPostIds, setLikedPostIds] = useState<number[]>([]);
   const [wishlistPostIds, setWishlistPostIds] = useState<number[]>([]);
@@ -819,8 +820,11 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
 };
 
 const addPost = async () => {
+    if (posting) return;
+    setPosting(true);
     if (!restaurant.trim()) {
       toast("レストラン名を入力してください");
+      setPosting(false);
       return;
     }
 
@@ -872,11 +876,6 @@ const addPost = async () => {
     await fetchRanking();
     await updateBadges(userData.user.id);
 
-    await fetchPosts();
-    await fetchLikes(userData.user.id);
-    await fetchRanking();
-    await updateBadges(userData.user.id);
-
     // ★4以上の場合フォロワーに通知
     if (rating >= 4) {
       const genreText = selectedGenres.length > 0 ? selectedGenres[0].replace(/^[^\s]+\s/, "") : "飲食店";
@@ -910,6 +909,7 @@ const addPost = async () => {
     setRating(5);
     setMapUrl("");
 
+   setPosting(false);
     toast("投稿しました");
   };
 
