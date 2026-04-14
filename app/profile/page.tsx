@@ -201,7 +201,7 @@ const startEdit = (post: Post) => {
   setEditComment(post.comment);
   setEditGenres(post.genres || []);
   setEditImages(post.images || (post.image ? [post.image] : []));
-  setEditRating(post.rating || 5);
+  setEditRating(Number(post.rating) || 5);
 };
 
   const saveEdit = async (postId: number) => {
@@ -767,7 +767,7 @@ setLoading(false);
               </button>
             ))}
             <span style={{ fontSize: "13px", color: "#666", alignSelf: "center", marginLeft: "4px" }}>
-              {editRating.toFixed(1)}
+              {Number(editRating).toFixed(1)}
             </span>
           </div>
         </div>
