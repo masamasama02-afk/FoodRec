@@ -1550,7 +1550,7 @@ const toggleLike = async (postId: number) => {
   </div>
   <p style={{ fontSize: "13px", color: "#111", marginBottom: "8px" }}>料理ジャンル</p>
   <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-    {["🍣 和食", "🍜 ラーメン", "🍱 鮨", "🦞 海鮮", "🍝 洋食", "🍕 イタリアン", "🍷 ビストロ", "🍜 中華", "🌮 エスニック", "🍖 焼肉", "🦌 ジビエ", "🥗 ヘルシー", "🍔 ファストフード", "🍰 スイーツ", "🍺 クラフトビール"].map((genre) => (
+    {["🍣 和食", "🍜 ラーメン", "🍝 つけ麺", "🫕 うどん", "🍜 蕎麦", "🍱 鮨", "🦞 海鮮", "🍝 洋食", "🍕 イタリアン", "🍷 ビストロ", "🍜 中華", "🌮 エスニック", "🍖 焼肉", "🦌 ジビエ", "🥗 ヘルシー", "🍔 ファストフード", "🍰 スイーツ", "🍺 クラフトビール"].map((genre) => (
       <button
         key={genre}
         onClick={() => setSelectedGenres(
