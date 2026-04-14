@@ -215,34 +215,36 @@ const [likeUsers, setLikeUsers] = useState<Record<number, {user_id: string, user
 
 
    const fetchRanking = async () => {
+  const since = new Date();
+  since.setDate(since.getDate() - 5);
 
   const { data } = await supabase
-    .from("likes")
-    .select("post_id");
+    .from("posts")
+    .select("user_id, username, profiles(avatar_url)")
+    .gte("created_at", since.toISOString());
 
   if (!data) return;
 
-  const counts: Record<number, number> = {};
+  const counts: Record<string, { username: string; count: number; avatar_url: string }> = {};
 
-  data.forEach((like) => {
-    counts[like.post_id] = (counts[like.post_id] || 0) + 1;
+  data.forEach((post: any) => {
+    if (!counts[post.user_id]) {
+      counts[post.user_id] = {
+        username: post.username || "不明",
+        count: 0,
+        avatar_url: post.profiles?.avatar_url || "",
+      };
+    }
+    counts[post.user_id].count++;
   });
 
-  const postIds = Object.keys(counts)
-    .sort((a, b) => counts[Number(b)] - counts[Number(a)])
+  const ranking = Object.entries(counts)
+    .sort((a, b) => b[1].count - a[1].count)
     .slice(0, 5)
-    .map(Number);
+    .map(([user_id, val]) => ({ user_id, ...val }));
 
-  if (postIds.length === 0) return;
-
-  const { data: posts } = await supabase
-    .from("posts")
-    .select("*")
-    .in("id", postIds);
-
-  setRankingPosts(posts || []);
+  setRankingPosts(ranking as any);
 };
-
   const fetchPosts = async () => {
 
   const column = sortBy === "rating" ? "rating" : "created_at";
@@ -1759,7 +1761,7 @@ const toggleLike = async (postId: number) => {
   marginBottom: "16px",
 }}>
   <h2 style={{ fontSize: "15px", fontWeight: "600", color: "#111", marginBottom: "12px" }}>
-    🔥 人気ランキング
+   📝 投稿数/5日
   </h2>
   {rankingPosts.map((post, index) => (
     <div
@@ -1776,9 +1778,9 @@ const toggleLike = async (postId: number) => {
         #{index + 1}
       </span>
       <div>
-        <p style={{ fontSize: "13px", fontWeight: "600", color: "#111" }}>{post.restaurant}</p>
-        <p style={{ fontSize: "11px", color: "#999" }}>{post.username}</p>
-      </div>
+        <p style={{ fontSize: "13px", fontWeight: "600", color: "#111" }}>{post.username}</p>
+        <p style={{ fontSize: "11px", color: "#999" }}>📝 {(post as any).count}件投稿</p>
+          </div>
     </div>
   ))}
 </div>
