@@ -106,6 +106,33 @@ export default function MapPage() {
         })}
       </div>
 
+     {/* ホームボタン */}
+      <div style={{
+        position: "absolute",
+        bottom: "24px",
+        left: "12px",
+        zIndex: 1000,
+      }}>
+        
+          <a href="/"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            padding: "10px 16px",
+            backgroundColor: "#fff",
+            border: "0.5px solid #ddd",
+            borderRadius: "20px",
+            fontSize: "13px",
+            color: "#111",
+            textDecoration: "none",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+          }}
+        >
+          🏠 ホーム
+        </a>
+      </div>
+
       {/* 地図 */}
       <MapView posts={posts} minRating={minRating} selectedGenres={selectedGenres} />
     </div>

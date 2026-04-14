@@ -39,6 +39,7 @@ const [editRestaurant, setEditRestaurant] = useState("");
 const [editComment, setEditComment] = useState("");
 const [editGenres, setEditGenres] = useState<string[]>([]);
 const [editImages, setEditImages] = useState<string[]>([]);
+const [editRating, setEditRating] = useState<number>(5);
   // プロフィール取得
   const fetchProfile = async (userId: string) => {
   const { data, error } = await supabase
@@ -200,6 +201,7 @@ const startEdit = (post: Post) => {
   setEditComment(post.comment);
   setEditGenres(post.genres || []);
   setEditImages(post.images || (post.image ? [post.image] : []));
+  setEditRating(post.rating || 5);
 };
 
   const saveEdit = async (postId: number) => {
@@ -211,6 +213,7 @@ const startEdit = (post: Post) => {
       genres: editGenres,
       images: editImages,
       image: editImages[0] ?? "",
+      rating: editRating,
     })
     .eq("id", postId);
 
@@ -592,7 +595,7 @@ setLoading(false);
   <p style={{ fontSize: "13px", color: "#888", marginBottom: "8px" }}>👥 友達を招待</p>
   <button
     onClick={() => {
-      const url = `https://food-rec-omega.vercel.app?ref=${user?.id}`;
+      const url = `https://food-rec-rouge.vercel.app?ref=${user?.id}`;
       navigator.clipboard.writeText(url);
       alert("招待リンクをコピーしました！");
     }}
@@ -744,6 +747,30 @@ setLoading(false);
             color: "#111",
           }}
         />
+        {/* 評価 */}
+        <div style={{ marginBottom: "10px" }}>
+          <p style={{ fontSize: "12px", color: "#666", marginBottom: "6px" }}>評価</p>
+          <div style={{ display: "flex", gap: "4px" }}>
+            {[1, 2, 3, 4, 5].map((star) => (
+              <button
+                key={star}
+                onClick={() => setEditRating(star)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  fontSize: "24px",
+                  cursor: "pointer",
+                  opacity: star <= editRating ? 1 : 0.3,
+                }}
+              >
+                ★
+              </button>
+            ))}
+            <span style={{ fontSize: "13px", color: "#666", alignSelf: "center", marginLeft: "4px" }}>
+              {editRating.toFixed(1)}
+            </span>
+          </div>
+        </div>
         {/* ジャンル選択 */}
         <div style={{ marginBottom: "10px" }}>
           <p style={{ fontSize: "12px", color: "#666", marginBottom: "6px" }}>シーン</p>
