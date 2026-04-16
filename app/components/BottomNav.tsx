@@ -7,7 +7,7 @@ export default function BottomNav() {
   const pathname = usePathname();
 
   const items = [
-  { href: "/", label: "ホーム", icon: "🏠" },
+  { href: "/", label: "ホーム", icon: "🏠", scroll: true },
   { href: "/map", label: "マップ", icon: "🗺️" },
   { href: "/search", label: "検索", icon: "🔍" },
   { href: "/follows", label: "フォロー", icon: "👥" },
@@ -34,6 +34,7 @@ export default function BottomNav() {
           <Link
             key={item.href}
             href={item.href}
+            onClick={() => { if (item.href === "/") window.scrollTo(0, 0); }}
             style={{
               display: "flex",
               flexDirection: "column",
