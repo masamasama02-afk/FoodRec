@@ -70,6 +70,8 @@ const [price, setPrice] = useState<number>(3000)
   const [timelineType, setTimelineType] = useState("all");
   const [uploading, setUploading] = useState(false);
   const [posting, setPosting] = useState(false);
+const [showShareModal, setShowShareModal] = useState(false);
+const [lastPostedRestaurant, setLastPostedRestaurant] = useState("");
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [likedPostIds, setLikedPostIds] = useState<number[]>([]);
   const [wishlistPostIds, setWishlistPostIds] = useState<number[]>([]);
@@ -919,7 +921,8 @@ const addPost = async () => {
     setMapUrl("");
 
    setPosting(false);
-    toast("投稿しました");
+    setLastPostedRestaurant(restaurant);
+    setShowShareModal(true);
   };
 
   const toggleFollowFromCard = async (targetUserId: string) => {
@@ -2181,6 +2184,73 @@ const toggleLike = async (postId: number) => {
         </div>
         
       ))}
-    </main>
+    {showShareModal && (
+  <div style={{
+    position: "fixed",
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    zIndex: 1000,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "24px",
+  }}>
+    <div style={{
+      backgroundColor: "#fff",
+      borderRadius: "16px",
+      padding: "24px",
+      width: "100%",
+      maxWidth: "360px",
+    }}>
+      <p style={{ fontSize: "16px", fontWeight: "700", color: "#111", marginBottom: "8px", textAlign: "center" }}>
+        🎉 投稿しました！
+      </p>
+      <p style={{ fontSize: "13px", color: "#666", marginBottom: "20px", textAlign: "center" }}>
+        友達にシェアしますか？
+      </p>
+      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        <button
+          onClick={() => {
+            const text = `${lastPostedRestaurant}に行ってきました！ #FoodRec`;
+            const url = `https://food-rec-rouge.vercel.app`;
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, "_blank");
+            setShowShareModal(false);
+            toast("投稿しました");
+          }}
+          style={{
+            padding: "12px",
+            borderRadius: "12px",
+            border: "none",
+            backgroundColor: "#000",
+            color: "#fff",
+            fontSize: "14px",
+            fontWeight: "600",
+            cursor: "pointer",
+          }}
+        >
+          𝕏 でシェア
+        </button>
+        <button
+          onClick={() => {
+            setShowShareModal(false);
+            toast("投稿しました");
+          }}
+          style={{
+            padding: "12px",
+            borderRadius: "12px",
+            border: "0.5px solid #ddd",
+            backgroundColor: "#fff",
+            color: "#666",
+            fontSize: "14px",
+            cursor: "pointer",
+          }}
+        >
+          スキップ
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+</main>
   );
 }
