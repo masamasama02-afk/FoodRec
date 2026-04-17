@@ -17,11 +17,32 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FoodRec",
-  description: "友達のおすすめ飲食店を記録・共有するアプリ",
+  title: "FoodRec | 友達のグルメをRecordしてRecommend",
+  description: "友達がどこで何を食べたか一目でわかるグルメSNS。お気に入りの店をいいね・保存して、友達におすすめしよう。",
   manifest: "/manifest.json",
   icons: {
     apple: "/icon-192.png",
+  },
+  openGraph: {
+    title: "FoodRec | 友達のグルメをRecordしてRecommend",
+    description: "友達がどこで何を食べたか一目でわかるグルメSNS。お気に入りの店をいいね・保存して、友達におすすめしよう。",
+    url: "https://food-rec-rouge.vercel.app",
+    siteName: "FoodRec",
+    locale: "ja_JP",
+    type: "website",
+    images: [
+      {
+        url: "https://food-rec-rouge.vercel.app/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "FoodRec - 友達のおすすめだけで選ぶ",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "FoodRec | 友達のグルメをRecordしてRecommend",
+    description: "友達がどこで何を食べたか一目でわかるグルメSNS。",
   },
 };
 
