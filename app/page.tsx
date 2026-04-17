@@ -70,7 +70,7 @@ const [price, setPrice] = useState<number>(3000)
   const [timelineType, setTimelineType] = useState("all");
   const [uploading, setUploading] = useState(false);
   const [posting, setPosting] = useState(false);
-
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [likedPostIds, setLikedPostIds] = useState<number[]>([]);
   const [wishlistPostIds, setWishlistPostIds] = useState<number[]>([]);
   const [likeCounts, setLikeCounts] = useState<Record<number, number>>({});
@@ -527,6 +527,15 @@ const addComment = async (postId: number) => {
   };
 
   // 初回のみ認証チェック
+useEffect(() => {
+  const handler = (e: any) => {
+    e.preventDefault();
+    setDeferredPrompt(e);
+  };
+  window.addEventListener("beforeinstallprompt", handler);
+  return () => window.removeEventListener("beforeinstallprompt", handler);
+}, []);
+
 useEffect(() => {
   const initAuth = async () => {
     const { data } = await supabase.auth.getUser();
@@ -1300,6 +1309,30 @@ const toggleLike = async (postId: number) => {
     >
       {authTab === "login" ? "ログイン" : "アカウントを作成"}
     </button>
+
+    {deferredPrompt && (
+      <button
+        onClick={async () => {
+          deferredPrompt.prompt();
+          await deferredPrompt.userChoice;
+          setDeferredPrompt(null);
+        }}
+        style={{
+          marginTop: "12px",
+          width: "100%",
+          padding: "12px",
+          borderRadius: "12px",
+          border: "0.5px solid #ddd",
+          backgroundColor: "#fff",
+          color: "#111",
+          fontSize: "13px",
+          fontWeight: "500",
+          cursor: "pointer",
+        }}
+      >
+        📱 ホーム画面に追加する
+      </button>
+    )}
   </section>
 )}
 
