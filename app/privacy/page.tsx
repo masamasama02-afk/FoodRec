@@ -1,3 +1,5 @@
+"use client";
+
 export default function PrivacyPage() {
   return (
     <main style={{ padding: "24px", maxWidth: "700px", margin: "0 auto", paddingBottom: "80px" }}>
