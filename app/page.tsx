@@ -1033,19 +1033,30 @@ const toggleLike = async (postId: number) => {
   alignItems: "center",
   justifyContent: "space-between",
 }}>
-  <div>
-    <h1 style={{
-      fontSize: "26px",
-      fontWeight: "700",
-      letterSpacing: "-0.5px",
-      color: "#111",
-      marginBottom: "2px",
-    }}>
-      FoodRec
-    </h1>
-    <p style={{ fontSize: "12px", color: "#bbb" }}>
-      Recommendation & Record
-    </p>
+  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+    <img
+      src="/icon-192.png"
+      alt="FoodRec"
+      style={{
+        width: "40px",
+        height: "40px",
+        borderRadius: "10px",
+      }}
+    />
+    <div>
+      <h1 style={{
+        fontSize: "26px",
+        fontWeight: "700",
+        letterSpacing: "-0.5px",
+        color: "#111",
+        marginBottom: "2px",
+      }}>
+        FoodRec
+      </h1>
+      <p style={{ fontSize: "12px", color: "#bbb" }}>
+        Recommendation & Record
+      </p>
+    </div>
   </div>
 
   {/* 通知ベル */}
