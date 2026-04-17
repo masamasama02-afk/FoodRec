@@ -1,6 +1,20 @@
 export default function PrivacyPage() {
   return (
     <main style={{ padding: "24px", maxWidth: "700px", margin: "0 auto", paddingBottom: "80px" }}>
+      <button
+        onClick={() => window.history.back()}
+        style={{
+          marginBottom: "16px",
+          background: "none",
+          border: "none",
+          fontSize: "14px",
+          color: "#2563eb",
+          cursor: "pointer",
+          padding: 0,
+        }}
+      >
+        ← 戻る
+      </button>
       <h1 style={{ fontSize: "20px", fontWeight: "700", marginBottom: "24px" }}>プライバシーポリシー</h1>
 
       <p style={{ fontSize: "12px", color: "#999", marginBottom: "24px" }}>最終更新日：2026年4月17日</p>
