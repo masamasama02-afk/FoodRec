@@ -1682,18 +1682,19 @@ const toggleLike = async (postId: number) => {
 
         <button
           onClick={addPost}
+          disabled={posting}
           style={{
             marginTop: "20px",
             padding: "12px 20px",
             borderRadius: "10px",
             border: "none",
-            backgroundColor: "#111",
+            backgroundColor: posting ? "#888" : "#111",
             color: "#fff",
-            cursor: "pointer",
+            cursor: posting ? "not-allowed" : "pointer",
             fontWeight: "bold",
           }}
         >
-          投稿
+          {posting ? "投稿中..." : "投稿"}
         </button>
       </section>
 
