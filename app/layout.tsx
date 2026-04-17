@@ -17,6 +17,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  verification: {
+    google: "KCei6hPQju0fr9CXe_Dktpitcsm6Jn0CZpEJgoxOTRo",
+  },
   title: "FoodRec | 友達のグルメをRecordしてRecommend",
   description: "友達がどこで何を食べたか一目でわかるグルメSNS。お気に入りの店をいいね・保存して、友達におすすめしよう。",
   manifest: "/manifest.json",
