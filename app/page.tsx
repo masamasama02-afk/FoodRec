@@ -2211,7 +2211,7 @@ const toggleLike = async (postId: number) => {
       <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
         <button
           onClick={() => {
-            const text = `${lastPostedRestaurant}に行ってきました！ #FoodRec`;
+            const text = `${lastPostedRestaurant}に行ってきました！お店の記録・おすすめができるグルメアプリ「FoodRec」で投稿しました🍽️ #FoodRec`;
             const url = `https://food-rec-rouge.vercel.app`;
             window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, "_blank");
             setShowShareModal(false);
@@ -2229,6 +2229,26 @@ const toggleLike = async (postId: number) => {
           }}
         >
           𝕏 でシェア
+        </button>
+        <button
+          onClick={() => {
+            const text = `${lastPostedRestaurant}に行ってきました！お店の記録・おすすめができるグルメアプリ「FoodRec」で投稿しました🍽️ #FoodRec\nhttps://food-rec-rouge.vercel.app`;
+            window.open(`https://line.me/R/share?text=${encodeURIComponent(text)}`, "_blank");
+            setShowShareModal(false);
+            toast("投稿しました");
+          }}
+          style={{
+            padding: "12px",
+            borderRadius: "12px",
+            border: "none",
+            backgroundColor: "#06C755",
+            color: "#fff",
+            fontSize: "14px",
+            fontWeight: "600",
+            cursor: "pointer",
+          }}
+        >
+          LINE でシェア
         </button>
         <button
           onClick={() => {
