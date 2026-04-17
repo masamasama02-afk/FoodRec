@@ -4,7 +4,7 @@ export default function PrivacyPage() {
   return (
     <main style={{ padding: "24px", maxWidth: "700px", margin: "0 auto", paddingBottom: "80px" }}>
       <button
-        onClick={() => window.history.back()}
+        onClick={() => window.location.href = "/"}
         style={{
           marginBottom: "16px",
           background: "none",
