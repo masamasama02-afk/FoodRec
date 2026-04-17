@@ -16,6 +16,12 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export const metadata: Metadata = {
   verification: {
     google: "KCei6hPQju0fr9CXe_Dktpitcsm6Jn0CZpEJgoxOTRo",
