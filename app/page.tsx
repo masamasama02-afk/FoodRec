@@ -70,6 +70,7 @@ const [price, setPrice] = useState<number>(3000)
   const [timelineType, setTimelineType] = useState("all");
   const [uploading, setUploading] = useState(false);
   const [posting, setPosting] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 const [showShareModal, setShowShareModal] = useState(false);
 const [lastPostedRestaurant, setLastPostedRestaurant] = useState("");
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -140,6 +141,10 @@ const [likeUsers, setLikeUsers] = useState<Record<number, {user_id: string, user
   };
 
   const signUp = async () => {
+  if (!agreedToTerms) {
+    toast("利用規約とプライバシーポリシーに同意してください");
+    return;
+  }
   if (!email.trim() || !password.trim()) {
     toast("メールアドレスとパスワードを入力してください");
     return;
@@ -1304,6 +1309,24 @@ const toggleLike = async (postId: number) => {
         </div>
         <p style={{ fontSize: "11px", color: "#bbb", textAlign: "right", marginBottom: "16px" }}>{bio.length} / 100</p>
       </>
+    )}
+
+    {authTab === "signup" && (
+      <div style={{ display: "flex", alignItems: "flex-start", gap: "8px", marginBottom: "16px" }}>
+        <input
+          type="checkbox"
+          id="agree"
+          checked={agreedToTerms}
+          onChange={(e) => setAgreedToTerms(e.target.checked)}
+          style={{ marginTop: "2px", cursor: "pointer" }}
+        />
+        <label htmlFor="agree" style={{ fontSize: "12px", color: "#666", lineHeight: "1.6", cursor: "pointer" }}>
+          <a href="/terms" target="_blank" style={{ color: "#2563eb" }}>利用規約</a>
+          {" "}および{" "}
+          <a href="/privacy" target="_blank" style={{ color: "#2563eb" }}>プライバシーポリシー</a>
+          に同意します
+        </label>
+      </div>
     )}
 
     <button
