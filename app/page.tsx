@@ -70,6 +70,7 @@ const [price, setPrice] = useState<number>(3000)
   const [timelineType, setTimelineType] = useState("all");
   const [uploading, setUploading] = useState(false);
   const [posting, setPosting] = useState(false);
+const [showUsernameModal, setShowUsernameModal] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 const [showShareModal, setShowShareModal] = useState(false);
 const [lastPostedRestaurant, setLastPostedRestaurant] = useState("");
@@ -104,8 +105,10 @@ const [likeUsers, setLikeUsers] = useState<Record<number, {user_id: string, user
 
     if (data) {
       setUsername(data.username ?? "");
+      if (!data.username) setShowUsernameModal(true);
     } else {
       setUsername("");
+      setShowUsernameModal(true);
     }
   };
 
@@ -2329,6 +2332,77 @@ const toggleLike = async (postId: number) => {
           スキップ
         </button>
       </div>
+    </div>
+  </div>
+)}
+{showUsernameModal && (
+  <div style={{
+    position: "fixed",
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    zIndex: 1000,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "24px",
+  }}>
+    <div style={{
+      backgroundColor: "#fff",
+      borderRadius: "16px",
+      padding: "24px",
+      width: "100%",
+      maxWidth: "360px",
+    }}>
+      <p style={{ fontSize: "16px", fontWeight: "700", color: "#111", marginBottom: "8px", textAlign: "center" }}>
+        🍽️ ようこそ！
+      </p>
+      <p style={{ fontSize: "13px", color: "#666", marginBottom: "16px", textAlign: "center" }}>
+        表示名を設定してください
+      </p>
+      <input
+        placeholder="例: 食いしん坊たろう"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        maxLength={20}
+        style={{
+          width: "100%",
+          padding: "10px 14px",
+          borderRadius: "10px",
+          border: "0.5px solid #e0e0e0",
+          backgroundColor: "#fafafa",
+          boxSizing: "border-box",
+          fontSize: "14px",
+          color: "#111",
+          marginBottom: "12px",
+        }}
+      />
+      <button
+        onClick={async () => {
+          if (!username.trim()) {
+            toast("表示名を入力してください");
+            return;
+          }
+          await supabase.from("profiles").upsert({
+            id: user?.id,
+            username: username.trim(),
+          });
+          setShowUsernameModal(false);
+          toast("表示名を設定しました！");
+        }}
+        style={{
+          width: "100%",
+          padding: "12px",
+          borderRadius: "12px",
+          border: "none",
+          backgroundColor: "#111",
+          color: "#fff",
+          fontSize: "14px",
+          fontWeight: "600",
+          cursor: "pointer",
+        }}
+      >
+        設定する
+      </button>
     </div>
   </div>
 )}
