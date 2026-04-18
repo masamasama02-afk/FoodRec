@@ -2099,34 +2099,43 @@ const toggleLike = async (postId: number) => {
           <p style={{ marginBottom: "12px", lineHeight: 1.6, color: "#111" }}>
             {post.comment}
           </p>
-{console.log("image:", post.image, "images:", post.images, "length:", post.images?.length)}
-  <div style={{
-  display: post.images && post.images.length > 1 ? "flex" : "block",
-  overflowX: post.images && post.images.length > 1 ? "auto" : "visible",
-  gap: "8px",
-  marginBottom: "8px",
-  scrollbarWidth: "none",
-}}>
-  {(post.images && post.images.length > 0 ? post.images : (post.image && post.image !== "") ? [post.image] : []).map((url, index) => (
-    <img
-      key={index}
-      src={url}
-      alt={`${post.restaurant}-${index}`}
-      loading="lazy"
-      style={{
-        width: post.images && post.images.length > 1 ? "240px" : "100%",
-      minWidth: post.images && post.images.length > 1 ? "240px" : "unset",
-      maxWidth: "100%",
-      height: "220px",
-      maxHeight: "220px",
-      objectFit: "cover",
-        borderRadius: "12px",
-        border: "1px solid #eee",
-        flexShrink: 0,
-      }}
-    />
-  ))}
-</div>
+{(() => {
+  const imgs = post.images && post.images.length > 0
+    ? post.images
+    : post.image && post.image !== ""
+    ? [post.image]
+    : [];
+  if (imgs.length === 0) return null;
+  const isMultiple = imgs.length > 1;
+  return (
+    <div style={{
+      display: "flex",
+      overflowX: isMultiple ? "auto" : "hidden",
+      gap: "8px",
+      marginBottom: "8px",
+      scrollbarWidth: "none",
+    }}>
+      {imgs.map((url, index) => (
+        <img
+          key={index}
+          src={url}
+          alt={`${post.restaurant}-${index}`}
+          loading="lazy"
+          style={{
+            width: isMultiple ? "240px" : "100%",
+            minWidth: isMultiple ? "240px" : "100%",
+            height: "240px",
+            objectFit: "cover",
+            borderRadius: "12px",
+            border: "1px solid #eee",
+            flexShrink: 0,
+            display: "block",
+          }}
+        />
+      ))}
+    </div>
+  );
+})()}
           <div
   style={{
     display: "flex",
