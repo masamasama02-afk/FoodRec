@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   description: "友達がどこで何を食べたか一目でわかるグルメSNS。お気に入りの店をいいね・保存して、友達におすすめしよう。",
   manifest: "/manifest.json",
   icons: {
-    apple: "/icon-192.png",
+    apple: "/icon-192-v2.png",
   },
   openGraph: {
     title: "FoodRec | 友達のグルメをRecordしてRecommend",
