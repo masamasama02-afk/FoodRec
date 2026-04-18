@@ -2101,8 +2101,8 @@ const toggleLike = async (postId: number) => {
           </p>
 {console.log("image:", post.image, "images:", post.images, "length:", post.images?.length)}
   <div style={{
-  display: "flex",
-  overflowX: post.images && post.images.length > 1 ? "auto" : "hidden",
+  display: post.images && post.images.length > 1 ? "flex" : "block",
+  overflowX: post.images && post.images.length > 1 ? "auto" : "visible",
   gap: "8px",
   marginBottom: "8px",
   scrollbarWidth: "none",
@@ -2114,10 +2114,11 @@ const toggleLike = async (postId: number) => {
       alt={`${post.restaurant}-${index}`}
       loading="lazy"
       style={{
-        width: "100%",
-      minWidth: post.images && post.images.length > 1 ? "240px" : "100%",
-      maxWidth: post.images && post.images.length > 1 ? "240px" : "100%",
-      height: "220px",
+        width: post.images && post.images.length > 1 ? "240px" : "100%",
+      minWidth: post.images && post.images.length > 1 ? "240px" : "unset",
+      maxWidth: "100%",
+      height: post.images && post.images.length > 1 ? "220px" : "auto",
+      maxHeight: post.images && post.images.length > 1 ? "unset" : "400px",
       objectFit: "cover",
         borderRadius: "12px",
         border: "1px solid #eee",
