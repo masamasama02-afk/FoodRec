@@ -2061,7 +2061,7 @@ const toggleLike = async (postId: number) => {
 {console.log("image:", post.image, "images:", post.images, "length:", post.images?.length)}
   <div style={{
   display: "flex",
-  overflowX: "auto",
+  overflowX: post.images && post.images.length > 1 ? "auto" : "hidden",
   gap: "8px",
   marginBottom: "8px",
   scrollbarWidth: "none",
