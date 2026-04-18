@@ -69,6 +69,18 @@ export default function RootLayout({
     src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
     strategy="beforeInteractive"
   />
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-T3YB8GF6KE"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-T3YB8GF6KE');
+          `}
+        </Script>
         {children}
         <BottomNav />
         <Toaster position="top-center" />
