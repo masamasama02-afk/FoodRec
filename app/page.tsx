@@ -2073,10 +2073,9 @@ const toggleLike = async (postId: number) => {
       alt={`${post.restaurant}-${index}`}
       loading="lazy"
       style={{
-        width: post.images && post.images.length > 1 ? "260px" : "100%",
-      minWidth: post.images && post.images.length > 1 ? "260px" : "auto",
-      maxWidth: "100%",
-      height: "200px",
+        width: post.images && post.images.length > 1 ? "240px" : "100%",
+      minWidth: post.images && post.images.length > 1 ? "240px" : "100%",
+      height: "220px",
       objectFit: "cover",
         borderRadius: "12px",
         border: "1px solid #eee",
