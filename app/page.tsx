@@ -1046,13 +1046,15 @@ const toggleLike = async (postId: number) => {
   return (
     <main
   style={{
-    padding: "24px",
+    padding: "16px",
     fontFamily: "sans-serif",
-    maxWidth: "100%",
+    maxWidth: "600px",
     margin: "0 auto",
     backgroundColor: "#fafafa",
     minHeight: "100vh",
     paddingBottom: "80px",
+    width: "100%",
+    boxSizing: "border-box",
   }}
 >
       <div style={{
