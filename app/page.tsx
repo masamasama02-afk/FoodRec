@@ -495,6 +495,16 @@ const addComment = async (postId: number) => {
 
   await fetchComments()
 }
+  const signInWithGoogle = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: "https://food-rec-rouge.vercel.app",
+      },
+    });
+    if (error) toast(error.message);
+  };
+
   const signIn = async () => {
     if (!email.trim() || !password.trim()) {
       toast("メールアドレスとパスワードを入力してください");
@@ -1334,6 +1344,34 @@ const toggleLike = async (postId: number) => {
       style={{ width: "100%", padding: "13px", borderRadius: "12px", border: "none", backgroundColor: "#111", color: "#fff", fontSize: "14px", fontWeight: "600", cursor: "pointer" }}
     >
       {authTab === "login" ? "ログイン" : "アカウントを作成"}
+    </button>
+
+    <div style={{ display: "flex", alignItems: "center", gap: "8px", margin: "16px 0" }}>
+      <div style={{ flex: 1, height: "0.5px", backgroundColor: "#eee" }} />
+      <span style={{ fontSize: "12px", color: "#bbb" }}>または</span>
+      <div style={{ flex: 1, height: "0.5px", backgroundColor: "#eee" }} />
+    </div>
+
+    <button
+      onClick={signInWithGoogle}
+      style={{
+        width: "100%",
+        padding: "12px",
+        borderRadius: "12px",
+        border: "0.5px solid #ddd",
+        backgroundColor: "#fff",
+        color: "#111",
+        fontSize: "14px",
+        fontWeight: "500",
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "8px",
+      }}
+    >
+      <img src="https://www.google.com/favicon.ico" style={{ width: "18px", height: "18px" }} />
+      Googleでログイン
     </button>
 
     {deferredPrompt && (
