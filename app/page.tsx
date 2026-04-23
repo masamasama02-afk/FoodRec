@@ -1907,10 +1907,10 @@ const toggleLike = async (postId: number) => {
       {posts.map((post) => (
         <div key={post.id} style={{
           backgroundColor: "#fff",
-          marginBottom: "8px",
-          borderRadius: "16px",
+          marginBottom: "12px",
+          borderRadius: "20px",
           overflow: "hidden",
-          boxShadow: "0 1px 8px rgba(0,0,0,0.06)",
+          boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
         }}>
         <div style={{
     display: "flex",
@@ -2133,12 +2133,13 @@ const toggleLike = async (postId: number) => {
   if (imgs.length === 0) return null;
   const isMultiple = imgs.length > 1;
   return (
-   <div style={{
+  <div style={{
       display: "flex",
       overflowX: isMultiple ? "auto" : "hidden",
-      gap: "2px",
+      gap: "3px",
       marginBottom: "0",
       scrollbarWidth: "none",
+      borderRadius: isMultiple ? "0" : "0",
     }}>
       {imgs.map((url, index) => (
         <img
@@ -2147,12 +2148,11 @@ const toggleLike = async (postId: number) => {
           alt={`${post.restaurant}-${index}`}
           loading="lazy"
           style={{
-            width: isMultiple ? "80vw" : "100%",
-            minWidth: isMultiple ? "80vw" : "100%",
-            maxWidth: isMultiple ? "80vw" : "100%",
-            height: "300px",
+            width: isMultiple ? "75vw" : "100%",
+            minWidth: isMultiple ? "75vw" : "100%",
+            maxWidth: isMultiple ? "75vw" : "100%",
+            height: "280px",
             objectFit: "cover",
-            borderRadius: "0",
             flexShrink: 0,
             display: "block",
           }}
@@ -2164,10 +2164,11 @@ const toggleLike = async (postId: number) => {
           <div
   style={{
     display: "flex",
-    gap: "8px",
+    gap: "4px",
     alignItems: "center",
-    flexWrap: "wrap",
-    marginBottom: "12px",
+    padding: "4px 12px",
+    borderTop: "0.5px solid #f5f5f5",
+    marginTop: "8px",
   }}
 >
  <button
@@ -2222,7 +2223,7 @@ const toggleLike = async (postId: number) => {
   </button> 
 </div>
           </div>
-          <div style={{ marginTop: "10px", padding: "0 12px" }}>
+          <div style={{ padding: "0 14px 14px" }}>
 
   {(comments[post.id] || []).map((c) => (
     <div key={`${post.id}-${c.id}`} style={{ fontSize: "14px", marginBottom: "6px" }}>
@@ -2232,7 +2233,7 @@ const toggleLike = async (postId: number) => {
 
   <div style={{ display: "flex", gap: "6px", marginTop: "6px" }}>
     <input
-      placeholder="コメント"
+      placeholder="コメントを追加..."
       value={commentInputs[post.id] || ""}
       onChange={(e) =>
         setCommentInputs({
@@ -2242,22 +2243,28 @@ const toggleLike = async (postId: number) => {
       }
       style={{
         flex: 1,
-        padding: "6px",
-        border: "1px solid #ccc",
-        borderRadius: "6px"
+        padding: "8px 12px",
+        border: "none",
+        borderRadius: "20px",
+        backgroundColor: "#f5f5f5",
+        fontSize: "13px",
+        outline: "none",
       }}
     />
-
     <button
       onClick={() => addComment(post.id)}
       style={{
-        padding: "6px 10px",
-        border: "1px solid #ccc",
-        borderRadius: "6px",
-        background: "#fff"
+        padding: "8px 14px",
+        border: "none",
+        borderRadius: "20px",
+        backgroundColor: "#111",
+        color: "#fff",
+        fontSize: "12px",
+        fontWeight: "600",
+        cursor: "pointer",
       }}
     >
-      送信
+      投稿
     </button>
   </div>
 
@@ -2273,17 +2280,19 @@ const toggleLike = async (postId: number) => {
   <button
     onClick={() => deletePost(post.id)}
     style={{
-      padding: "8px 14px",
-      borderRadius: "8px",
-      border: "1px solid #ccc",
-                backgroundColor: "#fff",
-                cursor: "pointer",
-              }}
-            >
-              削除
-            </button>
-          )}
-        </div>
+      padding: "4px 10px",
+      borderRadius: "20px",
+      border: "none",
+      backgroundColor: "transparent",
+      color: "#ccc",
+      fontSize: "12px",
+      cursor: "pointer",
+      marginTop: "4px",
+    }}
+  >
+    削除
+  </button>
+)}        </div>
         
       ))}
     {showShareModal && (
