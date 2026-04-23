@@ -1067,7 +1067,7 @@ const toggleLike = async (postId: number) => {
 }}>
   <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
     <img
-      src="/icon-192.png"
+      src="/icon-192-v2.png"
       alt="FoodRec"
       style={{
         width: "40px",
@@ -2100,17 +2100,7 @@ const toggleLike = async (postId: number) => {
   </span>
 </div>
 
-          <p
-            style={{
-              fontSize: "12px",
-              color: "#888",
-              marginBottom: "12px",
-            }}
-          >
-            {post.created_at
-              ? (() => {})()
-              : ""}
-          </p>
+          
 
           <p style={{ marginBottom: "12px", lineHeight: 1.6, color: "#111" }}>
             {post.comment}
