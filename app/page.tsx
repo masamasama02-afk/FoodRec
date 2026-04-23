@@ -1905,14 +1905,14 @@ const toggleLike = async (postId: number) => {
       )}
 
       {posts.map((post) => (
-        <div
+       <div
   key={post.id}
   style={{
     backgroundColor: "#fff",
-    border: "0.5px solid #eee",
-    borderRadius: "16px",
-    padding: "14px",
-    marginBottom: "12px",
+    borderRadius: "0px",
+    padding: "16px 0",
+    marginBottom: "0px",
+    borderBottom: "0.5px solid #f0f0f0",
   }}
 >
          <div
@@ -2030,12 +2030,14 @@ const toggleLike = async (postId: number) => {
   {post.area && (
     <span style={{
       padding: "2px 8px",
-      borderRadius: "4px",
-      backgroundColor: "#f0f0f0",
-      color: "#555",
+      borderRadius: "20px",
+      backgroundColor: "transparent",
+      color: "#999",
       fontSize: "11px",
-      fontWeight: "500",
       whiteSpace: "nowrap",
+      display: "flex",
+      alignItems: "center",
+      gap: "2px",
     }}>
       📍 {post.area}
     </span>
@@ -2094,7 +2096,16 @@ const toggleLike = async (postId: number) => {
             }}
           >
             {post.created_at
-              ? new Date(post.created_at).toLocaleString("ja-JP")
+              ? (() => {
+                  const d = new Date(post.created_at);
+                  const now = new Date();
+                  const diff = Math.floor((now.getTime() - d.getTime()) / 1000);
+                  if (diff < 60) return "たった今";
+                  if (diff < 3600) return `${Math.floor(diff / 60)}分前`;
+                  if (diff < 86400) return `${Math.floor(diff / 3600)}時間前`;
+                  if (diff < 604800) return `${Math.floor(diff / 86400)}日前`;
+                  return `${d.getMonth() + 1}月${d.getDate()}日`;
+                })()
               : ""}
           </p>
 
@@ -2147,53 +2158,55 @@ const toggleLike = async (postId: number) => {
     marginBottom: "12px",
   }}
 >
-  <button
+ <button
     onClick={() => toggleLike(post.id)}
     style={{
-      padding: "8px 14px",
+      padding: "6px 12px",
       borderRadius: "20px",
-      border: "0.5px solid #ffc0c5",
-      backgroundColor: likedPostIds.includes(post.id) ? "#ffe4e6" : "#fff",
+      border: "none",
+      backgroundColor: "transparent",
       cursor: "pointer",
-      fontSize: "12px",
+      fontSize: "13px",
+      color: likedPostIds.includes(post.id) ? "#e74c3c" : "#999",
+      display: "flex",
+      alignItems: "center",
+      gap: "4px",
     }}
   >
-    {likedPostIds.includes(post.id) ? "❤️ いいね済み" : "🤍 いいね"}
+    {likedPostIds.includes(post.id) ? "❤️" : "🤍"}
+    <span>{likeCounts[post.id] || 0}</span>
   </button>
 
-  <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-    <span style={{ fontSize: "13px", color: "#999" }}>
-      {likeCounts[post.id] || 0}件
+  {likeUsers[post.id] && likeUsers[post.id].length > 0 && (
+    <span style={{ fontSize: "11px", color: "#bbb" }}>
+      {(() => {
+        const users = likeUsers[post.id];
+        const followingUsers = users.filter(u => followingIds.includes(u.user_id) && u.user_id !== user?.id);
+        const displayUsers = followingUsers.length > 0 ? followingUsers : users.filter(u => u.user_id !== user?.id);
+        if (displayUsers.length === 0) return null;
+        const names = displayUsers.slice(0, 2).map(u => u.username).join("、");
+        const rest = displayUsers.length - 2;
+        return rest > 0 ? `${names}、他${rest}人` : names;
+      })()}
     </span>
-    {likeUsers[post.id] && likeUsers[post.id].length > 0 && (
-      <span style={{ fontSize: "11px", color: "#bbb" }}>
-        {(() => {
-          const users = likeUsers[post.id];
-          const followingUsers = users.filter(u => followingIds.includes(u.user_id) && u.user_id !== user?.id);
-          const displayUsers = followingUsers.length > 0 ? followingUsers : users.filter(u => u.user_id !== user?.id);
-          if (displayUsers.length === 0) return null;
-          const names = displayUsers.slice(0, 2).map(u => u.username).join("、");
-          const rest = displayUsers.length - 2;
-          return rest > 0 ? `${names}、他${rest}人` : names;
-        })()}
-      </span>
-    )}
-  </div>
+  )}
 
   <button
     onClick={() => toggleWishlist(post.id)}
     style={{
-      padding: "8px 14px",
+      padding: "6px 12px",
       borderRadius: "20px",
-      border: wishlistPostIds.includes(post.id) ? "0.5px solid #f5d060" : "0.5px solid #ddd",
-      backgroundColor: wishlistPostIds.includes(post.id) ? "#fff8e1" : "#fff",
-      color: wishlistPostIds.includes(post.id) ? "#f5a623" : "#666",
+      border: "none",
+      backgroundColor: "transparent",
+      color: wishlistPostIds.includes(post.id) ? "#f5a623" : "#999",
       cursor: "pointer",
-      fontSize: "12px",
-      fontWeight: "500",
+      fontSize: "13px",
+      display: "flex",
+      alignItems: "center",
+      gap: "4px",
     }}
   >
-    {wishlistPostIds.includes(post.id) ? "🔖 行きたい済み" : "🔖 行きたい"}
+    🔖 <span>{wishlistPostIds.includes(post.id) ? "行きたい済み" : "行きたい"}</span>
   </button>
 </div>
           <div style={{ marginTop: "10px" }}>
