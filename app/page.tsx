@@ -1050,7 +1050,7 @@ const toggleLike = async (postId: number) => {
     fontFamily: "sans-serif",
     maxWidth: "720px",
     margin: "0 auto",
-    backgroundColor: "#fafafa",
+    backgroundColor: "#f2f2f7",
     minHeight: "100vh",
     paddingBottom: "80px",
     width: "100%",
@@ -1905,23 +1905,19 @@ const toggleLike = async (postId: number) => {
       )}
 
       {posts.map((post) => (
-       <div
-  key={post.id}
-  style={{
-    backgroundColor: "#fff",
-    borderBottom: "0.5px solid #f0f0f0",
-    marginBottom: "0",
-    paddingBottom: "16px",
-  }}
->
-        <div
-  style={{
+        <div key={post.id} style={{
+          backgroundColor: "#fff",
+          marginBottom: "8px",
+          borderRadius: "16px",
+          overflow: "hidden",
+          boxShadow: "0 1px 8px rgba(0,0,0,0.06)",
+        }}>
+        <div style={{
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: "10px 12px",
-  }}
->
+    padding: "12px 14px",
+  }}>
   <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
   {/* アイコン */}
   <div style={{ position: "relative", flexShrink: 0 }}>
@@ -2041,7 +2037,7 @@ const toggleLike = async (postId: number) => {
     rel="noopener noreferrer"
     style={{ textDecoration: "none" }}
   >
-    <h3 style={{ margin: 0, color: "#2563eb", textDecoration: "underline" }}>{post.restaurant}</h3>
+   <h3 style={{ margin: 0, color: "#111", fontSize: "15px", fontWeight: "700", textDecoration: "none" }}>{post.restaurant}</h3>
   </a>
   {post.area && (
     <span style={{
