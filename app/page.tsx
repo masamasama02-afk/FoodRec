@@ -15,6 +15,7 @@ type Comment = {
   username: string
   comment: string
   created_at: string
+  reply_to?: number | null
 }
 type Post = {
   id: number;
@@ -2209,7 +2210,7 @@ const toggleLike = async (postId: number) => {
           </div>
           <div style={{ padding: "0 14px 14px" }}>
 
-  {(comments[post.id] || []).map((c) => (
+ {(comments[post.id] || []).filter(c => !c.reply_to).map((c) => (
     <div key={`${post.id}-${c.id}`} style={{ fontSize: "13px", marginBottom: "8px" }}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: "6px" }}>
         <div style={{ flex: 1 }}>
@@ -2231,6 +2232,14 @@ const toggleLike = async (postId: number) => {
           返信
         </button>
       </div>
+      {/* 返信一覧 */}
+      {(comments[post.id] || []).filter(r => r.reply_to === c.id).map((r) => (
+        <div key={r.id} style={{ paddingLeft: "16px", marginTop: "4px", fontSize: "12px", color: "#555", borderLeft: "2px solid #eee" }}>
+          <span style={{ fontWeight: "600", color: "#111" }}>{r.username}</span>
+          <span style={{ marginLeft: "6px" }}>{r.comment}</span>
+        </div>
+      ))}
+
       {/* 返信入力欄 */}
       {replyTo?.commentId === c.id && replyTo?.postId === post.id && (
         <div style={{ display: "flex", gap: "6px", marginTop: "6px", paddingLeft: "12px" }}>
@@ -2258,7 +2267,8 @@ const toggleLike = async (postId: number) => {
                 post_id: post.id,
                 user_id: userData.user.id,
                 username: displayName,
-                comment: `@${c.username} ${replyInputs[c.id]}`,
+                comment: replyInputs[c.id],
+                reply_to: c.id,
               });
               setReplyInputs({ ...replyInputs, [c.id]: "" });
               setReplyTo(null);
