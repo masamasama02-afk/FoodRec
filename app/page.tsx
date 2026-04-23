@@ -1909,29 +1909,29 @@ const toggleLike = async (postId: number) => {
   key={post.id}
   style={{
     backgroundColor: "#fff",
-    borderRadius: "0px",
-    padding: "16px 0",
-    marginBottom: "0px",
     borderBottom: "0.5px solid #f0f0f0",
+    marginBottom: "0",
+    paddingBottom: "16px",
   }}
 >
-         <div
+        <div
   style={{
     display: "flex",
     alignItems: "center",
-    gap: "8px",
-    marginBottom: "10px",
+    justifyContent: "space-between",
+    padding: "10px 12px",
   }}
 >
+  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
   {/* アイコン */}
   <div style={{ position: "relative", flexShrink: 0 }}>
   <div
     style={{
-      width: "36px",
-      height: "36px",
+      width: "38px",
+      height: "38px",
       borderRadius: "50%",
       backgroundColor: "#f0f0f0",
-      border: "1px solid #eee",
+      border: "1.5px solid #ddd",
       overflow: "hidden",
       display: "flex",
       alignItems: "center",
@@ -2013,9 +2013,25 @@ const toggleLike = async (postId: number) => {
       )
     )}
   </div>
+  </div>
+  {post.created_at && (
+    <span style={{ fontSize: "11px", color: "#999" }}>
+      {(() => {
+        const d = new Date(post.created_at);
+        const now = new Date();
+        const diff = Math.floor((now.getTime() - d.getTime()) / 1000);
+        if (diff < 60) return "たった今";
+        if (diff < 3600) return `${Math.floor(diff / 60)}分前`;
+        if (diff < 86400) return `${Math.floor(diff / 3600)}時間前`;
+        if (diff < 604800) return `${Math.floor(diff / 86400)}日前`;
+        return `${d.getMonth() + 1}月${d.getDate()}日`;
+      })()}
+    </span>
+  )}
 </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px", flexWrap: "wrap" }}>
+        <div style={{ padding: "10px 12px 0" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px", flexWrap: "wrap" }}>
  <a href={post.place_id
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(post.restaurant)}&query_place_id=${post.place_id}`
     : post.lat && post.lng
@@ -2121,11 +2137,11 @@ const toggleLike = async (postId: number) => {
   if (imgs.length === 0) return null;
   const isMultiple = imgs.length > 1;
   return (
-    <div style={{
+   <div style={{
       display: "flex",
       overflowX: isMultiple ? "auto" : "hidden",
-      gap: "8px",
-      marginBottom: "8px",
+      gap: "2px",
+      marginBottom: "0",
       scrollbarWidth: "none",
     }}>
       {imgs.map((url, index) => (
@@ -2135,12 +2151,12 @@ const toggleLike = async (postId: number) => {
           alt={`${post.restaurant}-${index}`}
           loading="lazy"
           style={{
-            width: isMultiple ? "240px" : "100%",
-            minWidth: isMultiple ? "240px" : "100%",
-            height: "240px",
+            width: isMultiple ? "80vw" : "100%",
+            minWidth: isMultiple ? "80vw" : "100%",
+            maxWidth: isMultiple ? "80vw" : "100%",
+            height: "300px",
             objectFit: "cover",
-            borderRadius: "12px",
-            border: "1px solid #eee",
+            borderRadius: "0",
             flexShrink: 0,
             display: "block",
           }}
@@ -2209,7 +2225,8 @@ const toggleLike = async (postId: number) => {
     🔖 <span>{wishlistPostIds.includes(post.id) ? "行きたい済み" : "行きたい"}</span>
   </button> 
 </div>
-          <div style={{ marginTop: "10px" }}>
+          </div>
+          <div style={{ marginTop: "10px", padding: "0 12px" }}>
 
   {(comments[post.id] || []).map((c) => (
     <div key={`${post.id}-${c.id}`} style={{ fontSize: "14px", marginBottom: "6px" }}>
