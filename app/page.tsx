@@ -1904,11 +1904,7 @@ const toggleLike = async (postId: number) => {
         <p style={{ color: "#666" }}>まだ投稿がありません。</p>
       )}
 
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(2, 1fr)",
-        gap: "8px",
-      }}>
+      
       {posts.map((post) => (
         <div key={post.id} style={{
           backgroundColor: "#fff",
@@ -2281,7 +2277,7 @@ const toggleLike = async (postId: number) => {
 )}        </div>
         
       ))}
-      </div>
+     
     {showShareModal && (
   <div style={{
     position: "fixed",
