@@ -70,7 +70,9 @@ const [price, setPrice] = useState<number>(3000)
   const [timelineType, setTimelineType] = useState("all");
   const [uploading, setUploading] = useState(false);
   const [posting, setPosting] = useState(false);
-const [showUsernameModal, setShowUsernameModal] = useState(false);
+  const [showUsernameModal, setShowUsernameModal] = useState(false);
+const [replyTo, setReplyTo] = useState<{commentId: number, username: string, postId: number} | null>(null);
+const [replyInputs, setReplyInputs] = useState<Record<number, string>>({});
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 const [showShareModal, setShowShareModal] = useState(false);
 const [lastPostedRestaurant, setLastPostedRestaurant] = useState("");
@@ -2208,8 +2210,88 @@ const toggleLike = async (postId: number) => {
           <div style={{ padding: "0 14px 14px" }}>
 
   {(comments[post.id] || []).map((c) => (
-    <div key={`${post.id}-${c.id}`} style={{ fontSize: "14px", marginBottom: "6px" }}>
-      <strong>{c.username}</strong> {c.comment}
+    <div key={`${post.id}-${c.id}`} style={{ fontSize: "13px", marginBottom: "8px" }}>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: "6px" }}>
+        <div style={{ flex: 1 }}>
+          <span style={{ fontWeight: "600", color: "#111" }}>{c.username}</span>
+          <span style={{ color: "#333", marginLeft: "6px" }}>{c.comment}</span>
+        </div>
+        <button
+          onClick={() => setReplyTo({ commentId: c.id, username: c.username, postId: post.id })}
+          style={{
+            background: "none",
+            border: "none",
+            fontSize: "11px",
+            color: "#999",
+            cursor: "pointer",
+            padding: "0",
+            flexShrink: 0,
+          }}
+        >
+          返信
+        </button>
+      </div>
+      {/* 返信入力欄 */}
+      {replyTo?.commentId === c.id && replyTo?.postId === post.id && (
+        <div style={{ display: "flex", gap: "6px", marginTop: "6px", paddingLeft: "12px" }}>
+          <input
+            placeholder={`@${c.username} に返信...`}
+            value={replyInputs[c.id] || ""}
+            onChange={(e) => setReplyInputs({ ...replyInputs, [c.id]: e.target.value })}
+            style={{
+              flex: 1,
+              padding: "6px 10px",
+              border: "none",
+              borderRadius: "20px",
+              backgroundColor: "#f5f5f5",
+              fontSize: "12px",
+              outline: "none",
+            }}
+          />
+          <button
+            onClick={async () => {
+              if (!replyInputs[c.id]?.trim()) return;
+              const { data: userData } = await supabase.auth.getUser();
+              if (!userData.user) { toast("ログインしてください"); return; }
+              const displayName = username || userData.user.email?.split("@")[0] || "user";
+              await supabase.from("comments").insert({
+                post_id: post.id,
+                user_id: userData.user.id,
+                username: displayName,
+                comment: `@${c.username} ${replyInputs[c.id]}`,
+              });
+              setReplyInputs({ ...replyInputs, [c.id]: "" });
+              setReplyTo(null);
+              await fetchComments();
+            }}
+            style={{
+              padding: "6px 12px",
+              border: "none",
+              borderRadius: "20px",
+              backgroundColor: "#111",
+              color: "#fff",
+              fontSize: "11px",
+              cursor: "pointer",
+            }}
+          >
+            返信
+          </button>
+          <button
+            onClick={() => setReplyTo(null)}
+            style={{
+              padding: "6px 10px",
+              border: "none",
+              borderRadius: "20px",
+              backgroundColor: "transparent",
+              color: "#999",
+              fontSize: "11px",
+              cursor: "pointer",
+            }}
+          >
+            キャンセル
+          </button>
+        </div>
+      )}
     </div>
   ))}
 
