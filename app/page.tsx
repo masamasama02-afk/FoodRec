@@ -2207,7 +2207,7 @@ const toggleLike = async (postId: number) => {
     }}
   >
     🔖 <span>{wishlistPostIds.includes(post.id) ? "行きたい済み" : "行きたい"}</span>
-  </button>
+  </button> 
 </div>
           <div style={{ marginTop: "10px" }}>
 
