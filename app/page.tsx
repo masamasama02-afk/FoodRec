@@ -1190,6 +1190,10 @@ const toggleLike = async (postId: number) => {
                 <p style={{ fontSize: "13px", color: "#111", marginBottom: "2px" }}>
                   🍽️ {notif.message}
                 </p>
+              ) : notif.type === "reply" ? (
+                <p style={{ fontSize: "13px", color: "#111", marginBottom: "2px" }}>
+                  💬 <strong>{notif.from_username}</strong> があなたのコメントに返信しました
+                </p>
               ) : (
                 <>
                   <p style={{ fontSize: "13px", color: "#111", marginBottom: "2px" }}>
@@ -1666,7 +1670,7 @@ const toggleLike = async (postId: number) => {
   </div>
   <p style={{ fontSize: "13px", color: "#111", marginBottom: "8px" }}>料理ジャンル</p>
   <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-    {["🍣 和食", "🍜 ラーメン", "🍝 つけ麺", "🫕 うどん", "🍜 蕎麦", "🍱 鮨", "🦞 海鮮", "🍝 洋食", "🍕 イタリアン", "🍷 ビストロ", "🍜 中華", "🌮 エスニック", "🍖 焼肉", "🦌 ジビエ", "🥗 ヘルシー", "🍔 ファストフード", "🍰 スイーツ", "🍺 クラフトビール"].map((genre) => (
+    {["🍣 和食", "🍜 ラーメン", "🍝 つけ麺", "🫕 うどん", "🍜 蕎麦", "🍱 鮨", "🦞 海鮮", "🍛 カレー", "🥘 韓国料理", "🍗 焼き鳥", "🥟 餃子・点心", "🍻 居酒屋", "🥂 ワインバー", "🍦 デザート", "🍡 うなぎ", "🥘 スパニッシュ", "🍝 洋食", "🍕 イタリアン", "🍷 ビストロ", "🍜 中華", "🌮 エスニック", "🍖 焼肉", "🦌 ジビエ", "🥗 ヘルシー", "🍔 ファストフード", "🍰 スイーツ", "🍺 クラフトビール"].map((genre) => (
       <button
         key={genre}
         onClick={() => setSelectedGenres(
@@ -2270,6 +2274,20 @@ const toggleLike = async (postId: number) => {
                 comment: replyInputs[c.id],
                 reply_to: c.id,
               });
+
+              // 返信通知
+              if (c.user_id && c.user_id !== userData.user.id) {
+                await supabase.from("notifications").insert({
+                  user_id: c.user_id,
+                  from_user_id: userData.user.id,
+                  from_username: displayName,
+                  post_id: post.id,
+                  restaurant: post.restaurant,
+                  type: "reply",
+                  message: `${displayName}さんがあなたのコメントに返信しました`,
+                });
+              }
+
               setReplyInputs({ ...replyInputs, [c.id]: "" });
               setReplyTo(null);
               await fetchComments();
