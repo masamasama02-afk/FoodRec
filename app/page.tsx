@@ -1600,46 +1600,40 @@ const toggleLike = async (postId: number) => {
         />
 
         <div style={{ marginTop: "10px", marginBottom: "16px" }}>
-  <p style={{ marginBottom: "8px",color:"#111" }}>評価：</p>
-  <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+  <p style={{ marginBottom: "8px", color: "#111" }}>評価：</p>
+  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
     {[1, 2, 3, 4, 5].map((star) => {
       const filled = Math.min(Math.max(rating - (star - 1), 0), 1);
       return (
-        <div
-          key={star}
-          style={{ position: "relative", width: "36px", height: "36px", cursor: "pointer" }}
-        >
-          <svg viewBox="0 0 36 36" width="36" height="36" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id={`grad${star}`} x1="0" x2="1" y1="0" y2="0">
-                <stop offset={`${filled * 100}%`} stopColor="#f5a623" />
-                <stop offset={`${filled * 100}%`} stopColor="#ddd" />
-              </linearGradient>
-            </defs>
-            <path
-              d="M18 4l3.9 7.9 8.7 1.3-6.3 6.1 1.5 8.7L18 23.8l-7.8 4.1 1.5-8.7-6.3-6.1 8.7-1.3z"
-              fill={`url(#grad${star})`}
-              stroke="#f5a623"
-              strokeWidth="0.5"
-            />
-          </svg>
-          {/* 左半分：0.5刻み */}
-          <div
-            style={{ position: "absolute", left: 0, top: 0, width: "50%", height: "100%", zIndex: 1 }}
-            onClick={() => setRating(star - 0.5)}
+        <svg key={star} viewBox="0 0 36 36" width="28" height="28" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id={`grad${star}`} x1="0" x2="1" y1="0" y2="0">
+              <stop offset={`${filled * 100}%`} stopColor="#f5a623" />
+              <stop offset={`${filled * 100}%`} stopColor="#ddd" />
+            </linearGradient>
+          </defs>
+          <path
+            d="M18 4l3.9 7.9 8.7 1.3-6.3 6.1 1.5 8.7L18 23.8l-7.8 4.1 1.5-8.7-6.3-6.1 8.7-1.3z"
+            fill={`url(#grad${star})`}
+            stroke="#f5a623"
+            strokeWidth="0.5"
           />
-          {/* 右半分：整数 */}
-          <div
-            style={{ position: "absolute", right: 0, top: 0, width: "50%", height: "100%", zIndex: 1 }}
-            onClick={() => setRating(star)}
-          />
-        </div>
+        </svg>
       );
     })}
-    <span style={{ fontSize: "16px", fontWeight: "500", marginLeft: "8px" }}>
+    <span style={{ fontSize: "18px", fontWeight: "600", color: "#f5a623" }}>
       {rating.toFixed(1)}
     </span>
   </div>
+  <input
+    type="range"
+    min={1}
+    max={5}
+    step={0.1}
+    value={rating}
+    onChange={(e) => setRating(Number(e.target.value))}
+    style={{ width: "100%", accentColor: "#f5a623", marginTop: "8px" }}
+  />
 </div>
 {/* ジャンル選択 */}
 <div style={{ marginBottom: "16px" }}>
