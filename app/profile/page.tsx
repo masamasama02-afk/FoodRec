@@ -747,29 +747,42 @@ setLoading(false);
             color: "#111",
           }}
         />
-        {/* 評価 */}
+      {/* 評価 */}
         <div style={{ marginBottom: "10px" }}>
           <p style={{ fontSize: "12px", color: "#666", marginBottom: "6px" }}>評価</p>
-          <div style={{ display: "flex", gap: "4px" }}>
-            {[1, 2, 3, 4, 5].map((star) => (
-              <button
-                key={star}
-                onClick={() => setEditRating(star)}
-                style={{
-                  background: "none",
-                  border: "none",
-                  fontSize: "24px",
-                  cursor: "pointer",
-                  opacity: star <= editRating ? 1 : 0.3,
-                }}
-              >
-                ★
-              </button>
-            ))}
-            <span style={{ fontSize: "13px", color: "#666", alignSelf: "center", marginLeft: "4px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
+            {[1, 2, 3, 4, 5].map((star) => {
+              const filled = Math.min(Math.max(Number(editRating) - (star - 1), 0), 1);
+              return (
+                <svg key={star} viewBox="0 0 36 36" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id={`edit-grad${star}`} x1="0" x2="1" y1="0" y2="0">
+                      <stop offset={`${filled * 100}%`} stopColor="#f5a623" />
+                      <stop offset={`${filled * 100}%`} stopColor="#ddd" />
+                    </linearGradient>
+                  </defs>
+                  <path
+                    d="M18 4l3.9 7.9 8.7 1.3-6.3 6.1 1.5 8.7L18 23.8l-7.8 4.1 1.5-8.7-6.3-6.1 8.7-1.3z"
+                    fill={`url(#edit-grad${star})`}
+                    stroke="#f5a623"
+                    strokeWidth="0.5"
+                  />
+                </svg>
+              );
+            })}
+            <span style={{ fontSize: "14px", fontWeight: "600", color: "#f5a623" }}>
               {Number(editRating).toFixed(1)}
             </span>
           </div>
+          <input
+            type="range"
+            min={1}
+            max={5}
+            step={0.1}
+            value={editRating}
+            onChange={(e) => setEditRating(Number(e.target.value))}
+            style={{ width: "100%", accentColor: "#f5a623" }}
+          />
         </div>
         {/* ジャンル選択 */}
         <div style={{ marginBottom: "10px" }}>
