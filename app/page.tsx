@@ -62,7 +62,7 @@ const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [image, setImage] = useState<string | null>(null);
 const [images, setImages] = useState<string[]>([]);
 const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
-const [price, setPrice] = useState<number>(3000)
+const [price, setPrice] = useState<number>(1500)
   const [rating, setRating] = useState(5.0);
   const [mapUrl, setMapUrl] = useState("");
 
@@ -1696,17 +1696,17 @@ const toggleLike = async (postId: number) => {
   <div style={{ padding: "0 4px" }}>
     <input
       type="range"
-      min={1000}
+      min={500}
       max={30000}
-      step={1000}
+      step={500}
       value={price}
       onChange={(e) => setPrice(Number(e.target.value))}
       style={{ width: "100%", accentColor: "#111" }}
     />
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "6px" }}>
-      <span style={{ fontSize: "12px", color: "#999" }}>¥500</span>
+      <span style={{ fontSize: "12px", color: "#999" }}>¥500以下</span>
       <span style={{ fontSize: "15px", fontWeight: "600", color: "#111" }}>
-        {price >= 30000 ? "¥30,000+" : `¥${price.toLocaleString()}`}
+        {price <= 500 ? "¥500以下" : price >= 30000 ? "¥30,000+" : `¥${(price - 500).toLocaleString()}〜¥${price.toLocaleString()}`}
       </span>
       <span style={{ fontSize: "12px", color: "#999" }}>¥30,000+</span>
     </div>
