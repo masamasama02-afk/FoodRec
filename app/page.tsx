@@ -2356,10 +2356,26 @@ const toggleLike = async (postId: number) => {
 
 </div>
 {/* アフィリエイトリンク */}
-<div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "10px" }}>
-  
-    
-  
+<div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "10px", padding: "0 14px" }}>
+  <a
+    href={`https://ck.jp.ap.valuecommerce.com/servlet/referral?sid=3769655&pid=892606353&vc_url=${encodeURIComponent(`https://www.hotpepper.jp/strJ000000001/`)}`}
+    target="_blank"
+    rel="nofollow noopener"
+    style={{
+      padding: "8px 16px",
+      borderRadius: "20px",
+      backgroundColor: "#e60044",
+      color: "#fff",
+      fontSize: "12px",
+      fontWeight: "600",
+      textDecoration: "none",
+      display: "inline-flex",
+      alignItems: "center",
+      gap: "4px",
+    }}
+  >
+    🍽️ ホットペッパーで予約
+  </a>
 </div>
 
 {user && post.user_id === user.id && (
