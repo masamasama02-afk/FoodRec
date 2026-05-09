@@ -34,6 +34,7 @@ type Post = {
   lat?: number;
   lng?: number;
   place_id?: string;
+  must_menu?: string;
 };
 
 type Like = {
@@ -93,6 +94,7 @@ const [unreadCount, setUnreadCount] = useState(0);
 const [showNotifications, setShowNotifications] = useState(false);
 const [followingIds, setFollowingIds] = useState<string[]>([]);
 const [likeUsers, setLikeUsers] = useState<Record<number, {user_id: string, username: string}[]>>({});
+const [mustMenu, setMustMenu] = useState("");
 
   const fetchProfile = async (userId: string) => {
     const { data, error } = await supabase
@@ -893,7 +895,8 @@ const addPost = async () => {
       username: displayName,
       map_url: mapLink,
       lat: lat,
-      lng: lng
+      lng: lng,
+      must_menu: mustMenu,
       },
     ]);
 
@@ -940,6 +943,7 @@ const addPost = async () => {
     setPlaceId("");
     setRating(5);
     setMapUrl("");
+    setMustMenu("");
 
    setPosting(false);
     setLastPostedRestaurant(restaurant);
@@ -1716,6 +1720,28 @@ const toggleLike = async (postId: number) => {
       </span>
     </div>
   </div>
+</div>
+
+{/* 注文必須メニュー */}
+<div style={{ marginBottom: "16px" }}>
+  <p style={{ fontSize: "13px", color: "#111", marginBottom: "8px" }}>
+    🍽️ 注文必須メニュー
+  </p>
+  <input
+    placeholder="例: 黒毛和牛のサーロイン"
+    value={mustMenu}
+    onChange={(e) => setMustMenu(e.target.value)}
+    style={{
+      width: "100%",
+      padding: "10px 14px",
+      borderRadius: "10px",
+      border: "0.5px solid #e0e0e0",
+      backgroundColor: "#fafafa",
+      boxSizing: "border-box",
+      fontSize: "14px",
+      color: "#111",
+    }}
+  />
 </div>
 
         <label style={{
