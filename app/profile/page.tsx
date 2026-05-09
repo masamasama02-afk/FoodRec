@@ -475,6 +475,23 @@ setLoading(false);
        rankBadge === "食の探求者" ? "👑" : "🍴"}
     </div>
   )}
+  {rankBadge && (
+  <div style={{
+    marginTop: "4px",
+    fontSize: "11px",
+    color: "#888",
+    backgroundColor: "#f8f8f8",
+    border: "0.5px solid #eee",
+    borderRadius: "20px",
+    padding: "2px 10px",
+  }}>
+    {rankBadge === "First Bite" ? "🍴" :
+     rankBadge === "ビギナーグルメ" ? "🍽️" :
+     rankBadge === "フーディー" ? "🥘" :
+     rankBadge === "グルメ通" ? "🥇" :
+     rankBadge === "食の探求者" ? "👑" : "🍴"} {rankBadge}
+  </div>
+)}
 </div>
   {editing && (
     <>
