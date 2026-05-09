@@ -87,7 +87,7 @@ const [editMustMenu3, setEditMustMenu3] = useState("");
   const fetchWishlist = async (userId: string) => {
   const { data } = await supabase
     .from("wishlists")
-    .select("post_id, posts(id, restaurant, rating, username, comment)")
+    .select("post_id, posts(id, restaurant, rating, username, comment, genres, place_id, area)")
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
