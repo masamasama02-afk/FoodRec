@@ -426,60 +426,64 @@ setLoading(false);
         <h1 style={{ marginBottom: "20px" }}>プロフィール</h1>
 
 {/* アイコン */}
-<div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "20px" }}>
-  <div style={{ position: "relative", display: "inline-block", marginBottom: "8px" }}>
-<div
-    onClick={() => editing && document.getElementById("avatar-input")?.click()}
-    style={{
-      width: "80px",
-      height: "80px",
-      borderRadius: "50%",
-      backgroundColor: "#f0f0f0",
-      border: "1px solid #ddd",
-      overflow: "hidden",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      fontSize: "32px",
-      cursor: editing ? "pointer" : "default",
-      marginBottom: "8px",
-    }}
-  >
-    {avatarPreview ? (
-      <img src={avatarPreview} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-    ) : avatarUrl ? (
-      <img src={avatarUrl} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-    ) : (
-      "🍽️"
+<div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
+  <div style={{ flexShrink: 0 }}>
+    <div
+      onClick={() => editing && document.getElementById("avatar-input")?.click()}
+      style={{
+        width: "56px",
+        height: "56px",
+        borderRadius: "50%",
+        backgroundColor: "#f0f0f0",
+        border: "1px solid #ddd",
+        overflow: "hidden",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: "24px",
+        cursor: editing ? "pointer" : "default",
+      }}
+    >
+      {avatarPreview ? (
+        <img src={avatarPreview} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+      ) : avatarUrl ? (
+        <img src={avatarUrl} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+      ) : (
+        "🍽️"
+      )}
+    </div>
+  </div>
+  <div style={{ flex: 1 }}>
+    <p style={{ fontSize: "16px", fontWeight: "600", color: "#111" }}>
+      {username || "未設定"}
+    </p>
+    {rankBadge && (
+      <div style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "6px",
+        fontSize: "12px",
+        fontWeight: "600",
+        color: "#555",
+        backgroundColor: "#fff",
+        border: "1px solid #eee",
+        borderRadius: "20px",
+        padding: "3px 10px",
+        boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+        marginTop: "4px",
+      }}>
+        <span style={{ fontSize: "14px" }}>
+          {rankBadge === "First Bite" ? "🍴" :
+           rankBadge === "ビギナーグルメ" ? "🍽️" :
+           rankBadge === "フーディー" ? "🥘" :
+           rankBadge === "グルメ通" ? "🥇" :
+           rankBadge === "食の探求者" ? "👑" : "🍴"}
+        </span>
+        {rankBadge}
+      </div>
     )}
   </div>
-  
-{rankBadge && (
-  <div style={{
-    marginTop: "8px",
-    display: "inline-flex",
-    alignItems: "center",
-    gap: "6px",
-    fontSize: "13px",
-    fontWeight: "600",
-    color: "#555",
-    backgroundColor: "#fff",
-    border: "1px solid #eee",
-    borderRadius: "20px",
-    padding: "4px 14px",
-    boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
-  }}>
-    <span style={{ fontSize: "16px" }}>
-      {rankBadge === "First Bite" ? "🍴" :
-       rankBadge === "ビギナーグルメ" ? "🍽️" :
-       rankBadge === "フーディー" ? "🥘" :
-       rankBadge === "グルメ通" ? "🥇" :
-       rankBadge === "食の探求者" ? "👑" : "🍴"}
-    </span>
-    {rankBadge}
-  </div>
-)}
-</div>
+
   {editing && (
     <>
       <input
