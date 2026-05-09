@@ -16,7 +16,9 @@ type Post = {
   user_id?: string;
   username?: string;
   map_url?: string;
-  must_menu?: string;
+  must_menu_1?: string;
+must_menu_2?: string;
+must_menu_3?: string;
 };
 export default function ProfilePage() {
   const [user, setUser] = useState<any>(null);
@@ -41,7 +43,9 @@ const [editComment, setEditComment] = useState("");
 const [editGenres, setEditGenres] = useState<string[]>([]);
 const [editImages, setEditImages] = useState<string[]>([]);
 const [editRating, setEditRating] = useState<number>(5);
-const [editMustMenu, setEditMustMenu] = useState("");
+const [editMustMenu1, setEditMustMenu1] = useState("");
+const [editMustMenu2, setEditMustMenu2] = useState("");
+const [editMustMenu3, setEditMustMenu3] = useState("");
   // プロフィール取得
   const fetchProfile = async (userId: string) => {
   const { data, error } = await supabase
@@ -204,7 +208,9 @@ const startEdit = (post: Post) => {
   setEditGenres(post.genres || []);
   setEditImages(post.images || (post.image ? [post.image] : []));
   setEditRating(Number(post.rating) || 5);
-  setEditMustMenu(post.must_menu || "");
+  setEditMustMenu1(post.must_menu_1 || "");
+setEditMustMenu2(post.must_menu_2 || "");
+setEditMustMenu3(post.must_menu_3 || "");
 };
 
   const saveEdit = async (postId: number) => {
@@ -217,7 +223,9 @@ const startEdit = (post: Post) => {
     images: editImages,
     image: editImages[0] ?? "",
     rating: editRating,
-    must_menu: editMustMenu,
+    must_menu_1: editMustMenu1 || null,
+must_menu_2: editMustMenu2 || null,
+must_menu_3: editMustMenu3 || null,
   })
   .eq("id", postId);
 
@@ -839,24 +847,34 @@ setLoading(false);
             ))}
           </div>
         </div>
-{/* 注文必須メニュー */}
+{/* おすすめメニュー */}
 <div style={{ marginBottom: "10px" }}>
-  <p style={{ fontSize: "12px", color: "#666", marginBottom: "6px" }}>🍽️ 注文必須メニュー</p>
-  <input
-    placeholder="例: 黒毛和牛のサーロイン"
-    value={editMustMenu}
-    onChange={(e) => setEditMustMenu(e.target.value)}
-    style={{
-      width: "100%",
-      padding: "8px 12px",
-      borderRadius: "8px",
-      border: "1px solid #ccc",
-      boxSizing: "border-box",
-      fontSize: "13px",
-      color: "#111",
-    }}
-  />
+  <p style={{ fontSize: "12px", color: "#666", marginBottom: "6px" }}>🍽️ おすすめメニュー（任意・最大3件）</p>
+  {[
+    { label: "🥇 No.1", value: editMustMenu1, setter: setEditMustMenu1 },
+    { label: "🥈 No.2", value: editMustMenu2, setter: setEditMustMenu2 },
+    { label: "🥉 No.3", value: editMustMenu3, setter: setEditMustMenu3 },
+  ].map(({ label, value, setter }) => (
+    <div key={label} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+      <span style={{ fontSize: "12px", color: "#666", minWidth: "40px" }}>{label}</span>
+      <input
+        placeholder="例: 黒毛和牛のサーロイン"
+        value={value}
+        onChange={(e) => setter(e.target.value)}
+        style={{
+          flex: 1,
+          padding: "8px 12px",
+          borderRadius: "8px",
+          border: "1px solid #ccc",
+          boxSizing: "border-box",
+          fontSize: "13px",
+          color: "#111",
+        }}
+      />
+    </div>
+  ))}
 </div>
+
         {/* 画像 */}
         <div style={{ marginBottom: "10px" }}>
           <p style={{ fontSize: "12px", color: "#666", marginBottom: "6px" }}>画像（最大3枚）</p>
