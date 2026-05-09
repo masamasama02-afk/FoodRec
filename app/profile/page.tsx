@@ -1023,10 +1023,19 @@ setLoading(false);
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                
                   <div style={{ flex: 1 }}>
-                    <p style={{ fontSize: "15px", fontWeight: "600", color: "#2563eb", textDecoration: "underline", marginBottom: "4px" }}>
-                      {item.posts?.restaurant}
-                    </p>
+                    <a
+                   href={item.posts?.place_id
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.posts?.restaurant ?? "")}&query_place_id=${item.posts?.place_id}`
+    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.posts?.restaurant ?? "")}`
+  }
+  target="_blank"
+  rel="noopener noreferrer"
+  style={{ fontSize: "15px", fontWeight: "600", color: "#2563eb", textDecoration: "underline", marginBottom: "4px", display: "block" }}
+>
+  {item.posts?.restaurant}
+</a>
                     <p style={{ fontSize: "13px", color: "#f5a623", marginBottom: "4px" }}>
                       ★ {Number(item.posts?.rating).toFixed(1)}
                     </p>

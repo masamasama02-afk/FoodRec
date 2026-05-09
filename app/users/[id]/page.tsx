@@ -201,7 +201,7 @@ export default function UserPage() {
             { key: "💎 ラグジュアリーマスター", label: "ラグジュアリーマスター", icon: "💎" },
             { key: "🪙 コスパ神", label: "コスパ神", icon: "🪙" },
             { key: "☀️ ランチハンター", label: "ランチハンター", icon: "☀️" },
-            { key: "🍣 寿司職人", label: "寿司職人", icon: "🍣" },
+            { key: "🍣 寿司狂い", label: "寿司狂い", icon: "🍣" },
             { key: "🍜 ラーメン中毒", label: "ラーメン中毒", icon: "🍜" },
             { key: "🥩 焼肉奉行", label: "焼肉奉行", icon: "🥩" },
             { key: "☕ カフェ巡礼者", label: "カフェ巡礼者", icon: "☕" },

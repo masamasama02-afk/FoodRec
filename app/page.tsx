@@ -2150,7 +2150,7 @@ const toggleLike = async (postId: number) => {
   { rank: "🥈", value: post.must_menu_2 },
   { rank: "🥉", value: post.must_menu_3 },
 ].filter(item => item.value).length > 0 && (
-  <div style={{ marginBottom: "8px" }}>
+  <div style={{ marginBottom: "8px", display: "flex", flexDirection: "column", gap: "4px" }}>
     {[
       { rank: "🥇", value: post.must_menu_1 },
       { rank: "🥈", value: post.must_menu_2 },
