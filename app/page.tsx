@@ -2150,25 +2150,21 @@ const toggleLike = async (postId: number) => {
   { rank: "🥈", value: post.must_menu_2 },
   { rank: "🥉", value: post.must_menu_3 },
 ].filter(item => item.value).length > 0 && (
-  <div style={{ marginBottom: "8px", display: "flex", flexDirection: "column", gap: "4px" }}>
+  <div style={{ marginBottom: "10px" }}>
+    <p style={{ fontSize: "11px", color: "#bbb", marginBottom: "4px" }}>おすすめメニュー</p>
     {[
       { rank: "🥇", value: post.must_menu_1 },
       { rank: "🥈", value: post.must_menu_2 },
       { rank: "🥉", value: post.must_menu_3 },
     ].filter(item => item.value).map(({ rank, value }) => (
       <div key={rank} style={{
-        display: "inline-flex",
+        display: "flex",
         alignItems: "center",
         gap: "6px",
-        backgroundColor: "#fff8e1",
-        border: "0.5px solid #f5a623",
-        borderRadius: "20px",
-        padding: "4px 12px",
         marginBottom: "4px",
-        marginRight: "4px",
       }}>
-        <span style={{ fontSize: "12px" }}>{rank}</span>
-        <span style={{ fontSize: "12px", color: "#111" }}>{value}</span>
+        <span style={{ fontSize: "13px" }}>{rank}</span>
+        <span style={{ fontSize: "13px", color: "#333", fontWeight: "500" }}>{value}</span>
       </div>
     ))}
   </div>
