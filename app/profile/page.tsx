@@ -453,43 +453,30 @@ setLoading(false);
       "🍽️"
     )}
   </div>
-  {rankBadge && (
-    <div style={{
-      position: "absolute",
-      bottom: "0px",
-      right: "0px",
-      fontSize: "18px",
-      backgroundColor: "#fff",
-      borderRadius: "50%",
-      width: "24px",
-      height: "24px",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      border: "1px solid #eee",
-    }}>
+  
+{rankBadge && (
+  <div style={{
+    marginTop: "8px",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "6px",
+    fontSize: "13px",
+    fontWeight: "600",
+    color: "#555",
+    backgroundColor: "#fff",
+    border: "1px solid #eee",
+    borderRadius: "20px",
+    padding: "4px 14px",
+    boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+  }}>
+    <span style={{ fontSize: "16px" }}>
       {rankBadge === "First Bite" ? "🍴" :
        rankBadge === "ビギナーグルメ" ? "🍽️" :
        rankBadge === "フーディー" ? "🥘" :
        rankBadge === "グルメ通" ? "🥇" :
        rankBadge === "食の探求者" ? "👑" : "🍴"}
-    </div>
-  )}
-  {rankBadge && (
-  <div style={{
-    marginTop: "4px",
-    fontSize: "11px",
-    color: "#888",
-    backgroundColor: "#f8f8f8",
-    border: "0.5px solid #eee",
-    borderRadius: "20px",
-    padding: "2px 10px",
-  }}>
-    {rankBadge === "First Bite" ? "🍴" :
-     rankBadge === "ビギナーグルメ" ? "🍽️" :
-     rankBadge === "フーディー" ? "🥘" :
-     rankBadge === "グルメ通" ? "🥇" :
-     rankBadge === "食の探求者" ? "👑" : "🍴"} {rankBadge}
+    </span>
+    {rankBadge}
   </div>
 )}
 </div>
