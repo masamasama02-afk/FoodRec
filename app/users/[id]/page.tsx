@@ -117,53 +117,56 @@ export default function UserPage() {
         marginBottom: "20px",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
-          <div style={{ position: "relative", flexShrink: 0 }}>
-          <div style={{
-            width: "56px",
-            height: "56px",
-            borderRadius: "50%",
-            backgroundColor: "#f0f0f0",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "24px",
-            overflow: "hidden",
-          }}>
-            {profile?.avatar_url ? (
-              <img src={profile.avatar_url} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-            ) : "🍽️"}
-          </div>
-          {profile?.rank_badge && (
-            <div style={{
-              position: "absolute",
-              bottom: "-2px",
-              right: "-2px",
-              fontSize: "12px",
-              backgroundColor: "#fff",
-              borderRadius: "50%",
-              width: "20px",
-              height: "20px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              border: "1px solid #eee",
-            }}>
-              {profile.rank_badge === "First Bite" ? "🍴" :
-               profile.rank_badge === "ビギナーグルメ" ? "🍽️" :
-               profile.rank_badge === "フーディー" ? "🥘" :
-               profile.rank_badge === "グルメ通" ? "🥇" :
-               profile.rank_badge === "食の探求者" ? "👑" : "🍴"}
-            </div>
-          )}
-          </div>
-          <div style={{ flex: 1 }}>
-            <p style={{ fontSize: "16px", fontWeight: "600", color: "#111" }}>
-              {profile?.username || "未設定"}
-            </p>
-            <p style={{ fontSize: "12px", color: "#999" }}>
-              投稿数: {posts.length}
-            </p>
-          </div>
+  <div style={{ flexShrink: 0 }}>
+    <div style={{
+      width: "56px",
+      height: "56px",
+      borderRadius: "50%",
+      backgroundColor: "#f0f0f0",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: "24px",
+      overflow: "hidden",
+    }}>
+      {profile?.avatar_url ? (
+        <img src={profile.avatar_url} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+      ) : "🍽️"}
+    </div>
+  </div>
+  <div style={{ flex: 1 }}>
+    <p style={{ fontSize: "16px", fontWeight: "600", color: "#111" }}>
+      {profile?.username || "未設定"}
+    </p>
+    {profile?.rank_badge && (
+      <div style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "6px",
+        fontSize: "12px",
+        fontWeight: "600",
+        color: "#555",
+        backgroundColor: "#fff",
+        border: "1px solid #eee",
+        borderRadius: "20px",
+        padding: "3px 10px",
+        boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+        marginTop: "4px",
+      }}>
+        <span style={{ fontSize: "14px" }}>
+          {profile.rank_badge === "First Bite" ? "🍴" :
+           profile.rank_badge === "ビギナーグルメ" ? "🍽️" :
+           profile.rank_badge === "フーディー" ? "🥘" :
+           profile.rank_badge === "グルメ通" ? "🥇" :
+           profile.rank_badge === "食の探求者" ? "👑" : "🍴"}
+        </span>
+        {profile.rank_badge}
+      </div>
+    )}
+    <p style={{ fontSize: "12px", color: "#999", marginTop: "4px" }}>
+      投稿数: {posts.length}
+    </p>
+  </div>
           {currentUserId && currentUserId !== userId && (
             <button
               onClick={toggleFollow}
