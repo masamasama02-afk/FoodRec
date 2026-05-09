@@ -1053,9 +1053,27 @@ setLoading(false);
 >
   {item.posts?.restaurant}
 </a>
-                    <p style={{ fontSize: "13px", color: "#f5a623", marginBottom: "4px" }}>
-                      ★ {Number(item.posts?.rating).toFixed(1)}
-                    </p>
+{item.posts?.genres && item.posts.genres.length > 0 && (
+  <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginBottom: "6px", marginTop: "4px" }}>
+    {item.posts.genres.map((genre: string)=> (
+      <span
+        key={genre}
+        style={{
+          padding: "2px 8px",
+          borderRadius: "20px",
+          fontSize: "11px",
+          backgroundColor: "#f0f0f0",
+          color: "#555",
+        }}
+      >
+        {genre}
+      </span>
+    ))}
+  </div>
+)}
+<p style={{ fontSize: "13px", color: "#f5a623", marginBottom: "4px" }}>
+  ★ {Number(item.posts?.rating).toFixed(1)}
+</p>
                     <p style={{ fontSize: "12px", color: "#999" }}>
                       {item.posts?.username} のおすすめ
                     </p>
