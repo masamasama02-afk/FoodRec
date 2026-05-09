@@ -185,7 +185,7 @@ const updateBadges = async (userId: string) => {
   const izakayaPosts = posts.filter((p) => p.genres?.includes("🍺 飲み")).length;
 
   if (lunchPosts >= 20) newBadges.push("☀️ ランチハンター");
-  if (sushiPosts >= 10) newBadges.push("🍣 寿司職人");
+  if (sushiPosts >= 10) newBadges.push("🍣 寿司狂い");
   if (ramenPosts >= 15) newBadges.push("🍜 ラーメン中毒");
   if (yakinikuPosts >= 10) newBadges.push("🥩 焼肉奉行");
   if (cafePosts >= 20) newBadges.push("☕ カフェ巡礼者");
