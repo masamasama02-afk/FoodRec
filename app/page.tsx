@@ -2129,7 +2129,26 @@ const toggleLike = async (postId: number) => {
 </div>
 
           
-
+{post.must_menu && (
+  <div style={{
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "6px",
+    backgroundColor: "#fff8e1",
+    border: "0.5px solid #f5a623",
+    borderRadius: "20px",
+    padding: "4px 12px",
+    marginBottom: "8px",
+  }}>
+    <span style={{ fontSize: "12px" }}>🍽️</span>
+    <span style={{ fontSize: "12px", fontWeight: "600", color: "#c97a00" }}>
+      注文必須
+    </span>
+    <span style={{ fontSize: "12px", color: "#111" }}>
+      {post.must_menu}
+    </span>
+  </div>
+)}
           <p style={{ marginBottom: "12px", lineHeight: 1.6, color: "#111" }}>
             {post.comment}
           </p>

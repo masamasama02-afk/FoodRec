@@ -16,6 +16,7 @@ type Post = {
   user_id?: string;
   username?: string;
   map_url?: string;
+  must_menu?: string;
 };
 export default function ProfilePage() {
   const [user, setUser] = useState<any>(null);
@@ -40,6 +41,7 @@ const [editComment, setEditComment] = useState("");
 const [editGenres, setEditGenres] = useState<string[]>([]);
 const [editImages, setEditImages] = useState<string[]>([]);
 const [editRating, setEditRating] = useState<number>(5);
+const [editMustMenu, setEditMustMenu] = useState("");
   // プロフィール取得
   const fetchProfile = async (userId: string) => {
   const { data, error } = await supabase
@@ -202,20 +204,22 @@ const startEdit = (post: Post) => {
   setEditGenres(post.genres || []);
   setEditImages(post.images || (post.image ? [post.image] : []));
   setEditRating(Number(post.rating) || 5);
+  setEditMustMenu(post.must_menu || "");
 };
 
   const saveEdit = async (postId: number) => {
   const { error } = await supabase
-    .from("posts")
-    .update({
-      restaurant: editRestaurant,
-      comment: editComment,
-      genres: editGenres,
-      images: editImages,
-      image: editImages[0] ?? "",
-      rating: editRating,
-    })
-    .eq("id", postId);
+  .from("posts")
+  .update({
+    restaurant: editRestaurant,
+    comment: editComment,
+    genres: editGenres,
+    images: editImages,
+    image: editImages[0] ?? "",
+    rating: editRating,
+    must_menu: editMustMenu,
+  })
+  .eq("id", postId);
 
     if (error) {
       alert("更新失敗");
@@ -835,7 +839,24 @@ setLoading(false);
             ))}
           </div>
         </div>
-
+{/* 注文必須メニュー */}
+<div style={{ marginBottom: "10px" }}>
+  <p style={{ fontSize: "12px", color: "#666", marginBottom: "6px" }}>🍽️ 注文必須メニュー</p>
+  <input
+    placeholder="例: 黒毛和牛のサーロイン"
+    value={editMustMenu}
+    onChange={(e) => setEditMustMenu(e.target.value)}
+    style={{
+      width: "100%",
+      padding: "8px 12px",
+      borderRadius: "8px",
+      border: "1px solid #ccc",
+      boxSizing: "border-box",
+      fontSize: "13px",
+      color: "#111",
+    }}
+  />
+</div>
         {/* 画像 */}
         <div style={{ marginBottom: "10px" }}>
           <p style={{ fontSize: "12px", color: "#666", marginBottom: "6px" }}>画像（最大3枚）</p>
