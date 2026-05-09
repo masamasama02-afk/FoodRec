@@ -87,7 +87,7 @@ const [editMustMenu3, setEditMustMenu3] = useState("");
   const fetchWishlist = async (userId: string) => {
   const { data } = await supabase
     .from("wishlists")
-    .select("post_id, posts(id, restaurant, rating, username, comment, genres, place_id, area)")
+    .select("post_id, posts(id, restaurant, rating, username, comment, genres, place_id, area, image, images)")
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
@@ -1057,6 +1057,19 @@ setLoading(false);
           color: "#555",
         }}
       >
+        {item.posts?.image && (
+  <img
+    src={item.posts.image}
+    alt={item.posts.restaurant}
+    style={{
+      width: "100%",
+      height: "160px",
+      objectFit: "cover",
+      borderRadius: "10px",
+      marginTop: "8px",
+    }}
+  />
+)}
         {genre}
       </span>
     ))}
