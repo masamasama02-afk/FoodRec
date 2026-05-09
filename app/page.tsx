@@ -34,7 +34,9 @@ type Post = {
   lat?: number;
   lng?: number;
   place_id?: string;
-  must_menu?: string;
+  must_menu_1?: string;
+must_menu_2?: string;
+must_menu_3?: string;
 };
 
 type Like = {
@@ -94,7 +96,9 @@ const [unreadCount, setUnreadCount] = useState(0);
 const [showNotifications, setShowNotifications] = useState(false);
 const [followingIds, setFollowingIds] = useState<string[]>([]);
 const [likeUsers, setLikeUsers] = useState<Record<number, {user_id: string, username: string}[]>>({});
-const [mustMenu, setMustMenu] = useState("");
+const [mustMenu1, setMustMenu1] = useState("");
+const [mustMenu2, setMustMenu2] = useState("");
+const [mustMenu3, setMustMenu3] = useState("");
 
   const fetchProfile = async (userId: string) => {
     const { data, error } = await supabase
@@ -896,7 +900,9 @@ const addPost = async () => {
       map_url: mapLink,
       lat: lat,
       lng: lng,
-      must_menu: mustMenu,
+      must_menu_1: mustMenu1 || null,
+must_menu_2: mustMenu2 || null,
+must_menu_3: mustMenu3 || null,
       },
     ]);
 
@@ -943,7 +949,9 @@ const addPost = async () => {
     setPlaceId("");
     setRating(5);
     setMapUrl("");
-    setMustMenu("");
+    setMustMenu1("");
+setMustMenu2("");
+setMustMenu3("");
 
    setPosting(false);
     setLastPostedRestaurant(restaurant);
@@ -1725,23 +1733,32 @@ const toggleLike = async (postId: number) => {
 {/* 注文必須メニュー */}
 <div style={{ marginBottom: "16px" }}>
   <p style={{ fontSize: "13px", color: "#111", marginBottom: "8px" }}>
-    🍽️ 注文必須メニュー
+    🍽️ おすすめメニュー（任意・最大3件）
   </p>
-  <input
-    placeholder="例: 黒毛和牛のサーロイン"
-    value={mustMenu}
-    onChange={(e) => setMustMenu(e.target.value)}
-    style={{
-      width: "100%",
-      padding: "10px 14px",
-      borderRadius: "10px",
-      border: "0.5px solid #e0e0e0",
-      backgroundColor: "#fafafa",
-      boxSizing: "border-box",
-      fontSize: "14px",
-      color: "#111",
-    }}
-  />
+  {[
+    { label: "🥇 No.1", value: mustMenu1, setter: setMustMenu1 },
+    { label: "🥈 No.2", value: mustMenu2, setter: setMustMenu2 },
+    { label: "🥉 No.3", value: mustMenu3, setter: setMustMenu3 },
+  ].map(({ label, value, setter }) => (
+    <div key={label} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+      <span style={{ fontSize: "12px", color: "#666", minWidth: "40px" }}>{label}</span>
+      <input
+        placeholder="例: 黒毛和牛のサーロイン"
+        value={value}
+        onChange={(e) => setter(e.target.value)}
+        style={{
+          flex: 1,
+          padding: "10px 14px",
+          borderRadius: "10px",
+          border: "0.5px solid #e0e0e0",
+          backgroundColor: "#fafafa",
+          boxSizing: "border-box",
+          fontSize: "14px",
+          color: "#111",
+        }}
+      />
+    </div>
+  ))}
 </div>
 
         <label style={{
@@ -2128,25 +2145,32 @@ const toggleLike = async (postId: number) => {
   </span>
 </div>
 
-          
-{post.must_menu && (
-  <div style={{
-    display: "inline-flex",
-    alignItems: "center",
-    gap: "6px",
-    backgroundColor: "#fff8e1",
-    border: "0.5px solid #f5a623",
-    borderRadius: "20px",
-    padding: "4px 12px",
-    marginBottom: "8px",
-  }}>
-    <span style={{ fontSize: "12px" }}>🍽️</span>
-    <span style={{ fontSize: "12px", fontWeight: "600", color: "#c97a00" }}>
-      注文必須
-    </span>
-    <span style={{ fontSize: "12px", color: "#111" }}>
-      {post.must_menu}
-    </span>
+{[
+  { rank: "🥇", value: post.must_menu_1 },
+  { rank: "🥈", value: post.must_menu_2 },
+  { rank: "🥉", value: post.must_menu_3 },
+].filter(item => item.value).length > 0 && (
+  <div style={{ marginBottom: "8px" }}>
+    {[
+      { rank: "🥇", value: post.must_menu_1 },
+      { rank: "🥈", value: post.must_menu_2 },
+      { rank: "🥉", value: post.must_menu_3 },
+    ].filter(item => item.value).map(({ rank, value }) => (
+      <div key={rank} style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "6px",
+        backgroundColor: "#fff8e1",
+        border: "0.5px solid #f5a623",
+        borderRadius: "20px",
+        padding: "4px 12px",
+        marginBottom: "4px",
+        marginRight: "4px",
+      }}>
+        <span style={{ fontSize: "12px" }}>{rank}</span>
+        <span style={{ fontSize: "12px", color: "#111" }}>{value}</span>
+      </div>
+    ))}
   </div>
 )}
           <p style={{ marginBottom: "12px", lineHeight: 1.6, color: "#111" }}>
