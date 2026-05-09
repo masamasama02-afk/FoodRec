@@ -1195,9 +1195,35 @@ const toggleLike = async (postId: number) => {
                   🔖 <strong>{notif.from_username}</strong> が <strong>{notif.restaurant}</strong> を行きたいリストに追加しました
                 </p>
               ) : notif.type === "follow" ? (
-                <p style={{ fontSize: "13px", color: "#111", marginBottom: "2px" }}>
-                  👤 <strong>{notif.from_username}</strong> がフォローしました
-                </p>
+  <div>
+    <p style={{ fontSize: "13px", color: "#111", marginBottom: "6px" }}>
+      👤 <strong>{notif.from_username}</strong> がフォローしました
+    </p>
+    {!followingIds.includes(notif.from_user_id) ? (
+      <button
+        onClick={async () => {
+          await supabase.from("follows").insert({
+            follower_id: user.id,
+            following_id: notif.from_user_id,
+          });
+          setFollowingIds([...followingIds, notif.from_user_id]);
+        }}
+        style={{
+          padding: "4px 12px",
+          borderRadius: "20px",
+          border: "none",
+          backgroundColor: "#111",
+          color: "#fff",
+          fontSize: "11px",
+          cursor: "pointer",
+        }}
+      >
+        フォローバック
+      </button>
+    ) : (
+      <span style={{ fontSize: "11px", color: "#999" }}>✓ フォロー中</span>
+    )}
+  </div>
                    ) : notif.type === "new_post" ? (
                 <p style={{ fontSize: "13px", color: "#111", marginBottom: "2px" }}>
                   🍽️ {notif.message}
