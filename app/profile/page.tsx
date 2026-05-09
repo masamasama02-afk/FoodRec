@@ -1057,7 +1057,13 @@ setLoading(false);
           color: "#555",
         }}
       >
-        {item.posts?.image && (
+        
+        {genre}
+      </span>
+    ))}
+  </div>
+)}
+{item.posts?.image && (
   <img
     src={item.posts.image}
     alt={item.posts.restaurant}
@@ -1069,11 +1075,6 @@ setLoading(false);
       marginTop: "8px",
     }}
   />
-)}
-        {genre}
-      </span>
-    ))}
-  </div>
 )}
 <p style={{ fontSize: "13px", color: "#f5a623", marginBottom: "4px" }}>
   ★ {Number(item.posts?.rating).toFixed(1)}
