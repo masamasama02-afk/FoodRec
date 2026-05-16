@@ -617,7 +617,7 @@ setLoading(false);
   <p style={{ fontSize: "13px", color: "#888", marginBottom: "8px" }}>👥 友達を招待</p>
   <button
     onClick={() => {
-      const url = `https://food-rec-rouge.vercel.app?ref=${user?.id}`;
+      const url = `https://foodrec.app?ref=${user?.id}`;
       navigator.clipboard.writeText(url);
       alert("招待リンクをコピーしました！");
     }}
