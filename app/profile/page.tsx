@@ -12,6 +12,7 @@ type Post = {
   image: string;
   images?: string[];
   genres?: string[];
+  area?: string;
   created_at?: string;
   user_id?: string;
   username?: string;
@@ -46,6 +47,7 @@ const [editRating, setEditRating] = useState<number>(5);
 const [editMustMenu1, setEditMustMenu1] = useState("");
 const [editMustMenu2, setEditMustMenu2] = useState("");
 const [editMustMenu3, setEditMustMenu3] = useState("");
+const [openMenuPostId, setOpenMenuPostId] = useState<number | null>(null);
   // プロフィール取得
   const fetchProfile = async (userId: string) => {
   const { data, error } = await supabase
@@ -726,14 +728,19 @@ setLoading(false);
           <>
             {posts.length === 0 && <p style={{ color: "#999", fontSize: "14px" }}>まだ投稿がありません</p>}
 
-       {posts.map((post) => (
+       <div style={{
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr",
+  gap: "8px",
+  marginBottom: "12px",
+}}>
+{posts.map((post) => (
   <div
     key={post.id}
     style={{
       border: "0.5px solid #eee",
       borderRadius: "16px",
-      padding: "14px",
-      marginBottom: "12px",
+      overflow: "hidden",
       backgroundColor: "#fff",
     }}
   >
@@ -952,64 +959,103 @@ setLoading(false);
     ) : (
       // 表示モード
       <div>
-        <h3 style={{ fontSize: "15px", fontWeight: "600", color: "#111", marginBottom: "4px" }}>
-          {post.restaurant}
-        </h3>
-        <p style={{ color: "#f5a623", fontSize: "14px", marginBottom: "4px" }}>
-          ★ {Number(post.rating).toFixed(1)}
-        </p>
-        <p style={{ fontSize: "12px", color: "#999", marginBottom: "8px" }}>
-          {post.created_at ? new Date(post.created_at).toLocaleString("ja-JP") : ""}
-        </p>
-        <p style={{ fontSize: "13px", color: "#111", lineHeight: 1.6, marginBottom: "8px" }}>
-          {post.comment}
-        </p>
-        {post.image && (
-          <img
-            src={post.image}
-            style={{
+        {(() => {
+          const imgs = post.images && post.images.length > 0 ? post.images : post.image ? [post.image] : [];
+          return imgs.length > 0 ? (
+            <img
+              src={imgs[0]}
+              style={{
+                width: "100%",
+                height: "160px",
+                objectFit: "cover",
+                display: "block",
+              }}
+            />
+          ) : (
+            <div style={{
               width: "100%",
-              maxHeight: "200px",
-              objectFit: "cover",
-              borderRadius: "10px",
-              marginBottom: "8px",
-            }}
-          />
-        )}
-        <div style={{ display: "flex", gap: "8px" }}>
-          <button
-            onClick={() => startEdit(post)}
-            style={{
-              padding: "6px 14px",
-              borderRadius: "20px",
-              border: "0.5px solid #ddd",
-              backgroundColor: "#fff",
-              color: "#111",
-              fontSize: "12px",
-              cursor: "pointer",
-            }}
-          >
-            編集
-          </button>
-          <button
-            onClick={() => deletePost(post.id)}
-            style={{
-              padding: "6px 14px",
-              borderRadius: "20px",
-              border: "0.5px solid #ffcccc",
-              backgroundColor: "#fff0f0",
-              color: "#cc0000",
-              fontSize: "12px",
-              cursor: "pointer",
-            }}
-          >
-            削除
-          </button>
+              height: "160px",
+              backgroundColor: "#f8f8f8",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "32px",
+            }}>🍽️</div>
+          );
+        })()}
+        <div style={{ padding: "10px" }}>
+          <p style={{ fontSize: "13px", fontWeight: "600", color: "#111", marginBottom: "4px", lineHeight: 1.3 }}>
+            {post.restaurant}
+          </p>
+          <p style={{ fontSize: "12px", color: "#f5a623", marginBottom: "4px" }}>
+            ★ {Number(post.rating).toFixed(1)}
+          </p>
+          {post.area && (
+            <p style={{ fontSize: "11px", color: "#999", marginBottom: "8px" }}>📍 {post.area}</p>
+          )}
+         <div style={{ position: "relative", marginTop: "8px", display: "flex", justifyContent: "flex-end" }}>
+            <button
+              onClick={() => setOpenMenuPostId(openMenuPostId === post.id ? null : post.id)}
+              style={{
+                background: "none",
+                border: "none",
+                fontSize: "18px",
+                cursor: "pointer",
+                color: "#999",
+                padding: "4px 8px",
+              }}
+            >•••</button>
+            {openMenuPostId === post.id && (
+              <div style={{
+                position: "absolute",
+                bottom: "100%",
+                right: 0,
+                backgroundColor: "#fff",
+                border: "0.5px solid #eee",
+                borderRadius: "12px",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                zIndex: 10,
+                overflow: "hidden",
+                minWidth: "100px",
+              }}>
+                <button
+                  onClick={() => { startEdit(post); setOpenMenuPostId(null); }}
+                  style={{
+                    display: "block",
+                    width: "100%",
+                    padding: "12px 16px",
+                    border: "none",
+                    backgroundColor: "#fff",
+                    color: "#111",
+                    fontSize: "13px",
+                    cursor: "pointer",
+                    textAlign: "left",
+                    borderBottom: "0.5px solid #f0f0f0",
+                  }}
+                >編集</button>
+                <button
+                  onClick={() => { deletePost(post.id); setOpenMenuPostId(null); }}
+                  style={{
+                    display: "block",
+                    width: "100%",
+                    padding: "12px 16px",
+                    border: "none",
+                    backgroundColor: "#fff",
+                    color: "#cc0000",
+                    fontSize: "13px",
+                    cursor: "pointer",
+                    textAlign: "left",
+                  }}
+                >削除</button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     )}
   </div>
 ))}
+</div>
       </>
         )}
 
