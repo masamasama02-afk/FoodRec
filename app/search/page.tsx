@@ -54,7 +54,10 @@ export default function SearchPage() {
   // 重複排除してマージ
   const merged = [...(textData || []), ...genreMatched];
   const unique = merged.filter((p, i, arr) => arr.findIndex(x => x.id === p.id) === i);
-
+console.log("textData:", textData);
+  console.log("allPosts:", allPosts);
+  console.log("genreMatched:", genreMatched);
+  console.log("unique:", unique);
   setPosts(unique);
   setLoading(false);
 };
