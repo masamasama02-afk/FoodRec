@@ -30,26 +30,34 @@ export default function SearchPage() {
   const [searched, setSearched] = useState(false);
 
   const search = async () => {
-    if (!keyword.trim()) return;
-    setLoading(true);
-    setSearched(true);
+  if (!keyword.trim()) return;
+  setLoading(true);
+  setSearched(true);
 
-    const { data, error } = await supabase
-      .from("posts")
-      .select("*, profiles(avatar_url)")
-      .or(`area.ilike.%${keyword}%,genres.cs.{"${keyword}"}`)
-      .order("created_at", { ascending: false });
+  // エリア・レストラン名・コメントで検索
+  const { data: textData } = await supabase
+    .from("posts")
+    .select("*, profiles(avatar_url)")
+    .or(`area.ilike.%${keyword}%,restaurant.ilike.%${keyword}%,comment.ilike.%${keyword}%`)
+    .order("created_at", { ascending: false });
 
-    if (error) {
-      console.error(error);
-      setLoading(false);
-      return;
-    }
+  // ジャンルで検索（絵文字込みでも部分一致）
+  const { data: allPosts } = await supabase
+    .from("posts")
+    .select("*, profiles(avatar_url)")
+    .order("created_at", { ascending: false });
 
-    setPosts(data || []);
-    setLoading(false);
-  };
+  const genreMatched = (allPosts || []).filter(p =>
+    p.genres?.some((g: string) => g.includes(keyword))
+  );
 
+  // 重複排除してマージ
+  const merged = [...(textData || []), ...genreMatched];
+  const unique = merged.filter((p, i, arr) => arr.findIndex(x => x.id === p.id) === i);
+
+  setPosts(unique);
+  setLoading(false);
+};
   return (
     <main style={{
       padding: "16px",
