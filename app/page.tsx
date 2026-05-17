@@ -99,6 +99,9 @@ const [likeUsers, setLikeUsers] = useState<Record<number, {user_id: string, user
 const [mustMenu1, setMustMenu1] = useState("");
 const [mustMenu2, setMustMenu2] = useState("");
 const [mustMenu3, setMustMenu3] = useState("");
+const [showOnboarding, setShowOnboarding] = useState(false);
+const [onboardingStep, setOnboardingStep] = useState(1);
+const [suggestedUsers, setSuggestedUsers] = useState<any[]>([]);
 
   const fetchProfile = async (userId: string) => {
     const { data, error } = await supabase
@@ -580,6 +583,30 @@ useEffect(() => {
         .eq("follower_id", data.user.id);
       setFollowingIds((follows || []).map((f) => f.following_id));
     }
+    // オンボーディング判定
+if (data.user) {
+  const { data: follows } = await supabase
+    .from("follows")
+    .select("*")
+    .eq("follower_id", data.user.id);
+  
+  const { data: myPosts } = await supabase
+    .from("posts")
+    .select("id")
+    .eq("user_id", data.user.id);
+
+  if ((follows?.length ?? 0) === 0 && (myPosts?.length ?? 0) === 0) {
+    // おすすめユーザー取得（投稿数が多い人）
+    const { data: activeUsers } = await supabase
+      .from("profiles")
+      .select("id, username, avatar_url, rank_badge")
+      .not("username", "is", null)
+      .limit(10);
+    
+    setSuggestedUsers(activeUsers || []);
+    setShowOnboarding(true);
+  }
+}
     await fetchRanking();
     await fetchComments();
   };
@@ -2491,7 +2518,216 @@ const toggleLike = async (postId: number) => {
 )}        </div>
         
       ))}
-     
+     {showOnboarding && (
+  <div style={{
+    position: "fixed",
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    zIndex: 1000,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "24px",
+  }}>
+    <div style={{
+      backgroundColor: "#fff",
+      borderRadius: "20px",
+      padding: "28px 24px",
+      width: "100%",
+      maxWidth: "400px",
+      maxHeight: "80vh",
+      overflowY: "auto",
+    }}>
+
+      {/* ステップ1 */}
+      {onboardingStep === 1 && (
+        <div style={{ textAlign: "center" }}>
+          <p style={{ fontSize: "40px", marginBottom: "16px" }}>🍽️</p>
+          <p style={{ fontSize: "20px", fontWeight: "700", color: "#111", marginBottom: "12px" }}>
+            FoodRecへようこそ！
+          </p>
+          <p style={{ fontSize: "14px", color: "#666", lineHeight: 1.7, marginBottom: "28px" }}>
+            フォローした人のおすすめレストランが<br />
+            マップで見えるグルメSNSです。<br />
+            まず信頼できる人をフォローしましょう！
+          </p>
+          <button
+            onClick={() => setOnboardingStep(2)}
+            style={{
+              width: "100%",
+              padding: "14px",
+              borderRadius: "12px",
+              border: "none",
+              backgroundColor: "#111",
+              color: "#fff",
+              fontSize: "15px",
+              fontWeight: "600",
+              cursor: "pointer",
+            }}
+          >
+            はじめる →
+          </button>
+          <button
+            onClick={() => setShowOnboarding(false)}
+            style={{
+              width: "100%",
+              padding: "12px",
+              borderRadius: "12px",
+              border: "none",
+              backgroundColor: "transparent",
+              color: "#999",
+              fontSize: "13px",
+              cursor: "pointer",
+              marginTop: "8px",
+            }}
+          >
+            スキップ
+          </button>
+        </div>
+      )}
+
+      {/* ステップ2 */}
+      {onboardingStep === 2 && (
+        <div>
+          <p style={{ fontSize: "17px", fontWeight: "700", color: "#111", marginBottom: "6px" }}>
+            👥 おすすめユーザー
+          </p>
+          <p style={{ fontSize: "13px", color: "#999", marginBottom: "20px" }}>
+            アクティブなユーザーをフォローしましょう
+          </p>
+          {suggestedUsers.map((u) => (
+            <div key={u.id} style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+              marginBottom: "14px",
+            }}>
+              <div style={{
+                width: "44px",
+                height: "44px",
+                borderRadius: "50%",
+                backgroundColor: "#f0f0f0",
+                overflow: "hidden",
+                flexShrink: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "20px",
+              }}>
+                {u.avatar_url
+                  ? <img src={u.avatar_url} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  : "🍽️"}
+              </div>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontSize: "14px", fontWeight: "600", color: "#111" }}>{u.username}</p>
+                {u.rank_badge && (
+                  <p style={{ fontSize: "11px", color: "#999" }}>{u.rank_badge}</p>
+                )}
+              </div>
+              <button
+                onClick={async () => {
+                  if (!user) return;
+                  const isFollowing = followingIds.includes(u.id);
+                  if (!isFollowing) {
+                    await supabase.from("follows").insert({
+                      follower_id: user.id,
+                      following_id: u.id,
+                    });
+                    setFollowingIds([...followingIds, u.id]);
+                  } else {
+                    await supabase.from("follows").delete()
+                      .eq("follower_id", user.id)
+                      .eq("following_id", u.id);
+                    setFollowingIds(followingIds.filter(id => id !== u.id));
+                  }
+                }}
+                style={{
+                  padding: "6px 16px",
+                  borderRadius: "20px",
+                  border: "none",
+                  backgroundColor: followingIds.includes(u.id) ? "#f0f0f0" : "#111",
+                  color: followingIds.includes(u.id) ? "#666" : "#fff",
+                  fontSize: "12px",
+                  fontWeight: "500",
+                  cursor: "pointer",
+                  flexShrink: 0,
+                }}
+              >
+                {followingIds.includes(u.id) ? "フォロー中" : "フォロー"}
+              </button>
+            </div>
+          ))}
+          <button
+            onClick={() => setOnboardingStep(3)}
+            style={{
+              width: "100%",
+              padding: "14px",
+              borderRadius: "12px",
+              border: "none",
+              backgroundColor: "#111",
+              color: "#fff",
+              fontSize: "15px",
+              fontWeight: "600",
+              cursor: "pointer",
+              marginTop: "8px",
+            }}
+          >
+            次へ →
+          </button>
+        </div>
+      )}
+
+      {/* ステップ3 */}
+      {onboardingStep === 3 && (
+        <div style={{ textAlign: "center" }}>
+          <p style={{ fontSize: "40px", marginBottom: "16px" }}>✏️</p>
+          <p style={{ fontSize: "20px", fontWeight: "700", color: "#111", marginBottom: "12px" }}>
+            最初の1投稿をしよう！
+          </p>
+          <p style={{ fontSize: "14px", color: "#666", lineHeight: 1.7, marginBottom: "28px" }}>
+            お気に入りのレストランを登録して<br />
+            友達におすすめしましょう🍽️
+          </p>
+          <button
+            onClick={() => {
+              setShowOnboarding(false);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            style={{
+              width: "100%",
+              padding: "14px",
+              borderRadius: "12px",
+              border: "none",
+              backgroundColor: "#111",
+              color: "#fff",
+              fontSize: "15px",
+              fontWeight: "600",
+              cursor: "pointer",
+            }}
+          >
+            投稿してみる！
+          </button>
+          <button
+            onClick={() => setShowOnboarding(false)}
+            style={{
+              width: "100%",
+              padding: "12px",
+              borderRadius: "12px",
+              border: "none",
+              backgroundColor: "transparent",
+              color: "#999",
+              fontSize: "13px",
+              cursor: "pointer",
+              marginTop: "8px",
+            }}
+          >
+            あとで
+          </button>
+        </div>
+      )}
+    </div>
+  </div>
+)}
     {showShareModal && (
   <div style={{
     position: "fixed",
