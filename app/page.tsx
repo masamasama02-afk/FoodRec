@@ -682,11 +682,11 @@ const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
   const files = Array.from(e.target.files || []);
   if (files.length === 0) return;
 
-  const remaining = 3 - images.length;
-  if (remaining <= 0) {
-    toast("画像は最大3枚までです");
-    return;
-  }
+  const remaining = 5 - images.length;
+if (remaining <= 0) {
+  toast("画像は最大5枚までです");
+  return;
+}
 
   const filesToUpload = files.slice(0, remaining);
   setUploading(true);
@@ -1837,7 +1837,7 @@ const toggleLike = async (postId: number) => {
   />
 </label>
 <p style={{ fontSize: "11px", color: "#aaa", marginTop: "6px" }}>
-  最大3枚まで選択できます（{images.length}/3）
+  最大5枚まで選択できます（{images.length}/5）
 </p>
 
 {uploading && (

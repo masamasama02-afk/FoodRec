@@ -245,9 +245,9 @@ must_menu_3: editMustMenu3 || null,
 
   const remaining = 3 - editImages.length;
   if (remaining <= 0) {
-    alert("画像は最大3枚までです");
-    return;
-  }
+  alert("画像は最大5枚までです");
+  return;
+}
 
   const filesToUpload = files.slice(0, remaining);
   const uploadedUrls: string[] = [];
@@ -912,7 +912,7 @@ setLoading(false);
                 >×</button>
               </div>
             ))}
-            {editImages.length < 3 && (
+            {editImages.length < 5&& (
               <label style={{
                 width: "80px", height: "80px", borderRadius: "8px",
                 border: "1px dashed #ccc", display: "flex", alignItems: "center",
