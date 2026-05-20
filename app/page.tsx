@@ -514,7 +514,7 @@ const addComment = async (postId: number) => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: "https://food-rec-rouge.vercel.app",
+        redirectTo: "https://foodrec.app",
       },
     });
     if (error) toast(error.message);
