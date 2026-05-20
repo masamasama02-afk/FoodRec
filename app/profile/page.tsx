@@ -308,20 +308,19 @@ must_menu_3: editMustMenu3 || null,
 };
 
   const deletePost = async (postId: number) => {
-    if (!confirm("削除しますか？")) return;
+  const { error } = await supabase
+    .from("posts")
+    .delete()
+    .eq("id", postId);
 
-    const { error } = await supabase
-      .from("posts")
-      .delete()
-      .eq("id", postId);
+  if (error) {
+    console.error("削除エラー:", error);
+    return;
+  }
 
-    if (error) {
-      alert("削除失敗");
-      return;
-    }
-
-    await fetchMyPosts(user.id);
-  };
+  setOpenMenuPostId(null);
+  await fetchMyPosts(user.id);
+};
 
   const updateProfile = async () => {
   if (!user) return;
