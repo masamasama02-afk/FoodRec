@@ -243,7 +243,7 @@ must_menu_3: editMustMenu3 || null,
   const files = Array.from(e.target.files || []);
   if (files.length === 0) return;
 
-  const remaining = 3 - editImages.length;
+  const remaining = 5 - editImages.length;
   if (remaining <= 0) {
   alert("画像は最大5枚までです");
   return;
@@ -891,7 +891,7 @@ setLoading(false);
 
         {/* 画像 */}
         <div style={{ marginBottom: "10px" }}>
-          <p style={{ fontSize: "12px", color: "#666", marginBottom: "6px" }}>画像（最大3枚）</p>
+          <p style={{ fontSize: "12px", color: "#666", marginBottom: "6px" }}>画像（最大5枚）</p>
           <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "8px" }}>
             {editImages.map((url, index) => (
               <div key={index} style={{ position: "relative" }}>
