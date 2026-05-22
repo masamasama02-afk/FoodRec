@@ -255,40 +255,57 @@ export default function UserPage() {
         <p style={{ color: "#999", fontSize: "14px" }}>まだ投稿がありません。</p>
       )}
 
-      {posts.map((post) => (
-        <div key={post.id} style={{
-          backgroundColor: "#fff",
-          border: "0.5px solid #eee",
-          borderRadius: "16px",
-          padding: "14px",
-          marginBottom: "12px",
-        }}>
-          <h3 style={{ fontSize: "15px", fontWeight: "600", color: "#111", marginBottom: "4px" }}>
-            {post.restaurant}
-          </h3>
-          <p style={{ color: "#f5a623", fontSize: "14px", marginBottom: "4px" }}>
-            ★ {Number(post.rating).toFixed(1)}
-          </p>
-          <p style={{ fontSize: "12px", color: "#999", marginBottom: "8px" }}>
-            {post.created_at ? new Date(post.created_at).toLocaleString("ja-JP") : ""}
-          </p>
-          <p style={{ fontSize: "13px", color: "#111", lineHeight: 1.6 }}>
-            {post.comment}
-          </p>
-          {post.image && (
-            <img
-              src={post.image}
-              style={{
-                width: "100%",
-                maxHeight: "200px",
-                objectFit: "cover",
-                borderRadius: "10px",
-                marginTop: "8px",
-              }}
-            />
-          )}
-        </div>
-      ))}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr",
+        gap: "8px",
+      }}>
+        {posts.map((post) => (
+          <div key={post.id} style={{
+            backgroundColor: "#fff",
+            border: "0.5px solid #eee",
+            borderRadius: "16px",
+            overflow: "hidden",
+          }}>
+            {(() => {
+              const imgs = post.images && post.images.length > 0 ? post.images : post.image ? [post.image] : [];
+              return imgs.length > 0 ? (
+                <img
+                  src={imgs[0]}
+                  loading="lazy"
+                  style={{
+                    width: "100%",
+                    height: "160px",
+                    objectFit: "cover",
+                    display: "block",
+                  }}
+                />
+              ) : (
+                <div style={{
+                  width: "100%",
+                  height: "160px",
+                  backgroundColor: "#f8f8f8",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "32px",
+                }}>🍽️</div>
+              );
+            })()}
+            <div style={{ padding: "10px" }}>
+              <p style={{ fontSize: "13px", fontWeight: "600", color: "#111", marginBottom: "4px", lineHeight: 1.3 }}>
+                {post.restaurant}
+              </p>
+              <p style={{ fontSize: "12px", color: "#f5a623", marginBottom: "4px" }}>
+                ★ {Number(post.rating).toFixed(1)}
+              </p>
+              {post.area && (
+                <p style={{ fontSize: "11px", color: "#999" }}>📍 {post.area}</p>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
     </main>
   );
 }
