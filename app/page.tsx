@@ -1470,7 +1470,7 @@ const toggleLike = async (postId: number) => {
       }}
     >
       <img src="https://www.google.com/favicon.ico" style={{ width: "18px", height: "18px" }} />
-      Googleでログイン
+      Googleアカウントで続ける
     </button>
 
     {deferredPrompt && (
