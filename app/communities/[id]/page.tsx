@@ -153,25 +153,67 @@ export default function CommunityPage() {
         </div>
 
         {/* 招待リンク */}
-        <button
-          onClick={() => {
-            const url = `https://foodrec.app/join/${community.invite_code}`;
-            navigator.clipboard.writeText(url);
-            alert("招待リンクをコピーしました！");
-          }}
-          style={{
-            width: "100%",
-            padding: "10px",
-            borderRadius: "10px",
-            border: "0.5px solid #ddd",
-            backgroundColor: "#f8f8f8",
-            color: "#111",
-            fontSize: "13px",
-            cursor: "pointer",
-          }}
-        >
-          🔗 招待リンクをコピーして友達を招待
-        </button>
+        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+  <button
+    onClick={() => {
+      const url = `https://foodrec.app/join/${community.invite_code}`;
+      const text = `「${community.name}」のグルメコミュニティに招待します！FoodRecで友達のおすすめレストランをチェックしよう🍽️`;
+      window.open(`https://line.me/R/share?text=${encodeURIComponent(text + "\n" + url)}`, "_blank");
+    }}
+    style={{
+      flex: 1,
+      padding: "10px",
+      borderRadius: "10px",
+      border: "none",
+      backgroundColor: "#06C755",
+      color: "#fff",
+      fontSize: "13px",
+      fontWeight: "600",
+      cursor: "pointer",
+    }}
+  >
+    LINE で招待
+  </button>
+  <button
+    onClick={() => {
+      const url = `https://foodrec.app/join/${community.invite_code}`;
+      const text = `「${community.name}」のグルメコミュニティに招待します！FoodRecで友達のおすすめレストランをチェックしよう🍽️`;
+      window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, "_blank");
+    }}
+    style={{
+      flex: 1,
+      padding: "10px",
+      borderRadius: "10px",
+      border: "none",
+      backgroundColor: "#000",
+      color: "#fff",
+      fontSize: "13px",
+      fontWeight: "600",
+      cursor: "pointer",
+    }}
+  >
+    𝕏 で招待
+  </button>
+  <button
+    onClick={() => {
+      const url = `https://foodrec.app/join/${community.invite_code}`;
+      navigator.clipboard.writeText(url);
+      alert("招待リンクをコピーしました！");
+    }}
+    style={{
+      flex: 1,
+      padding: "10px",
+      borderRadius: "10px",
+      border: "0.5px solid #ddd",
+      backgroundColor: "#fff",
+      color: "#111",
+      fontSize: "13px",
+      cursor: "pointer",
+    }}
+  >
+    🔗 コピー
+  </button>
+</div>
       </div>
 
       {/* メンバー一覧 */}

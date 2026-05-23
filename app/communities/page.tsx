@@ -159,25 +159,67 @@ export default function CommunitiesPage() {
             </p>
           )}
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                const url = `https://foodrec.app/join/${community.invite_code}`;
-                navigator.clipboard.writeText(url);
-                alert("招待リンクをコピーしました！");
-              }}
-              style={{
-                padding: "6px 14px",
-                borderRadius: "20px",
-                border: "0.5px solid #ddd",
-                backgroundColor: "#fff",
-                color: "#111",
-                fontSize: "12px",
-                cursor: "pointer",
-              }}
-            >
-              🔗 招待リンクをコピー
-            </button>
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+  <button
+    onClick={(e) => {
+      e.stopPropagation();
+      const url = `https://foodrec.app/join/${community.invite_code}`;
+      const text = `「${community.name}」のグルメコミュニティに招待します！FoodRecで友達のおすすめレストランをチェックしよう🍽️`;
+      window.open(`https://line.me/R/share?text=${encodeURIComponent(text + "\n" + url)}`, "_blank");
+    }}
+    style={{
+      padding: "8px 16px",
+      borderRadius: "20px",
+      border: "none",
+      backgroundColor: "#06C755",
+      color: "#fff",
+      fontSize: "12px",
+      fontWeight: "600",
+      cursor: "pointer",
+    }}
+  >
+    LINE で招待
+  </button>
+  <button
+    onClick={(e) => {
+      e.stopPropagation();
+      const url = `https://foodrec.app/join/${community.invite_code}`;
+      const text = `「${community.name}」のグルメコミュニティに招待します！FoodRecで友達のおすすめレストランをチェックしよう🍽️`;
+      window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, "_blank");
+    }}
+    style={{
+      padding: "8px 16px",
+      borderRadius: "20px",
+      border: "none",
+      backgroundColor: "#000",
+      color: "#fff",
+      fontSize: "12px",
+      fontWeight: "600",
+      cursor: "pointer",
+    }}
+  >
+    𝕏 で招待
+  </button>
+  <button
+    onClick={(e) => {
+      e.stopPropagation();
+      const url = `https://foodrec.app/join/${community.invite_code}`;
+      navigator.clipboard.writeText(url);
+      alert("招待リンクをコピーしました！");
+    }}
+    style={{
+      padding: "8px 16px",
+      borderRadius: "20px",
+      border: "0.5px solid #ddd",
+      backgroundColor: "#fff",
+      color: "#111",
+      fontSize: "12px",
+      cursor: "pointer",
+    }}
+  >
+    🔗 リンクをコピー
+  </button>
+</div>
           </div>
         </div>
       ))}
