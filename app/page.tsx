@@ -1043,55 +1043,64 @@ const toggleLike = async (postId: number) => {
   const { data } = await supabase.auth.getUser();
 
   if (!data.user) {
-      toast("ログインしてください");
+    toast("ログインしてください");
+    return;
+  }
+
+  const alreadyLiked = likedPostIds.includes(postId);
+
+  // 楽観的更新（先にUIを更新）
+  if (alreadyLiked) {
+    setLikedPostIds(likedPostIds.filter(id => id !== postId));
+    setLikeCounts(prev => ({ ...prev, [postId]: (prev[postId] || 1) - 1 }));
+  } else {
+    setLikedPostIds([...likedPostIds, postId]);
+    setLikeCounts(prev => ({ ...prev, [postId]: (prev[postId] || 0) + 1 }));
+  }
+
+  // DB更新
+  if (alreadyLiked) {
+    const { error } = await supabase
+      .from("likes")
+      .delete()
+      .eq("post_id", postId)
+      .eq("user_id", data.user.id);
+
+    if (error) {
+      // 失敗したら元に戻す
+      setLikedPostIds([...likedPostIds, postId]);
+      setLikeCounts(prev => ({ ...prev, [postId]: (prev[postId] || 0) + 1 }));
+      toast("いいね解除に失敗しました");
+    }
+  } else {
+    const { error } = await supabase.from("likes").insert([
+      { post_id: postId, user_id: data.user.id },
+    ]);
+
+    if (error) {
+      // 失敗したら元に戻す
+      setLikedPostIds(likedPostIds.filter(id => id !== postId));
+      setLikeCounts(prev => ({ ...prev, [postId]: (prev[postId] || 1) - 1 }));
+      toast("いいねに失敗しました");
       return;
     }
 
-    const alreadyLiked = likedPostIds.includes(postId);
-
-    if (alreadyLiked) {
-      const { error } = await supabase
-        .from("likes")
-        .delete()
-        .eq("post_id", postId)
-        .eq("user_id", data.user.id);
-
-      if (error) {
-        console.error("いいね解除エラー:", error);
-        toast("いいね解除に失敗しました");
-        return;
-      }
-    } else {
-      const { error } = await supabase.from("likes").insert([
-        {
-          post_id: postId,
-          user_id: data.user.id,
-        },
-      ]);
-
-      if (error) {
-        console.error("いいねエラー:", JSON.stringify(error));
-        toast("いいねに失敗しました");
-        return;
-      }
-
-      // 投稿者に通知
-      const post = posts.find(p => p.id === postId);
-      if (post && post.user_id && post.user_id !== data.user.id) {
-        const displayName = username || data.user.email?.split("@")[0] || "user";
-        await supabase.from("notifications").insert({
-          user_id: post.user_id,
-          from_user_id: data.user.id,
-          from_username: displayName,
-          post_id: postId,
-          restaurant: post.restaurant,
-          type: "like",
-          message: `${displayName}さんが「${post.restaurant}」にいいねしました`,
-        });
-      }
+    // 投稿者に通知
+    const post = posts.find(p => p.id === postId);
+    if (post && post.user_id && post.user_id !== data.user.id) {
+      const displayName = username || data.user.email?.split("@")[0] || "user";
+      await supabase.from("notifications").insert({
+        user_id: post.user_id,
+        from_user_id: data.user.id,
+        from_username: displayName,
+        post_id: postId,
+        restaurant: post.restaurant,
+        type: "like",
+        message: `${displayName}さんが「${post.restaurant}」にいいねしました`,
+      });
     }
+  }
 
-    await fetchLikes(data.user.id);
   };
 
   const deletePost = async (id: number) => {
