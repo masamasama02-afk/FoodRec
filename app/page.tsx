@@ -2808,7 +2808,7 @@ const toggleLike = async (postId: number) => {
         <button
           onClick={() => {
             const text = `${lastPostedRestaurant}に行ってきました！お店の記録・おすすめができるグルメアプリ「FoodRec」で投稿しました🍽️ #FoodRec`;
-            const url = `https://food-rec-rouge.vercel.app`;
+            const url = `https://foodrec.app`;
             window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, "_blank");
             setShowShareModal(false);
             toast("投稿しました");
@@ -2828,7 +2828,7 @@ const toggleLike = async (postId: number) => {
         </button>
         <button
           onClick={() => {
-            const text = `${lastPostedRestaurant}に行ってきました！お店の記録・おすすめができるグルメアプリ「FoodRec」で投稿しました🍽️ #FoodRec\nhttps://food-rec-rouge.vercel.app`;
+            const text = `${lastPostedRestaurant}に行ってきました！お店の記録・おすすめができるグルメアプリ「FoodRec」で投稿しました🍽️ #FoodRec\nhttps://foodrec.app`;
             window.open(`https://line.me/R/share?text=${encodeURIComponent(text)}`, "_blank");
             setShowShareModal(false);
             toast("投稿しました");
