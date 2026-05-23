@@ -106,6 +106,7 @@ const [suggestedUsers, setSuggestedUsers] = useState<any[]>([]);
 const router = useRouter();
 const [postCommunityIds, setPostCommunityIds] = useState<string[]>([]);
 const [myCommunities, setMyCommunities] = useState<any[]>([]);
+const [signingIn, setSigningIn] = useState(false);
 
   const fetchProfile = async (userId: string) => {
     const { data, error } = await supabase
@@ -517,6 +518,7 @@ const addComment = async (postId: number) => {
   await fetchComments()
 }
   const signInWithGoogle = async () => {
+  setSigningIn(true);
   const params = new URLSearchParams(window.location.search);
   const redirect = params.get("redirect") || "/";
   const { error } = await supabase.auth.signInWithOAuth({
@@ -525,7 +527,10 @@ const addComment = async (postId: number) => {
       redirectTo: `https://foodrec.app${redirect}`,
     },
   });
-  if (error) toast(error.message);
+  if (error) {
+    toast(error.message);
+    setSigningIn(false);
+  }
 };
 
   const signIn = async () => {
@@ -1461,27 +1466,34 @@ const toggleLike = async (postId: number) => {
     </div>
 
     <button
-      onClick={signInWithGoogle}
-      style={{
-        width: "100%",
-        padding: "12px",
-        borderRadius: "12px",
-        border: "0.5px solid #ddd",
-        backgroundColor: "#fff",
-        color: "#111",
-        fontSize: "14px",
-        fontWeight: "500",
-        cursor: "pointer",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "8px",
-      }}
-    >
+  onClick={signInWithGoogle}
+  disabled={signingIn}
+  style={{
+    width: "100%",
+    padding: "12px",
+    borderRadius: "12px",
+    border: "0.5px solid #ddd",
+    backgroundColor: "#fff",
+    color: "#111",
+    fontSize: "14px",
+    fontWeight: "500",
+    cursor: signingIn ? "not-allowed" : "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "8px",
+    opacity: signingIn ? 0.7 : 1,
+  }}
+>
+  {signingIn ? (
+    <span style={{ fontSize: "14px", color: "#999" }}>ログイン中...</span>
+  ) : (
+    <>
       <img src="https://www.google.com/favicon.ico" style={{ width: "18px", height: "18px" }} />
       Googleアカウントで続ける
-    </button>
-
+    </>
+  )}
+</button>
     {deferredPrompt && (
       <button
         onClick={async () => {
