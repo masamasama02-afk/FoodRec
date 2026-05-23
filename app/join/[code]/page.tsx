@@ -141,7 +141,7 @@ export default function JoinPage() {
           </button>
         ) : (
           <button
-            onClick={user ? joinCommunity : () => router.push("/")}
+            onClick={user ? joinCommunity : () => router.push(`/?redirect=/join/${code}`)}
             disabled={joining}
             style={{
               width: "100%",
@@ -161,7 +161,7 @@ export default function JoinPage() {
         )}
 
         <button
-          onClick={() => router.push("/")}
+          onClick={() => router.push(`/?redirect=/join/${code}`)}
           style={{
             width: "100%",
             padding: "12px",

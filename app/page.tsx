@@ -5,6 +5,7 @@ import { supabase } from "../lib/supabase";
 import toast from "react-hot-toast";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 declare const google: any;
 
@@ -102,6 +103,7 @@ const [mustMenu3, setMustMenu3] = useState("");
 const [showOnboarding, setShowOnboarding] = useState(false);
 const [onboardingStep, setOnboardingStep] = useState(1);
 const [suggestedUsers, setSuggestedUsers] = useState<any[]>([]);
+const router = useRouter();
 
   const fetchProfile = async (userId: string) => {
     const { data, error } = await supabase
@@ -511,14 +513,16 @@ const addComment = async (postId: number) => {
   await fetchComments()
 }
   const signInWithGoogle = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: "https://foodrec.app",
-      },
-    });
-    if (error) toast(error.message);
-  };
+  const params = new URLSearchParams(window.location.search);
+  const redirect = params.get("redirect") || "/";
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `https://foodrec.app${redirect}`,
+    },
+  });
+  if (error) toast(error.message);
+};
 
   const signIn = async () => {
     if (!email.trim() || !password.trim()) {
@@ -547,6 +551,10 @@ const addComment = async (postId: number) => {
         .eq("follower_id", data.user.id);
       setFollowingIds((follows || []).map((f) => f.following_id));
       toast("ログインしました");
+      //
+        const params = new URLSearchParams(window.location.search);
+  const redirect = params.get("redirect");
+  if (redirect) router.push(redirect);
     }
   };
 
