@@ -61,13 +61,24 @@ export default function CommunityPage() {
 
       // メンバー取得
       const { data: memberData } = await supabase
-        .from("community_members")
-        .select("user_id, profiles(username, avatar_url, rank_badge)")
-        .eq("community_id", communityId);
+  .from("community_members")
+  .select("user_id")
+  .eq("community_id", communityId);
 
-      const memberList = memberData || [];
-      setMembers(memberList);
-      const memberIds = memberList.map((m: any) => m.user_id);
+const memberIds = (memberData || []).map((m: any) => m.user_id);
+
+// プロフィールを別途取得
+const { data: profileData } = await supabase
+  .from("profiles")
+  .select("id, username, avatar_url, rank_badge")
+  .in("id", memberIds);
+
+const memberList = (memberData || []).map((m: any) => ({
+  user_id: m.user_id,
+  profiles: profileData?.find((p: any) => p.id === m.user_id) || null,
+}));
+
+setMembers(memberList);
 
       // フォロー中取得
       const { data: follows } = await supabase
