@@ -1911,7 +1911,34 @@ const toggleLike = async (postId: number) => {
     </div>
   </div>
 )}
-
+ {/* 公開範囲 */}
+<div style={{ marginBottom: "16px" }}>
+  <p style={{ fontSize: "13px", color: "#111", marginBottom: "8px" }}>
+    🔒 公開範囲
+  </p>
+  <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+    <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}>
+      <input
+        type="radio"
+        name="visibility"
+        checked={postCommunityId === null}
+        onChange={() => setPostCommunityId(null)}
+      />
+      <span style={{ fontSize: "14px", color: "#111" }}>🌐 全体公開</span>
+    </label>
+    {myCommunities.map((community) => (
+      <label key={community.id} style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}>
+        <input
+          type="radio"
+          name="visibility"
+          checked={postCommunityId === community.id}
+          onChange={() => setPostCommunityId(community.id)}
+        />
+        <span style={{ fontSize: "14px", color: "#111" }}>👥 {community.name}のみ</span>
+      </label>
+    ))}
+  </div>
+</div>
         <button
           onClick={addPost}
           disabled={posting}
@@ -2490,34 +2517,7 @@ const toggleLike = async (postId: number) => {
         cursor: "pointer",
       }}
     >
-      {/* 公開範囲 */}
-<div style={{ marginBottom: "16px" }}>
-  <p style={{ fontSize: "13px", color: "#111", marginBottom: "8px" }}>
-    🔒 公開範囲
-  </p>
-  <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-    <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}>
-      <input
-        type="radio"
-        name="visibility"
-        checked={postCommunityId === null}
-        onChange={() => setPostCommunityId(null)}
-      />
-      <span style={{ fontSize: "14px", color: "#111" }}>🌐 全体公開</span>
-    </label>
-    {myCommunities.map((community) => (
-      <label key={community.id} style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}>
-        <input
-          type="radio"
-          name="visibility"
-          checked={postCommunityId === community.id}
-          onChange={() => setPostCommunityId(community.id)}
-        />
-        <span style={{ fontSize: "14px", color: "#111" }}>👥 {community.name}のみ</span>
-      </label>
-    ))}
-  </div>
-</div>
+     
       投稿
     </button>
   </div>
