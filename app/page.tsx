@@ -104,7 +104,7 @@ const [showOnboarding, setShowOnboarding] = useState(false);
 const [onboardingStep, setOnboardingStep] = useState(1);
 const [suggestedUsers, setSuggestedUsers] = useState<any[]>([]);
 const router = useRouter();
-const [postCommunityId, setPostCommunityId] = useState<string | null>(null);
+const [postCommunityIds, setPostCommunityIds] = useState<string[]>([]);
 const [myCommunities, setMyCommunities] = useState<any[]>([]);
 
   const fetchProfile = async (userId: string) => {
@@ -281,7 +281,7 @@ const [myCommunities, setMyCommunities] = useState<any[]>([]);
     const { data, error } = await supabase
   .from("posts")
   .select("*, profiles(avatar_url, rank_badge)")
-  .is("community_id", null)
+  .or("community_id.is.null,community_id.eq.{}")
   .order(column, { ascending: false });
 
     if (error) {
@@ -950,7 +950,7 @@ const addPost = async () => {
       must_menu_1: mustMenu1 || null,
       must_menu_2: mustMenu2 || null,
       must_menu_3: mustMenu3,
-    community_id: postCommunityId || null,  // ← 追加
+    community_id: postCommunityIds.length > 0 ? postCommunityIds : null,
       },
     ]);
 
@@ -1000,7 +1000,7 @@ const addPost = async () => {
     setMustMenu1("");
     setMustMenu2("");
     setMustMenu3("");
-    setPostCommunityId(null); 
+    setPostCommunityIds([]); 
 
    setPosting(false);
     setLastPostedRestaurant(restaurant);
@@ -1916,28 +1916,30 @@ const toggleLike = async (postId: number) => {
   <p style={{ fontSize: "13px", color: "#111", marginBottom: "8px" }}>
     🔒 公開範囲
   </p>
-  <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-    <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}>
+  <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", marginBottom: "8px" }}>
+    <input
+      type="checkbox"
+      checked={postCommunityIds.length === 0}
+      onChange={() => setPostCommunityIds([])}
+    />
+    <span style={{ fontSize: "14px", color: "#111" }}>🌐 全体公開</span>
+  </label>
+  {myCommunities.map((community) => (
+    <label key={community.id} style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", marginBottom: "8px" }}>
       <input
-        type="radio"
-        name="visibility"
-        checked={postCommunityId === null}
-        onChange={() => setPostCommunityId(null)}
+        type="checkbox"
+        checked={postCommunityIds.includes(community.id)}
+        onChange={() => {
+          setPostCommunityIds(prev =>
+            prev.includes(community.id)
+              ? prev.filter(id => id !== community.id)
+              : [...prev, community.id]
+          );
+        }}
       />
-      <span style={{ fontSize: "14px", color: "#111" }}>🌐 全体公開</span>
+      <span style={{ fontSize: "14px", color: "#111" }}>👥 {community.name}のみ</span>
     </label>
-    {myCommunities.map((community) => (
-      <label key={community.id} style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}>
-        <input
-          type="radio"
-          name="visibility"
-          checked={postCommunityId === community.id}
-          onChange={() => setPostCommunityId(community.id)}
-        />
-        <span style={{ fontSize: "14px", color: "#111" }}>👥 {community.name}のみ</span>
-      </label>
-    ))}
-  </div>
+  ))}
 </div>
         <button
           onClick={addPost}
