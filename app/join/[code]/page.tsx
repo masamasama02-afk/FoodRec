@@ -23,7 +23,8 @@ export default function JoinPage() {
         .select("*")
         .eq("invite_code", code)
         .maybeSingle();
-
+console.log("code:", code);
+console.log("communityData:", communityData);
       if (!communityData) {
         setLoading(false);
         return;
