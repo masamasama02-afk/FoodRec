@@ -2273,9 +2273,9 @@ const toggleLike = async (postId: number) => {
     ))}
   </div>
 )}
-          <p style={{ marginBottom: "12px", lineHeight: 1.6, color: "#111" }}>
-            {post.comment}
-          </p>
+          <p style={{ marginBottom: "12px", lineHeight: 1.6, color: "#111", whiteSpace: "pre-wrap" }}>
+  {post.comment}
+</p>
 {(() => {
   const imgs = post.images && post.images.length > 0
     ? post.images
