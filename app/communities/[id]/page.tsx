@@ -391,7 +391,7 @@ setMembers(memberList);
           {/* 投稿内容 */}
           <div style={{ padding: "0 14px 14px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px", flexWrap: "wrap" }}>
-              
+              <a
                 href={post.place_id
                   ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(post.restaurant)}&query_place_id=${post.place_id}`
                   : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(post.restaurant)}`
@@ -399,7 +399,7 @@ setMembers(memberList);
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ fontSize: "15px", fontWeight: "700", color: "#111", textDecoration: "none" }}
-              <a>
+              >
                 {post.restaurant}
               </a>
               {post.area && (
