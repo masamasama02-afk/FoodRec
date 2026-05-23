@@ -341,7 +341,7 @@ export default function CommunityPage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ fontSize: "15px", fontWeight: "700", color: "#111", textDecoration: "none" }}
-              >
+              <a>
                 {post.restaurant}
               </a>
               {post.area && (
