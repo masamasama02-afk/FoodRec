@@ -5,12 +5,12 @@ import { supabase } from "../../lib/supabase"
 import dynamic from "next/dynamic"
 
 const MapView = dynamic(() => import("../components/MapView").then(mod => mod.default), { ssr: false })
-const [myCommunities, setMyCommunities] = useState<any[]>([])
-const [selectedCommunityId, setSelectedCommunityId] = useState<string | null>(null)
-const [userId, setUserId] = useState<string | null>(null)
 
 export default function MapPage() {
   const [posts, setPosts] = useState<any[]>([])
+  const [myCommunities, setMyCommunities] = useState<any[]>([])
+  const [selectedCommunityId, setSelectedCommunityId] = useState<string | null>(null)
+  const [userId, setUserId] = useState<string | null>(null)
   const [minRating, setMinRating] = useState(0)
   const [selectedGenres, setSelectedGenres] = useState<string[]>([])
 
