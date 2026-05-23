@@ -104,6 +104,8 @@ const [showOnboarding, setShowOnboarding] = useState(false);
 const [onboardingStep, setOnboardingStep] = useState(1);
 const [suggestedUsers, setSuggestedUsers] = useState<any[]>([]);
 const router = useRouter();
+const [postCommunityId, setPostCommunityId] = useState<string | null>(null);
+const [myCommunities, setMyCommunities] = useState<any[]>([]);
 
   const fetchProfile = async (userId: string) => {
     const { data, error } = await supabase
@@ -278,7 +280,8 @@ const router = useRouter();
 
     const { data, error } = await supabase
   .from("posts")
- .select("*, profiles(avatar_url, rank_badge)")
+  .select("*, profiles(avatar_url, rank_badge)")
+  .is("community_id", null)
   .order(column, { ascending: false });
 
     if (error) {
@@ -311,6 +314,7 @@ const router = useRouter();
   .from("posts")
   .select("*, profiles(avatar_url, rank_badge)")
   .in("user_id", followingIds)
+  .is("community_id", null)
   .order(column, { ascending: false });
 
     if (error) {
@@ -615,7 +619,15 @@ if (data.user) {
     setShowOnboarding(true);
   }
 }
-    await fetchRanking();
+// 自分のコミュニティ取得
+if (data.user) {
+  const { data: communityData } = await supabase
+    .from("community_members")
+    .select("community_id, communities(id, name)")
+    .eq("user_id", data.user.id);
+  setMyCommunities((communityData || []).map((c: any) => c.communities));
+}   
+await fetchRanking();
     await fetchComments();
   };
   initAuth();
@@ -936,8 +948,9 @@ const addPost = async () => {
       lat: lat,
       lng: lng,
       must_menu_1: mustMenu1 || null,
-must_menu_2: mustMenu2 || null,
-must_menu_3: mustMenu3 || null,
+      must_menu_2: mustMenu2 || null,
+      must_menu_3: mustMenu3,
+    community_id: postCommunityId || null,  // ← 追加
       },
     ]);
 
@@ -985,8 +998,9 @@ must_menu_3: mustMenu3 || null,
     setRating(5);
     setMapUrl("");
     setMustMenu1("");
-setMustMenu2("");
-setMustMenu3("");
+    setMustMenu2("");
+    setMustMenu3("");
+    setPostCommunityId(null); 
 
    setPosting(false);
     setLastPostedRestaurant(restaurant);
@@ -2476,6 +2490,34 @@ const toggleLike = async (postId: number) => {
         cursor: "pointer",
       }}
     >
+      {/* 公開範囲 */}
+<div style={{ marginBottom: "16px" }}>
+  <p style={{ fontSize: "13px", color: "#111", marginBottom: "8px" }}>
+    🔒 公開範囲
+  </p>
+  <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+    <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}>
+      <input
+        type="radio"
+        name="visibility"
+        checked={postCommunityId === null}
+        onChange={() => setPostCommunityId(null)}
+      />
+      <span style={{ fontSize: "14px", color: "#111" }}>🌐 全体公開</span>
+    </label>
+    {myCommunities.map((community) => (
+      <label key={community.id} style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}>
+        <input
+          type="radio"
+          name="visibility"
+          checked={postCommunityId === community.id}
+          onChange={() => setPostCommunityId(community.id)}
+        />
+        <span style={{ fontSize: "14px", color: "#111" }}>👥 {community.name}のみ</span>
+      </label>
+    ))}
+  </div>
+</div>
       投稿
     </button>
   </div>
