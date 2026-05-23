@@ -10,7 +10,7 @@ export default function BottomNav() {
   { href: "/", label: "ホーム", icon: "🏠", scroll: true },
   { href: "/map", label: "マップ", icon: "🗺️" },
   { href: "/search", label: "検索", icon: "🔍" },
-  { href: "/follows", label: "フォロー", icon: "👥" },
+  { href: "/communities", label: "グループ", icon: "🍽️" },
   { href: "/profile", label: "マイページ", icon: "👤" },
 ];
 
