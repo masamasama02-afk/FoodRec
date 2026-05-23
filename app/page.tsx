@@ -950,7 +950,7 @@ const addPost = async () => {
       must_menu_1: mustMenu1 || null,
       must_menu_2: mustMenu2 || null,
       must_menu_3: mustMenu3,
-    community_id: postCommunityIds.length > 0 ? postCommunityIds : null,
+   community_id: postCommunityIds.length > 0 ? `{${postCommunityIds.map(id => `"${id}"`).join(",")}}` : null,
       },
     ]);
 
