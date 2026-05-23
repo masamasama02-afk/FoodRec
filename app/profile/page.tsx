@@ -583,6 +583,21 @@ setLoading(false);
     </button>
   </>
 )}
+<button
+  onClick={() => window.location.href = "/mylist"}
+  style={{
+    padding: "8px 16px",
+    borderRadius: "20px",
+    border: "0.5px solid #ddd",
+    backgroundColor: "#fff",
+    color: "#111",
+    fontSize: "13px",
+    cursor: "pointer",
+    marginTop: "8px",
+  }}
+>
+  📋 マイリストを見る
+</button>
 
 <div style={{ marginTop: "16px", borderTop: "1px solid #eee", paddingTop: "16px" }}>
   <p style={{ fontSize: "13px", color: "#888", marginBottom: "12px" }}>メール: {user?.email}</p>
