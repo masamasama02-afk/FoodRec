@@ -159,6 +159,35 @@ export default function CommunitiesPage() {
             </p>
           )}
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            {community.owner_id === user?.id && (
+  <button
+    onClick={async (e) => {
+      e.stopPropagation();
+      if (!confirm("このコミュニティを削除しますか？")) return;
+      const { error } = await supabase
+        .from("communities")
+        .delete()
+        .eq("id", community.id);
+      if (error) {
+        alert("削除失敗");
+        return;
+      }
+      await fetchCommunities(user.id);
+    }}
+    style={{
+      padding: "6px 14px",
+      borderRadius: "20px",
+      border: "0.5px solid #ffcccc",
+      backgroundColor: "#fff0f0",
+      color: "#cc0000",
+      fontSize: "12px",
+      cursor: "pointer",
+      marginBottom: "8px",
+    }}
+  >
+    削除
+  </button>
+)}
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
   <button
     onClick={(e) => {
