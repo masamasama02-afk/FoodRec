@@ -5,6 +5,9 @@ import { supabase } from "../../lib/supabase"
 import dynamic from "next/dynamic"
 
 const MapView = dynamic(() => import("../components/MapView").then(mod => mod.default), { ssr: false })
+const [myCommunities, setMyCommunities] = useState<any[]>([])
+const [selectedCommunityId, setSelectedCommunityId] = useState<string | null>(null)
+const [userId, setUserId] = useState<string | null>(null)
 
 export default function MapPage() {
   const [posts, setPosts] = useState<any[]>([])
@@ -12,20 +15,36 @@ export default function MapPage() {
   const [selectedGenres, setSelectedGenres] = useState<string[]>([])
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      const { data: auth } = await supabase.auth.getUser()
-      if (!auth.user) return
+  const fetchPosts = async () => {
+    const { data: auth } = await supabase.auth.getUser()
+    if (!auth.user) return
+    setUserId(auth.user.id)
 
-      const { data } = await supabase
-        .from("posts")
-        .select("*")
-        .not("lat", "is", null)
+    // 自分のコミュニティ取得
+    const { data: communityData } = await supabase
+      .from("community_members")
+      .select("community_id, communities(id, name)")
+      .eq("user_id", auth.user.id)
+    setMyCommunities((communityData || []).map((c: any) => c.communities))
 
-      setPosts(data || [])
-    }
+    // フォロー中のユーザー取得
+    const { data: follows } = await supabase
+      .from("follows")
+      .select("following_id")
+      .eq("follower_id", auth.user.id)
+    const followingIds = (follows || []).map((f: any) => f.following_id)
 
-    fetchPosts()
-  }, [])
+    const { data } = await supabase
+      .from("posts")
+      .select("*")
+      .not("lat", "is", null)
+      .in("user_id", [...followingIds, auth.user.id])
+
+    setPosts(data || [])
+  }
+
+  fetchPosts()
+}, [])
 
   return (
     <div style={{ width: "100%", height: "100vh", position: "relative" }}>
@@ -104,8 +123,32 @@ export default function MapPage() {
             </button>
           );
         })}
+        {myCommunities.length > 0 && (
+          <>
+            <span style={{ color: "#ddd", flexShrink: 0 }}>|</span>
+            {myCommunities.map((community) => (
+              <button
+                key={community.id}
+                onClick={() => setSelectedCommunityId(
+                  selectedCommunityId === community.id ? null : community.id
+                )}
+                style={{
+                  padding: "4px 10px",
+                  borderRadius: "20px",
+                  border: "none",
+                  backgroundColor: selectedCommunityId === community.id ? "#111" : "#f0f0f0",
+                  color: selectedCommunityId === community.id ? "#fff" : "#666",
+                  fontSize: "12px",
+                  cursor: "pointer",
+                  flexShrink: 0,
+                }}
+              >
+                👥 {community.name}
+              </button>
+            ))}
+          </>
+        )}
       </div>
-
      {/* ホームボタン */}
       <div style={{
         position: "absolute",
@@ -134,7 +177,14 @@ export default function MapPage() {
       </div>
 
       {/* 地図 */}
-      <MapView posts={posts} minRating={minRating} selectedGenres={selectedGenres} />
+      <MapView
+  posts={posts.filter(post => {
+    if (selectedCommunityId === null) return true;
+    return post.community_id && post.community_id.includes(selectedCommunityId);
+  })}
+  minRating={minRating}
+  selectedGenres={selectedGenres}
+/>
     </div>
   )
 }
