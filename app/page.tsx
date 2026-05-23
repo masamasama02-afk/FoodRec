@@ -2570,7 +2570,7 @@ const toggleLike = async (postId: number) => {
 )}        </div>
         
       ))}
-     {showOnboarding && (
+   {showOnboarding && (
   <div style={{
     position: "fixed",
     top: 0, left: 0, right: 0, bottom: 0,
@@ -2599,12 +2599,15 @@ const toggleLike = async (postId: number) => {
             FoodRecへようこそ！
           </p>
           <p style={{ fontSize: "14px", color: "#666", lineHeight: 1.7, marginBottom: "28px" }}>
-            フォローした人のおすすめレストランが<br />
-            マップで見えるグルメSNSです。<br />
-            まず信頼できる人をフォローしましょう！
+            まずはお気に入りのレストランを<br />
+            投稿してみましょう！<br />
+            あなたのおすすめが友達の参考になります🍽️
           </p>
           <button
-            onClick={() => setOnboardingStep(2)}
+            onClick={() => {
+              setShowOnboarding(false);
+              window.scrollTo({ top: 400, behavior: "smooth" });
+            }}
             style={{
               width: "100%",
               padding: "14px",
@@ -2615,9 +2618,27 @@ const toggleLike = async (postId: number) => {
               fontSize: "15px",
               fontWeight: "600",
               cursor: "pointer",
+              marginBottom: "10px",
             }}
           >
-            はじめる →
+            ✏️ 投稿してみる
+          </button>
+          <button
+            onClick={() => setOnboardingStep(2)}
+            style={{
+              width: "100%",
+              padding: "12px",
+              borderRadius: "12px",
+              border: "0.5px solid #ddd",
+              backgroundColor: "#fff",
+              color: "#111",
+              fontSize: "14px",
+              fontWeight: "500",
+              cursor: "pointer",
+              marginBottom: "10px",
+            }}
+          >
+            👥 友達をグループに招待する
           </button>
           <button
             onClick={() => setShowOnboarding(false)}
@@ -2630,7 +2651,6 @@ const toggleLike = async (postId: number) => {
               color: "#999",
               fontSize: "13px",
               cursor: "pointer",
-              marginTop: "8px",
             }}
           >
             スキップ
@@ -2638,112 +2658,21 @@ const toggleLike = async (postId: number) => {
         </div>
       )}
 
-      {/* ステップ2 */}
+      {/* ステップ2：グループ作成・招待 */}
       {onboardingStep === 2 && (
-        <div>
-          <p style={{ fontSize: "17px", fontWeight: "700", color: "#111", marginBottom: "6px" }}>
-            👥 おすすめユーザー
-          </p>
-          <p style={{ fontSize: "13px", color: "#999", marginBottom: "20px" }}>
-            アクティブなユーザーをフォローしましょう
-          </p>
-          {suggestedUsers.map((u) => (
-            <div key={u.id} style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "12px",
-              marginBottom: "14px",
-            }}>
-              <div style={{
-                width: "44px",
-                height: "44px",
-                borderRadius: "50%",
-                backgroundColor: "#f0f0f0",
-                overflow: "hidden",
-                flexShrink: 0,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "20px",
-              }}>
-                {u.avatar_url
-                  ? <img src={u.avatar_url} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                  : "🍽️"}
-              </div>
-              <div style={{ flex: 1 }}>
-                <p style={{ fontSize: "14px", fontWeight: "600", color: "#111" }}>{u.username}</p>
-                {u.rank_badge && (
-                  <p style={{ fontSize: "11px", color: "#999" }}>{u.rank_badge}</p>
-                )}
-              </div>
-              <button
-                onClick={async () => {
-                  if (!user) return;
-                  const isFollowing = followingIds.includes(u.id);
-                  if (!isFollowing) {
-                    await supabase.from("follows").insert({
-                      follower_id: user.id,
-                      following_id: u.id,
-                    });
-                    setFollowingIds([...followingIds, u.id]);
-                  } else {
-                    await supabase.from("follows").delete()
-                      .eq("follower_id", user.id)
-                      .eq("following_id", u.id);
-                    setFollowingIds(followingIds.filter(id => id !== u.id));
-                  }
-                }}
-                style={{
-                  padding: "6px 16px",
-                  borderRadius: "20px",
-                  border: "none",
-                  backgroundColor: followingIds.includes(u.id) ? "#f0f0f0" : "#111",
-                  color: followingIds.includes(u.id) ? "#666" : "#fff",
-                  fontSize: "12px",
-                  fontWeight: "500",
-                  cursor: "pointer",
-                  flexShrink: 0,
-                }}
-              >
-                {followingIds.includes(u.id) ? "フォロー中" : "フォロー"}
-              </button>
-            </div>
-          ))}
-          <button
-            onClick={() => setOnboardingStep(3)}
-            style={{
-              width: "100%",
-              padding: "14px",
-              borderRadius: "12px",
-              border: "none",
-              backgroundColor: "#111",
-              color: "#fff",
-              fontSize: "15px",
-              fontWeight: "600",
-              cursor: "pointer",
-              marginTop: "8px",
-            }}
-          >
-            次へ →
-          </button>
-        </div>
-      )}
-
-      {/* ステップ3 */}
-      {onboardingStep === 3 && (
         <div style={{ textAlign: "center" }}>
-          <p style={{ fontSize: "40px", marginBottom: "16px" }}>✏️</p>
+          <p style={{ fontSize: "40px", marginBottom: "16px" }}>👥</p>
           <p style={{ fontSize: "20px", fontWeight: "700", color: "#111", marginBottom: "12px" }}>
-            最初の1投稿をしよう！
+            友達をグループに招待しよう
           </p>
           <p style={{ fontSize: "14px", color: "#666", lineHeight: 1.7, marginBottom: "28px" }}>
-            お気に入りのレストランを登録して<br />
-            友達におすすめしましょう🍽️
+            グループを作って友達を招待すると<br />
+            お互いのおすすめが見られるようになります！
           </p>
           <button
             onClick={() => {
               setShowOnboarding(false);
-              window.scrollTo({ top: 0, behavior: "smooth" });
+              window.location.href = "/communities";
             }}
             style={{
               width: "100%",
@@ -2755,12 +2684,13 @@ const toggleLike = async (postId: number) => {
               fontSize: "15px",
               fontWeight: "600",
               cursor: "pointer",
+              marginBottom: "10px",
             }}
           >
-            投稿してみる！
+            👥 グループを作成する
           </button>
           <button
-            onClick={() => setShowOnboarding(false)}
+            onClick={() => setOnboardingStep(1)}
             style={{
               width: "100%",
               padding: "12px",
@@ -2770,13 +2700,13 @@ const toggleLike = async (postId: number) => {
               color: "#999",
               fontSize: "13px",
               cursor: "pointer",
-              marginTop: "8px",
             }}
           >
-            あとで
+            戻る
           </button>
         </div>
       )}
+
     </div>
   </div>
 )}
