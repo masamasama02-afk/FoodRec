@@ -20,9 +20,14 @@ export default function CommunityPage() {
   const [showMembers, setShowMembers] = useState(false);
 
   const fetchPosts = async (memberIds: string[], type: "all" | "follow", myFollowingIds: string[]) => {
-    const targetIds = type === "follow"
-      ? memberIds.filter(id => myFollowingIds.includes(id))
-      : memberIds;
+  console.log("memberIds:", memberIds);
+  console.log("type:", type);
+  
+  const targetIds = type === "follow"
+    ? memberIds.filter(id => myFollowingIds.includes(id))
+    : memberIds;
+
+  console.log("targetIds:", targetIds);
 
     if (targetIds.length === 0) {
       setPosts([]);
