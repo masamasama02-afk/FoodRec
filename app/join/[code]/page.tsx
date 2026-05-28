@@ -54,37 +54,44 @@ console.log("communityData:", communityData);
   }, [code]);
 
   const joinCommunity = async () => {
-    if (!user) {
-      router.push("/");
-      return;
-    }
+  if (!user) {
+    router.push(`/?redirect=/join/${code}`);
+    return;
+  }
 
-    setJoining(true);
+  setJoining(true);
 
-    const { error } = await supabase.from("community_members").insert({
-      community_id: community.id,
-      user_id: user.id,
-    });
+  // リクエストを送信
+  const { error } = await supabase.from("community_requests").insert({
+    community_id: community.id,
+    user_id: user.id,
+  });
 
-    if (error) {
-      alert("参加に失敗しました");
-      setJoining(false);
-      return;
-    }
+  if (error) {
+    alert("リクエストに失敗しました");
+    setJoining(false);
+    return;
+  }
 
-    router.push(`/communities/${community.id}`);
-  };
+  // オーナーに通知
+  const { data: myProfile } = await supabase
+    .from("profiles")
+    .select("username")
+    .eq("id", user.id)
+    .maybeSingle();
+  const myName = myProfile?.username || "ユーザー";
 
-  if (loading) return (
-    <main style={{ padding: "24px", textAlign: "center" }}>読み込み中...</main>
-  );
+  await supabase.from("notifications").insert({
+    user_id: community.owner_id,
+    from_user_id: user.id,
+    from_username: myName,
+    type: "community_request",
+    message: `${myName}さんが「${community.name}」への参加をリクエストしました`,
+  });
 
-  if (!community) return (
-    <main style={{ padding: "24px", textAlign: "center" }}>
-      <p style={{ fontSize: "15px", color: "#999" }}>招待リンクが無効です</p>
-    </main>
-  );
-
+  setJoining(false);
+  alert("参加リクエストを送りました！承認をお待ちください。");
+};
   return (
     <main style={{
       padding: "24px",

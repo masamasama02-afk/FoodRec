@@ -1257,6 +1257,100 @@ const toggleLike = async (postId: number) => {
                 <p style={{ fontSize: "13px", color: "#111", marginBottom: "2px" }}>
                   🔖 <strong>{notif.from_username}</strong> が <strong>{notif.restaurant}</strong> を行きたいリストに追加しました
                 </p>
+                ) : notif.type === "community_request" ? (
+  <div>
+    <p style={{ fontSize: "13px", color: "#111", marginBottom: "6px" }}>
+      👥 <strong>{notif.from_username}</strong> が参加をリクエストしました
+    </p>
+    <p style={{ fontSize: "12px", color: "#666", marginBottom: "8px" }}>
+      {notif.message}
+    </p>
+    <div style={{ display: "flex", gap: "8px" }}>
+      <button
+        onClick={async () => {
+          // community_requestsからリクエストを取得
+          const { data: requests } = await supabase
+            .from("community_requests")
+            .select("id, community_id")
+            .eq("user_id", notif.from_user_id)
+            .eq("status", "pending");
+
+          if (!requests || requests.length === 0) return;
+          const request = requests[0];
+
+          // 承認
+          await supabase
+            .from("community_requests")
+            .update({ status: "approved" })
+            .eq("id", request.id);
+
+          // メンバーに追加
+          await supabase.from("community_members").insert({
+            community_id: request.community_id,
+            user_id: notif.from_user_id,
+          });
+
+          // 承認通知を送る
+          await supabase.from("notifications").insert({
+            user_id: notif.from_user_id,
+            from_user_id: user.id,
+            from_username: username,
+            type: "community_approved",
+            message: `参加リクエストが承認されました`,
+          });
+
+          toast("承認しました！");
+          await fetchNotifications();
+        }}
+        style={{
+          padding: "6px 16px",
+          borderRadius: "20px",
+          border: "none",
+          backgroundColor: "#111",
+          color: "#fff",
+          fontSize: "12px",
+          cursor: "pointer",
+        }}
+      >承認</button>
+      <button
+        onClick={async () => {
+          const { data: requests } = await supabase
+            .from("community_requests")
+            .select("id")
+            .eq("user_id", notif.from_user_id)
+            .eq("status", "pending");
+
+          if (!requests || requests.length === 0) return;
+
+          await supabase
+            .from("community_requests")
+            .update({ status: "rejected" })
+            .eq("id", requests[0].id);
+
+          // 拒否通知を送る
+          await supabase.from("notifications").insert({
+            user_id: notif.from_user_id,
+            from_user_id: user.id,
+            from_username: username,
+            type: "community_rejected",
+            message: `参加リクエストが承認されませんでした`,
+          });
+
+          toast("拒否しました");
+          await fetchNotifications();
+        }}
+        style={{
+          padding: "6px 16px",
+          borderRadius: "20px",
+          border: "0.5px solid #ddd",
+          backgroundColor: "#fff",
+          color: "#666",
+          fontSize: "12px",
+          cursor: "pointer",
+        }}
+      >拒否</button>
+    </div>
+  </div>
               ) : notif.type === "follow" ? (
   <div>
     <p style={{ fontSize: "13px", color: "#111", marginBottom: "6px" }}>
@@ -1294,6 +1388,14 @@ const toggleLike = async (postId: number) => {
               ) : notif.type === "reply" ? (
                 <p style={{ fontSize: "13px", color: "#111", marginBottom: "2px" }}>
                   💬 <strong>{notif.from_username}</strong> があなたのコメントに返信しました
+                </p>
+              ) : notif.type === "community_approved" ? (
+                <p style={{ fontSize: "13px", color: "#111", marginBottom: "2px" }}>
+                  🎉 <strong>{notif.from_username}</strong> がコミュニティへの参加を承認しました
+                </p>
+              ) : notif.type === "community_rejected" ? (
+                <p style={{ fontSize: "13px", color: "#111", marginBottom: "2px" }}>
+                  😔 コミュニティへの参加リクエストが承認されませんでした
                 </p>
               ) : (
                 <>

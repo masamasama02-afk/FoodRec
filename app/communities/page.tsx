@@ -1,5 +1,6 @@
 "use client";
 
+
 import { supabase } from "../../lib/supabase";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -14,6 +15,7 @@ export default function CommunitiesPage() {
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
+  const [isPublic, setIsPublic] = useState(true);
 
   const fetchCommunities = async (userId: string) => {
     const { data } = await supabase
@@ -44,7 +46,7 @@ export default function CommunitiesPage() {
 
     const { data, error } = await supabase
       .from("communities")
-      .insert({ name: name.trim(), description: description.trim(), owner_id: user.id })
+      .insert({ name: name.trim(), description: description.trim(), owner_id: user.id, is_public: isPublic })
       .select()
       .single();
 
@@ -99,6 +101,8 @@ export default function CommunitiesPage() {
           ＋ 作成
         </button>
       </div>
+      {/* 公開コミュニティ一覧 */}
+<PublicCommunities userId={user?.id} />
 
       {/* コミュニティ一覧 */}
       {communities.length === 0 && (
@@ -300,6 +304,36 @@ export default function CommunitiesPage() {
               <label style={{ fontSize: "13px", color: "#666", display: "block", marginBottom: "6px" }}>
                 説明（任意）
               </label>
+              <div style={{ marginBottom: "20px" }}>
+  <label style={{ fontSize: "13px", color: "#666", display: "block", marginBottom: "8px" }}>
+    公開設定
+  </label>
+  <div style={{ display: "flex", gap: "8px" }}>
+    <button
+      onClick={() => setIsPublic(true)}
+      style={{
+        flex: 1, padding: "10px",
+        borderRadius: "10px", border: "none",
+        backgroundColor: isPublic ? "#111" : "#f0f0f0",
+        color: isPublic ? "#fff" : "#666",
+        fontSize: "13px", cursor: "pointer",
+      }}
+    >🌐 公開</button>
+    <button
+      onClick={() => setIsPublic(false)}
+      style={{
+        flex: 1, padding: "10px",
+        borderRadius: "10px", border: "none",
+        backgroundColor: !isPublic ? "#111" : "#f0f0f0",
+        color: !isPublic ? "#fff" : "#666",
+        fontSize: "13px", cursor: "pointer",
+      }}
+    >🔒 非公開</button>
+  </div>
+  <p style={{ fontSize: "11px", color: "#999", marginTop: "6px" }}>
+    {isPublic ? "コミュニティ名と人数が公開されます" : "招待された人だけが参加できます"}
+  </p>
+</div>
               <textarea
                 placeholder="どんなコミュニティか説明しよう"
                 value={description}
@@ -358,4 +392,75 @@ export default function CommunitiesPage() {
       )}
     </main>
   );
+  function PublicCommunities({ userId }: { userId: string }) {
+  const [publicCommunities, setPublicCommunities] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetch = async () => {
+      const { data } = await supabase
+        .from("communities")
+        .select("id, name, description, invite_code")
+        .eq("is_public", true)
+        .order("created_at", { ascending: false });
+
+      // 各コミュニティのメンバー数を取得
+      const withCounts = await Promise.all((data || []).map(async (c: any) => {
+        const { count } = await supabase
+          .from("community_members")
+          .select("*", { count: "exact", head: true })
+          .eq("community_id", c.id);
+        return { ...c, member_count: count || 0 };
+      }));
+
+      setPublicCommunities(withCounts);
+    };
+    fetch();
+  }, []);
+
+  if (publicCommunities.length === 0) return null;
+
+  return (
+    <div style={{ marginBottom: "24px" }}>
+      <p style={{ fontSize: "14px", fontWeight: "600", color: "#111", marginBottom: "12px" }}>
+        📊 みんなのコミュニティ
+      </p>
+      {publicCommunities.map((community) => (
+        <div key={community.id} style={{
+          backgroundColor: "#fff",
+          border: "0.5px solid #eee",
+          borderRadius: "16px",
+          padding: "14px 16px",
+          marginBottom: "8px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}>
+          <div>
+            <p style={{ fontSize: "15px", fontWeight: "600", color: "#111", marginBottom: "2px" }}>
+              {community.name}
+            </p>
+            {community.description && (
+              <p style={{ fontSize: "12px", color: "#999" }}>{community.description}</p>
+            )}
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", flexShrink: 0 }}>
+            <p style={{ fontSize: "12px", color: "#999" }}>👥 {community.member_count}人</p>
+            <button
+              onClick={() => window.location.href = `/join/${community.invite_code}`}
+              style={{
+                padding: "6px 14px",
+                borderRadius: "20px",
+                border: "none",
+                backgroundColor: "#111",
+                color: "#fff",
+                fontSize: "12px",
+                cursor: "pointer",
+              }}
+            >参加</button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 }
