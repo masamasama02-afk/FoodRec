@@ -16,6 +16,9 @@ export default function CommunitiesPage() {
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [isPublic, setIsPublic] = useState(true);
+  const [editingCommunityId, setEditingCommunityId] = useState<string | null>(null);
+const [editName, setEditName] = useState("");
+const [editDescription, setEditDescription] = useState("");
 
   const fetchCommunities = async (userId: string) => {
     const { data } = await supabase
@@ -68,6 +71,20 @@ export default function CommunitiesPage() {
     setCreating(false);
     await fetchCommunities(user.id);
   };
+
+  const updateCommunity = async () => {
+  if (!editName.trim()) return;
+
+  const { error } = await supabase
+    .from("communities")
+    .update({ name: editName.trim(), description: editDescription.trim() })
+    .eq("id", editingCommunityId);
+
+  if (error) { alert("更新失敗"); return; }
+
+  setEditingCommunityId(null);
+  await fetchCommunities(user.id);
+};
 
   if (loading) return <main style={{ padding: "24px" }}>読み込み中...</main>;
 
@@ -152,11 +169,98 @@ export default function CommunitiesPage() {
           }}
         >
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
-            <p style={{ fontSize: "16px", fontWeight: "700", color: "#111" }}>
-              {community.name}
-            </p>
-            <span style={{ fontSize: "12px", color: "#bbb" }}>→</span>
-          </div>
+  {editingCommunityId === community.id ? (
+    <div style={{ flex: 1, marginRight: "8px" }}>
+      <input
+        value={editName}
+        onChange={(e) => setEditName(e.target.value)}
+        style={{
+          width: "100%",
+          padding: "8px 12px",
+          borderRadius: "10px",
+          border: "0.5px solid #e0e0e0",
+          backgroundColor: "#fafafa",
+          boxSizing: "border-box",
+          fontSize: "14px",
+          color: "#111",
+          marginBottom: "8px",
+        }}
+      />
+      <textarea
+        value={editDescription}
+        onChange={(e) => setEditDescription(e.target.value)}
+        placeholder="説明（任意）"
+        style={{
+          width: "100%",
+          padding: "8px 12px",
+          borderRadius: "10px",
+          border: "0.5px solid #e0e0e0",
+          backgroundColor: "#fafafa",
+          boxSizing: "border-box",
+          fontSize: "13px",
+          color: "#111",
+          resize: "none",
+          height: "60px",
+          marginBottom: "8px",
+        }}
+      />
+      <div style={{ display: "flex", gap: "8px" }}>
+        <button
+          onClick={updateCommunity}
+          style={{
+            padding: "6px 16px",
+            borderRadius: "20px",
+            border: "none",
+            backgroundColor: "#111",
+            color: "#fff",
+            fontSize: "12px",
+            cursor: "pointer",
+          }}
+        >保存</button>
+        <button
+          onClick={() => setEditingCommunityId(null)}
+          style={{
+            padding: "6px 16px",
+            borderRadius: "20px",
+            border: "0.5px solid #ddd",
+            backgroundColor: "#fff",
+            color: "#666",
+            fontSize: "12px",
+            cursor: "pointer",
+          }}
+        >キャンセル</button>
+      </div>
+    </div>
+  ) : (
+    <>
+      <p style={{ fontSize: "16px", fontWeight: "700", color: "#111" }}>
+        {community.name}
+      </p>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        {community.owner_id === user?.id && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setEditingCommunityId(community.id);
+              setEditName(community.name);
+              setEditDescription(community.description || "");
+            }}
+            style={{
+              padding: "4px 10px",
+              borderRadius: "20px",
+              border: "0.5px solid #ddd",
+              backgroundColor: "#fff",
+              color: "#666",
+              fontSize: "11px",
+              cursor: "pointer",
+            }}
+          >編集</button>
+        )}
+        <span style={{ fontSize: "12px", color: "#bbb" }}>→</span>
+      </div>
+    </>
+  )}
+</div>
           {community.description && (
             <p style={{ fontSize: "13px", color: "#666", marginBottom: "10px", lineHeight: 1.5 }}>
               {community.description}
