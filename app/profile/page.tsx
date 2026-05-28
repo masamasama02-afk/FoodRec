@@ -13,6 +13,7 @@ type Post = {
   images?: string[];
   genres?: string[];
   area?: string;
+  place_id?: string;
   created_at?: string;
   user_id?: string;
   username?: string;
@@ -48,6 +49,8 @@ const [editMustMenu1, setEditMustMenu1] = useState("");
 const [editMustMenu2, setEditMustMenu2] = useState("");
 const [editMustMenu3, setEditMustMenu3] = useState("");
 const [openMenuPostId, setOpenMenuPostId] = useState<number | null>(null);
+const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+
   // プロフィール取得
   const fetchProfile = async (userId: string) => {
   const { data, error } = await supabase
@@ -958,7 +961,7 @@ setLoading(false);
       </div>
     ) : (
       // 表示モード
-      <div>
+      <div onClick={() => setSelectedPost(post)} style={{ cursor: "pointer" }}>
         {(() => {
           const imgs = post.images && post.images.length > 0 ? post.images : post.image ? [post.image] : [];
           return imgs.length > 0 ? (
@@ -1156,6 +1159,129 @@ setLoading(false);
           </>
         )}
       </section>
+      {selectedPost && (
+  <div
+    onClick={() => setSelectedPost(null)}
+    style={{
+      position: "fixed",
+      top: 0, left: 0, right: 0, bottom: 0,
+      backgroundColor: "rgba(0,0,0,0.7)",
+      zIndex: 1000,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "24px",
+    }}
+  >
+    <div
+      onClick={(e) => e.stopPropagation()}
+      style={{
+        backgroundColor: "#fff",
+        borderRadius: "20px",
+        width: "100%",
+        maxWidth: "480px",
+        maxHeight: "85vh",
+        overflowY: "auto",
+      }}
+    >
+      {(() => {
+        const imgs = selectedPost.images && selectedPost.images.length > 0
+          ? selectedPost.images
+          : selectedPost.image ? [selectedPost.image] : [];
+        return imgs.length > 0 ? (
+          <div style={{
+            display: "flex",
+            overflowX: imgs.length > 1 ? "auto" : "hidden",
+            scrollbarWidth: "none",
+          }}>
+            {imgs.map((url, index) => (
+              <img
+                key={index}
+                src={url}
+                style={{
+                  width: imgs.length > 1 ? "85vw" : "100%",
+                  minWidth: imgs.length > 1 ? "85vw" : "100%",
+                  height: "260px",
+                  objectFit: "cover",
+                  flexShrink: 0,
+                  borderRadius: imgs.length === 1 ? "20px 20px 0 0" : "0",
+                }}
+              />
+            ))}
+          </div>
+        ) : null;
+      })()}
+      <div style={{ padding: "20px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px", flexWrap: "wrap" }}>
+          <a
+            href={selectedPost.place_id
+              ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedPost.restaurant)}&query_place_id=${selectedPost.place_id}`
+              : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedPost.restaurant)}`
+            }
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ fontSize: "18px", fontWeight: "700", color: "#111", textDecoration: "none" }}
+          >
+            {selectedPost.restaurant} 🗺️
+          </a>
+          {selectedPost.area && (
+            <span style={{ fontSize: "12px", color: "#999" }}>📍 {selectedPost.area}</span>
+          )}
+        </div>
+        {selectedPost.genres && selectedPost.genres.length > 0 && (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginBottom: "10px" }}>
+            {selectedPost.genres.map((genre) => (
+              <span key={genre} style={{
+                padding: "3px 10px",
+                borderRadius: "20px",
+                fontSize: "11px",
+                backgroundColor: "#f0f0f0",
+                color: "#555",
+              }}>{genre}</span>
+            ))}
+          </div>
+        )}
+        <p style={{ fontSize: "14px", color: "#f5a623", marginBottom: "10px" }}>
+          ★ {Number(selectedPost.rating).toFixed(1)}
+        </p>
+        {[selectedPost.must_menu_1, selectedPost.must_menu_2, selectedPost.must_menu_3].filter(Boolean).length > 0 && (
+          <div style={{ marginBottom: "10px" }}>
+            <p style={{ fontSize: "11px", color: "#bbb", marginBottom: "4px" }}>おすすめメニュー</p>
+            {[
+              { rank: "🥇", value: selectedPost.must_menu_1 },
+              { rank: "🥈", value: selectedPost.must_menu_2 },
+              { rank: "🥉", value: selectedPost.must_menu_3 },
+            ].filter(item => item.value).map(({ rank, value }) => (
+              <div key={rank} style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "2px" }}>
+                <span style={{ fontSize: "12px" }}>{rank}</span>
+                <span style={{ fontSize: "12px", color: "#333" }}>{value}</span>
+              </div>
+            ))}
+          </div>
+        )}
+        <p style={{ fontSize: "14px", color: "#111", lineHeight: 1.6, marginBottom: "16px", whiteSpace: "pre-wrap" }}>
+          {selectedPost.comment}
+        </p>
+        <p style={{ fontSize: "12px", color: "#bbb", marginBottom: "16px" }}>
+          {selectedPost.created_at ? new Date(selectedPost.created_at).toLocaleDateString("ja-JP") : ""}
+        </p>
+        <button
+          onClick={() => setSelectedPost(null)}
+          style={{
+            width: "100%",
+            padding: "12px",
+            borderRadius: "12px",
+            border: "0.5px solid #ddd",
+            backgroundColor: "#fff",
+            color: "#666",
+            fontSize: "14px",
+            cursor: "pointer",
+          }}
+        >閉じる</button>
+      </div>
+    </div>
+  </div>
+)}
     </main>
   );
 }
