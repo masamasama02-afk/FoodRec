@@ -311,6 +311,7 @@ must_menu_3: editMustMenu3 || null,
 };
 
   const deletePost = async (postId: number) => {
+  console.log("削除試行:", postId, "user:", user?.id);
   const { error } = await supabase
     .from("posts")
     .delete()
@@ -1021,8 +1022,8 @@ setLoading(false);
                 overflow: "hidden",
                 minWidth: "100px",
               }}>
-                <button
-                  onClick={() => { startEdit(post); setOpenMenuPostId(null); }}
+               <button
+  onClick={(e) => { e.stopPropagation(); startEdit(post); setOpenMenuPostId(null); }}
                   style={{
                     display: "block",
                     width: "100%",
@@ -1037,7 +1038,7 @@ setLoading(false);
                   }}
                 >編集</button>
                 <button
-                  onClick={() => { deletePost(post.id); setOpenMenuPostId(null); }}
+  onClick={(e) => { e.stopPropagation(); deletePost(post.id); setOpenMenuPostId(null); }}
                   style={{
                     display: "block",
                     width: "100%",
