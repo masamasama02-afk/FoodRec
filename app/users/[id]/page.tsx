@@ -256,63 +256,61 @@ export default function UserPage() {
         <p style={{ color: "#999", fontSize: "14px" }}>まだ投稿がありません。</p>
       )}
 
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        gap: "8px",
-      }}>
-        {posts.map((post) => (
-  <div
-    key={post.id}
-    onClick={() => setSelectedPost(post)}
-    style={{
-      backgroundColor: "#fff",
-      border: "0.5px solid #eee",
-      borderRadius: "16px",
-      overflow: "hidden",
-      cursor: "pointer",
-      marginBottom: "12px",
-    }}
-  >
-            {(() => {
-              const imgs = post.images && post.images.length > 0 ? post.images : post.image ? [post.image] : [];
-              return imgs.length > 0 ? (
-                <img
-                  src={imgs[0]}
-                  loading="lazy"
-                  style={{
-                    width: "100%",
-                    height: "160px",
-                    objectFit: "cover",
-                    display: "block",
-                  }}
-                />
-              ) : (
+      {[
+  { label: "S", color: "#ff4444", bg: "#fff0f0" },
+  { label: "A", color: "#ff8800", bg: "#fff8f0" },
+  { label: "B", color: "#4CAF50", bg: "#f0fff0" },
+  { label: "C", color: "#888", bg: "#f8f8f8" },
+].map((tier) => {
+  const tierPosts = posts.filter((p) => {
+    const r = Number(p.rating);
+    if (tier.label === "S") return r >= 4.5;
+    if (tier.label === "A") return r >= 4.0 && r < 4.5;
+    if (tier.label === "B") return r >= 3.5 && r < 4.0;
+    return r < 3.5;
+  });
+  if (tierPosts.length === 0) return null;
+  return (
+    <div key={tier.label} style={{ marginBottom: "16px" }}>
+      <div style={{ display: "flex", alignItems: "stretch", borderRadius: "12px", overflow: "hidden", border: "0.5px solid #eee" }}>
+        <div style={{
+          width: "44px", flexShrink: 0, backgroundColor: tier.bg,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          borderRight: `2px solid ${tier.color}`,
+        }}>
+          <span style={{ fontSize: "20px", fontWeight: "900", color: tier.color }}>{tier.label}</span>
+        </div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "2px", padding: "2px", backgroundColor: "#fff", flex: 1 }}>
+          {tierPosts.map((post) => {
+            const imgs = post.images && post.images.length > 0 ? post.images : post.image ? [post.image] : [];
+            return (
+              <div
+                key={post.id}
+                onClick={() => setSelectedPost(post)}
+                style={{
+                  width: "calc(33.33% - 2px)", aspectRatio: "1",
+                  overflow: "hidden", cursor: "pointer",
+                  position: "relative", backgroundColor: "#f8f8f8",
+                }}
+              >
+                {imgs.length > 0 ? (
+                  <img src={imgs[0]} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                ) : (
+                  <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px" }}>🍽️</div>
+                )}
                 <div style={{
-                  width: "100%",
-                  height: "160px",
-                  backgroundColor: "#f8f8f8",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "32px",
-                }}>🍽️</div>
-              );
-            })()}
-            <div style={{ padding: "10px" }}>
-              <p style={{ fontSize: "13px", fontWeight: "600", color: "#111", marginBottom: "4px", lineHeight: 1.3 }}>
-                {post.restaurant}
-              </p>
-              <p style={{ fontSize: "12px", color: "#f5a623", marginBottom: "4px" }}>
-                ★ {Number(post.rating).toFixed(1)}
-              </p>
-              {post.area && (
-                <p style={{ fontSize: "11px", color: "#999" }}>📍 {post.area}</p>
-              )}
-            </div>
-          </div>
-        ))}
+                  position: "absolute", bottom: "4px", right: "4px",
+                  backgroundColor: "rgba(0,0,0,0.6)", color: "#fff",
+                  fontSize: "10px", fontWeight: "600", padding: "2px 5px", borderRadius: "6px",
+                }}>★{Number(post.rating).toFixed(1)}</div>
+              </div>
+            );
+          })}
+        </div>
       </div>
+    </div>
+  );
+})}
       {selectedPost && (
   <div
     onClick={() => setSelectedPost(null)}
