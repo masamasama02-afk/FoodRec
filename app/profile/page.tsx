@@ -998,7 +998,7 @@ setLoading(false);
           )}
          <div style={{ position: "relative", marginTop: "8px", display: "flex", justifyContent: "flex-end" }}>
             <button
-              onClick={() => setOpenMenuPostId(openMenuPostId === post.id ? null : post.id)}
+  onClick={(e) => { e.stopPropagation(); setOpenMenuPostId(openMenuPostId === post.id ? null : post.id); }}
               style={{
                 background: "none",
                 border: "none",
