@@ -968,8 +968,8 @@ setLoading(false);
     const r = Number(p.rating);
     if (tier.label === "S") return r >= 4.5;
     if (tier.label === "A") return r >= 4.0 && r < 4.5;
-    if (tier.label === "B") return r >= 3.0 && r < 4.0;
-    return r < 3.0;
+    if (tier.label === "B") return r >= 3.5 && r < 4.0;
+    return r < 3.5;
   });
   if (tierPosts.length === 0) return null;
   return (
