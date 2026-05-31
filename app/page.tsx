@@ -107,6 +107,7 @@ const router = useRouter();
 const [postCommunityIds, setPostCommunityIds] = useState<string[]>([]);
 const [myCommunities, setMyCommunities] = useState<any[]>([]);
 const [signingIn, setSigningIn] = useState(false);
+const [showPostSheet, setShowPostSheet] = useState(false);
 
   const fetchProfile = async (userId: string) => {
     const { data, error } = await supabase
@@ -1718,370 +1719,252 @@ const toggleLike = async (postId: number) => {
   </section>
 )}
 
-      <section
+      {/* 投稿ボタン */}
+<button
+  onClick={() => setShowPostSheet(true)}
   style={{
-    backgroundColor: "#fff",
-    border: "0.5px solid #eee",
+    width: "100%",
+    padding: "14px",
     borderRadius: "16px",
-    padding: "16px",
+    border: "none",
+    backgroundColor: "#111",
+    color: "#fff",
+    fontSize: "15px",
+    fontWeight: "600",
+    cursor: "pointer",
     marginBottom: "20px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "8px",
   }}
 >
-  <h2 style={{ fontSize: "15px", fontWeight: "600", color: "#111", marginBottom: "12px" }}>
-    ✏️ 投稿する
-  </h2>
+  ✏️ レストランを投稿する
+</button>
 
-        <div style={{ position: "relative", marginBottom: "12px" }}>
-  <input
-    ref={restaurantInputRef}
-    placeholder="レストラン名を検索"
-    value={restaurant}
-    onChange={(e) => {
-      setRestaurant(e.target.value)
-      searchPlaces(e.target.value)
-    }}
-    style={{
-      width: "100%",
-      padding: "10px",
-      borderRadius: "8px",
-      border: "1px solid #ccc",
-      boxSizing: "border-box",
-      color: "#111",
-    }}
-  />
-  {showResults && searchResults.length > 0 && (
+{/* ボトムシート */}
+{showPostSheet && (
+  <>
+    {/* 背景オーバーレイ */}
+    <div
+      onClick={() => setShowPostSheet(false)}
+      style={{
+        position: "fixed",
+        top: 0, left: 0, right: 0, bottom: 0,
+        backgroundColor: "rgba(0,0,0,0.5)",
+        zIndex: 200,
+      }}
+    />
+    {/* シート本体 */}
     <div style={{
-      position: "absolute",
-      top: "100%",
-      left: 0,
-      right: 0,
+      position: "fixed",
+      bottom: 0, left: 0, right: 0,
       backgroundColor: "#fff",
-      border: "1px solid #ddd",
-      borderRadius: "8px",
-      maxHeight: "240px",
+      borderRadius: "20px 20px 0 0",
+      zIndex: 201,
+      maxHeight: "90vh",
       overflowY: "auto",
-      zIndex: 1000,
-      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+      padding: "20px 16px 40px",
     }}>
-      {searchResults.map((place, index) => (
-        <div
-          key={index}
-          onClick={() => selectPlace(place)}
-          style={{
-            padding: "10px 12px",
-            borderBottom: "0.5px solid #f0f0f0",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#f8f8f8")}
-          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#fff")}
-        >
-          <span style={{ fontSize: "16px" }}>📍</span>
-          <div>
-            <p style={{ margin: 0, fontSize: "13px", color: "#111", fontWeight: "500" }}>
-              {place.name}
-            </p>
-            <p style={{ margin: 0, fontSize: "11px", color: "#999" }}>
-              {place.formatted_address}
-            </p>
-          </div>
-        </div>
-      ))}
-    </div>
-  )}
-</div>
+      {/* ハンドル */}
+      <div style={{
+        width: "40px", height: "4px",
+        backgroundColor: "#ddd",
+        borderRadius: "2px",
+        margin: "0 auto 20px",
+      }} />
 
-        <textarea
-          placeholder="コメント"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
+        <h2 style={{ fontSize: "17px", fontWeight: "700", color: "#111" }}>✏️ 投稿する</h2>
+        <button
+          onClick={() => setShowPostSheet(false)}
           style={{
-            width: "100%",
-            padding: "10px",
-            minHeight: "100px",
-            marginBottom: "12px",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
-            boxSizing: "border-box",
-             color: "#111",
+            background: "none", border: "none",
+            fontSize: "20px", color: "#999", cursor: "pointer",
+          }}
+        >×</button>
+      </div>
+
+      {/* レストラン検索 */}
+      <div style={{ position: "relative", marginBottom: "12px" }}>
+        <input
+          ref={restaurantInputRef}
+          placeholder="レストラン名を検索"
+          value={restaurant}
+          onChange={(e) => { setRestaurant(e.target.value); searchPlaces(e.target.value); }}
+          style={{
+            width: "100%", padding: "12px 16px",
+            borderRadius: "12px", border: "0.5px solid #e0e0e0",
+            backgroundColor: "#fafafa", boxSizing: "border-box",
+            fontSize: "14px", color: "#111",
           }}
         />
-
-        <div style={{ marginTop: "10px", marginBottom: "16px" }}>
-  <p style={{ marginBottom: "8px", color: "#111" }}>評価：</p>
-  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-    {[1, 2, 3, 4, 5].map((star) => {
-      const filled = Math.min(Math.max(rating - (star - 1), 0), 1);
-      return (
-        <svg key={star} viewBox="0 0 36 36" width="28" height="28" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id={`grad${star}`} x1="0" x2="1" y1="0" y2="0">
-              <stop offset={`${filled * 100}%`} stopColor="#f5a623" />
-              <stop offset={`${filled * 100}%`} stopColor="#ddd" />
-            </linearGradient>
-          </defs>
-          <path
-            d="M18 4l3.9 7.9 8.7 1.3-6.3 6.1 1.5 8.7L18 23.8l-7.8 4.1 1.5-8.7-6.3-6.1 8.7-1.3z"
-            fill={`url(#grad${star})`}
-            stroke="#f5a623"
-            strokeWidth="0.5"
-          />
-        </svg>
-      );
-    })}
-    <span style={{ fontSize: "18px", fontWeight: "600", color: "#f5a623" }}>
-      {rating.toFixed(1)}
-    </span>
-  </div>
-  <input
-    type="range"
-    min={1}
-    max={5}
-    step={0.1}
-    value={rating}
-    onChange={(e) => setRating(Number(e.target.value))}
-    style={{ width: "100%", accentColor: "#f5a623", marginTop: "8px" }}
-  />
-</div>
-{/* ジャンル選択 */}
-<div style={{ marginBottom: "16px" }}>
-  <p style={{ fontSize: "13px", color: "#111", marginBottom: "8px" }}>シーン</p>
-  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
-    {["🌞 ランチ", "🌙 ディナー", "☕ カフェ", "🍺 飲み", "👫 デート", "👥 グループ", "🥂 2次会"].map((genre) => (
-      <button
-        key={genre}
-        onClick={() => setSelectedGenres(
-          selectedGenres.includes(genre)
-            ? selectedGenres.filter(g => g !== genre)
-            : [...selectedGenres, genre]
+        {showResults && searchResults.length > 0 && (
+          <div style={{
+            position: "absolute", top: "100%", left: 0, right: 0,
+            backgroundColor: "#fff", border: "1px solid #ddd",
+            borderRadius: "12px", maxHeight: "240px", overflowY: "auto",
+            zIndex: 1000, boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+          }}>
+            {searchResults.map((place, index) => (
+              <div
+                key={index}
+                onClick={() => selectPlace(place)}
+                style={{
+                  padding: "10px 14px", borderBottom: "0.5px solid #f0f0f0",
+                  cursor: "pointer", display: "flex", alignItems: "center", gap: "10px",
+                }}
+              >
+                <span style={{ fontSize: "16px" }}>📍</span>
+                <div>
+                  <p style={{ margin: 0, fontSize: "13px", color: "#111", fontWeight: "500" }}>{place.name}</p>
+                  <p style={{ margin: 0, fontSize: "11px", color: "#999" }}>{place.formatted_address}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         )}
-        style={{
-          padding: "6px 14px",
-          borderRadius: "20px",
-          border: "0.5px solid #ddd",
-          backgroundColor: selectedGenres.includes(genre) ? "#111" : "#fff",
-          color: selectedGenres.includes(genre) ? "#fff" : "#666",
-          fontSize: "12px",
-          fontWeight: "500",
-          cursor: "pointer",
-        }}
-      >
-        {genre}
-      </button>
-    ))}
-  </div>
-  <p style={{ fontSize: "13px", color: "#111", marginBottom: "8px" }}>料理ジャンル</p>
-  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-    {["🍣 和食", "🍜 ラーメン", "🍝 つけ麺", "🫕 うどん", "🍜 蕎麦", "🍱 鮨", "🦞 海鮮", "🍛 カレー", "🥘 韓国料理", "🍗 焼き鳥", "🥟 餃子・点心", "🍻 居酒屋", "🥂 ワインバー", "🍦 デザート", "🍡 うなぎ", "🥘 スパニッシュ", "🍝 洋食", "🍕 イタリアン", "🍷 ビストロ", "🍜 中華", "🌮 エスニック", "🍖 焼肉", "🦌 ジビエ", "🥗 ヘルシー", "🍔 ファストフード", "🍰 スイーツ", "🍺 クラフトビール"].map((genre) => (
-      <button
-        key={genre}
-        onClick={() => setSelectedGenres(
-          selectedGenres.includes(genre)
-            ? selectedGenres.filter(g => g !== genre)
-            : [...selectedGenres, genre]
-        )}
-        style={{
-          padding: "6px 14px",
-          borderRadius: "20px",
-          border: "0.5px solid #ddd",
-          backgroundColor: selectedGenres.includes(genre) ? "#111" : "#fff",
-          color: selectedGenres.includes(genre) ? "#fff" : "#666",
-          fontSize: "12px",
-          fontWeight: "500",
-          cursor: "pointer",
-        }}
-      >
-        {genre}
-      </button>
-    ))}
-  </div>
-</div>
-       {/* 価格帯 */}
-<div style={{ marginBottom: "16px" }}>
-  <p style={{ fontSize: "13px", color: "#111", marginBottom: "8px" }}>
-    💰 価格帯（1人あたり）
-  </p>
-  <div style={{ padding: "0 4px" }}>
-    <input
-      type="range"
-      min={500}
-      max={30000}
-      step={500}
-      value={price}
-      onChange={(e) => setPrice(Number(e.target.value))}
-      style={{ width: "100%", accentColor: "#111" }}
-    />
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "6px" }}>
-      <span style={{ fontSize: "12px", color: "#999" }}>¥500以下</span>
-      <span style={{ fontSize: "15px", fontWeight: "600", color: "#111" }}>
-        {price <= 500 ? "¥500以下" : price >= 30000 ? "¥30,000+" : `¥${(price - 500).toLocaleString()}〜¥${price.toLocaleString()}`}
-      </span>
-      <span style={{ fontSize: "12px", color: "#999" }}>¥30,000+</span>
-    </div>
-    <div style={{ display: "flex", justifyContent: "center", marginTop: "4px" }}>
-      <span style={{ fontSize: "12px", color: "#999" }}>
-        {price <= 1000 ? "コスパ飯" : price <= 3000 ? "普通" : price <= 8000 ? "ちょっと良い" : price <= 15000 ? "高め" : "プレミアム"}
-      </span>
-    </div>
-  </div>
-</div>
+      </div>
 
-{/* 注文必須メニュー */}
-<div style={{ marginBottom: "16px" }}>
-  <p style={{ fontSize: "13px", color: "#111", marginBottom: "8px" }}>
-    🍽️ おすすめメニュー（任意・最大3件）
-  </p>
-  {[
-    { label: "🥇 No.1", value: mustMenu1, setter: setMustMenu1 },
-    { label: "🥈 No.2", value: mustMenu2, setter: setMustMenu2 },
-    { label: "🥉 No.3", value: mustMenu3, setter: setMustMenu3 },
-  ].map(({ label, value, setter }) => (
-    <div key={label} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-      <span style={{ fontSize: "12px", color: "#666", minWidth: "40px" }}>{label}</span>
-      <input
-        placeholder="例: 黒毛和牛のサーロイン"
-        value={value}
-        onChange={(e) => setter(e.target.value)}
+      {/* コメント */}
+      <textarea
+        placeholder="コメント"
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
         style={{
-          flex: 1,
-          padding: "10px 14px",
-          borderRadius: "10px",
-          border: "0.5px solid #e0e0e0",
-          backgroundColor: "#fafafa",
-          boxSizing: "border-box",
-          fontSize: "14px",
-          color: "#111",
+          width: "100%", padding: "12px 16px",
+          minHeight: "100px", marginBottom: "16px",
+          borderRadius: "12px", border: "0.5px solid #e0e0e0",
+          backgroundColor: "#fafafa", boxSizing: "border-box",
+          fontSize: "14px", color: "#111", resize: "none",
         }}
       />
-    </div>
-  ))}
-</div>
 
-        <label style={{
-  display: "inline-flex",
-  alignItems: "center",
-  gap: "6px",
-  padding: "8px 16px",
-  borderRadius: "20px",
-  border: "0.5px solid #ddd",
-  backgroundColor: "#fff",
-  color: "#555",
-  fontSize: "13px",
-  fontWeight: "500",
-  cursor: "pointer",
-}}>
-  📷 写真を追加
-  <input
-    type="file"
-    accept="image/*"
-    multiple
-    onChange={handleImage}
-    style={{ display: "none" }}
-  />
-</label>
-<p style={{ fontSize: "11px", color: "#aaa", marginTop: "6px" }}>
-  最大5枚まで選択できます（{images.length}/5）
-</p>
-
-{uploading && (
-  <p style={{ color: "#666", marginTop: "8px" }}>
-    画像をアップロード中...
-  </p>
-)}
-
-{images.length > 0 && (
-  <div style={{ marginTop: "16px" }}>
-    <p style={{ marginBottom: "8px", color: "#111" }}>画像プレビュー</p>
-    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-      {images.map((url, index) => (
-        <div key={index} style={{ position: "relative" }}>
-          <img
-            src={url}
-            alt={`preview-${index}`}
-            style={{
-              width: "100px",
-              height: "100px",
-              objectFit: "cover",
-              borderRadius: "8px",
-              border: "1px solid #ddd",
-            }}
-          />
-          <button
-            onClick={() => setImages(images.filter((_, i) => i !== index))}
-            style={{
-              position: "absolute",
-              top: "4px",
-              right: "4px",
-              width: "20px",
-              height: "20px",
-              borderRadius: "50%",
-              border: "none",
-              backgroundColor: "rgba(0,0,0,0.5)",
-              color: "#fff",
-              fontSize: "12px",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            ×
-          </button>
+      {/* 評価 */}
+      <div style={{ marginBottom: "16px" }}>
+        <p style={{ fontSize: "13px", color: "#111", marginBottom: "8px", fontWeight: "500" }}>評価</p>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          {[1, 2, 3, 4, 5].map((star) => {
+            const filled = Math.min(Math.max(rating - (star - 1), 0), 1);
+            return (
+              <svg key={star} viewBox="0 0 36 36" width="28" height="28" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id={`grad${star}`} x1="0" x2="1" y1="0" y2="0">
+                    <stop offset={`${filled * 100}%`} stopColor="#f5a623" />
+                    <stop offset={`${filled * 100}%`} stopColor="#ddd" />
+                  </linearGradient>
+                </defs>
+                <path d="M18 4l3.9 7.9 8.7 1.3-6.3 6.1 1.5 8.7L18 23.8l-7.8 4.1 1.5-8.7-6.3-6.1 8.7-1.3z" fill={`url(#grad${star})`} stroke="#f5a623" strokeWidth="0.5" />
+              </svg>
+            );
+          })}
+          <span style={{ fontSize: "18px", fontWeight: "600", color: "#f5a623" }}>{rating.toFixed(1)}</span>
         </div>
-      ))}
-    </div>
-  </div>
-)}
- {/* 公開範囲 */}
-<div style={{ marginBottom: "16px" }}>
-  <p style={{ fontSize: "13px", color: "#111", marginBottom: "8px" }}>
-    🔒 公開範囲
-  </p>
-  <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", marginBottom: "8px" }}>
-    <input
-      type="checkbox"
-      checked={postCommunityIds.length === 0}
-      onChange={() => setPostCommunityIds([])}
-    />
-    <span style={{ fontSize: "14px", color: "#111" }}>🌐 全体公開</span>
-  </label>
-  {myCommunities.map((community) => (
-    <label key={community.id} style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", marginBottom: "8px" }}>
-      <input
-        type="checkbox"
-        checked={postCommunityIds.includes(community.id)}
-        onChange={() => {
-          setPostCommunityIds(prev =>
-            prev.includes(community.id)
-              ? prev.filter(id => id !== community.id)
-              : [...prev, community.id]
-          );
-        }}
-      />
-      <span style={{ fontSize: "14px", color: "#111" }}>👥 {community.name}のみ</span>
-    </label>
-  ))}
-</div>
-        <button
-          onClick={addPost}
-          disabled={posting}
-          style={{
-            marginTop: "20px",
-            padding: "12px 20px",
-            borderRadius: "10px",
-            border: "none",
-            backgroundColor: posting ? "#888" : "#111",
-            color: "#fff",
-            cursor: posting ? "not-allowed" : "pointer",
-            fontWeight: "bold",
-          }}
-        >
-          {posting ? "投稿中..." : "投稿"}
-        </button>
-      </section>
+        <input type="range" min={1} max={5} step={0.1} value={rating} onChange={(e) => setRating(Number(e.target.value))} style={{ width: "100%", accentColor: "#f5a623", marginTop: "8px" }} />
+      </div>
 
+      {/* ジャンル */}
+      <div style={{ marginBottom: "16px" }}>
+        <p style={{ fontSize: "13px", color: "#111", marginBottom: "8px", fontWeight: "500" }}>シーン</p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
+          {["🌞 ランチ", "🌙 ディナー", "☕ カフェ", "🍺 飲み", "👫 デート", "👥 グループ", "🥂 2次会"].map((genre) => (
+            <button key={genre} onClick={() => setSelectedGenres(selectedGenres.includes(genre) ? selectedGenres.filter(g => g !== genre) : [...selectedGenres, genre])}
+              style={{ padding: "6px 14px", borderRadius: "20px", border: "0.5px solid #ddd", backgroundColor: selectedGenres.includes(genre) ? "#111" : "#fff", color: selectedGenres.includes(genre) ? "#fff" : "#666", fontSize: "12px", cursor: "pointer" }}>
+              {genre}
+            </button>
+          ))}
+        </div>
+        <p style={{ fontSize: "13px", color: "#111", marginBottom: "8px", fontWeight: "500" }}>料理ジャンル</p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+          {["🍣 和食", "🍜 ラーメン", "🍝 つけ麺", "🫕 うどん", "🍜 蕎麦", "🍱 鮨", "🦞 海鮮", "🍛 カレー", "🥘 韓国料理", "🍗 焼き鳥", "🥟 餃子・点心", "🍻 居酒屋", "🥂 ワインバー", "🍦 デザート", "🍡 うなぎ", "🥘 スパニッシュ", "🍝 洋食", "🍕 イタリアン", "🍷 ビストロ", "🍜 中華", "🌮 エスニック", "🍖 焼肉", "🦌 ジビエ", "🥗 ヘルシー", "🍔 ファストフード", "🍰 スイーツ", "🍺 クラフトビール"].map((genre) => (
+            <button key={genre} onClick={() => setSelectedGenres(selectedGenres.includes(genre) ? selectedGenres.filter(g => g !== genre) : [...selectedGenres, genre])}
+              style={{ padding: "6px 14px", borderRadius: "20px", border: "0.5px solid #ddd", backgroundColor: selectedGenres.includes(genre) ? "#111" : "#fff", color: selectedGenres.includes(genre) ? "#fff" : "#666", fontSize: "12px", cursor: "pointer" }}>
+              {genre}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 価格帯 */}
+      <div style={{ marginBottom: "16px" }}>
+        <p style={{ fontSize: "13px", color: "#111", marginBottom: "8px", fontWeight: "500" }}>💰 価格帯（1人あたり）</p>
+        <input type="range" min={500} max={30000} step={500} value={price} onChange={(e) => setPrice(Number(e.target.value))} style={{ width: "100%", accentColor: "#111" }} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "6px" }}>
+          <span style={{ fontSize: "12px", color: "#999" }}>¥500以下</span>
+          <span style={{ fontSize: "15px", fontWeight: "600", color: "#111" }}>
+            {price <= 500 ? "¥500以下" : price >= 30000 ? "¥30,000+" : `¥${(price - 500).toLocaleString()}〜¥${price.toLocaleString()}`}
+          </span>
+          <span style={{ fontSize: "12px", color: "#999" }}>¥30,000+</span>
+        </div>
+      </div>
+
+      {/* おすすめメニュー */}
+      <div style={{ marginBottom: "16px" }}>
+        <p style={{ fontSize: "13px", color: "#111", marginBottom: "8px", fontWeight: "500" }}>🍽️ おすすめメニュー（任意）</p>
+        {[
+          { label: "🥇 No.1", value: mustMenu1, setter: setMustMenu1 },
+          { label: "🥈 No.2", value: mustMenu2, setter: setMustMenu2 },
+          { label: "🥉 No.3", value: mustMenu3, setter: setMustMenu3 },
+        ].map(({ label, value, setter }) => (
+          <div key={label} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+            <span style={{ fontSize: "12px", color: "#666", minWidth: "40px" }}>{label}</span>
+            <input placeholder="例: 黒毛和牛のサーロイン" value={value} onChange={(e) => setter(e.target.value)}
+              style={{ flex: 1, padding: "10px 14px", borderRadius: "10px", border: "0.5px solid #e0e0e0", backgroundColor: "#fafafa", boxSizing: "border-box", fontSize: "14px", color: "#111" }} />
+          </div>
+        ))}
+      </div>
+
+      {/* 写真 */}
+      <div style={{ marginBottom: "16px" }}>
+        <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "8px 16px", borderRadius: "20px", border: "0.5px solid #ddd", backgroundColor: "#fff", color: "#555", fontSize: "13px", cursor: "pointer" }}>
+          📷 写真を追加（{images.length}/5）
+          <input type="file" accept="image/*" multiple onChange={handleImage} style={{ display: "none" }} />
+        </label>
+        {uploading && <p style={{ color: "#666", marginTop: "8px", fontSize: "13px" }}>アップロード中...</p>}
+        {images.length > 0 && (
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "12px" }}>
+            {images.map((url, index) => (
+              <div key={index} style={{ position: "relative" }}>
+                <img src={url} style={{ width: "80px", height: "80px", objectFit: "cover", borderRadius: "8px", border: "1px solid #ddd" }} />
+                <button onClick={() => setImages(images.filter((_, i) => i !== index))}
+                  style={{ position: "absolute", top: "4px", right: "4px", width: "20px", height: "20px", borderRadius: "50%", border: "none", backgroundColor: "rgba(0,0,0,0.5)", color: "#fff", fontSize: "12px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>×</button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* 公開範囲 */}
+      <div style={{ marginBottom: "20px" }}>
+        <p style={{ fontSize: "13px", color: "#111", marginBottom: "8px", fontWeight: "500" }}>🔒 公開範囲</p>
+        <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", marginBottom: "8px" }}>
+          <input type="checkbox" checked={postCommunityIds.length === 0} onChange={() => setPostCommunityIds([])} />
+          <span style={{ fontSize: "14px", color: "#111" }}>🌐 全体公開</span>
+        </label>
+        {myCommunities.map((community) => (
+          <label key={community.id} style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", marginBottom: "8px" }}>
+            <input type="checkbox" checked={postCommunityIds.includes(community.id)}
+              onChange={() => setPostCommunityIds(prev => prev.includes(community.id) ? prev.filter(id => id !== community.id) : [...prev, community.id])} />
+            <span style={{ fontSize: "14px", color: "#111" }}>👥 {community.name}のみ</span>
+          </label>
+        ))}
+      </div>
+
+      {/* 投稿ボタン */}
+      <button
+        onClick={addPost}
+        disabled={posting}
+        style={{
+          width: "100%", padding: "14px", borderRadius: "14px", border: "none",
+          backgroundColor: posting ? "#888" : "#111", color: "#fff",
+          fontSize: "15px", fontWeight: "600", cursor: posting ? "not-allowed" : "pointer",
+        }}
+      >
+        {posting ? "投稿中..." : "投稿する"}
+      </button>
+    </div>
+  </>
+)}
      <div style={{
   display: "flex",
   justifyContent: "space-between",
