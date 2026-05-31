@@ -733,230 +733,6 @@ setLoading(false);
             {posts.length === 0 && <p style={{ color: "#999", fontSize: "14px" }}>まだ投稿がありません</p>}
 
        
-{posts.map((post) => (
-  <div    key={post.id}
-    style={{
-      border: "0.5px solid #eee",
-      borderRadius: "16px",
-      overflow: "hidden",
-      backgroundColor: "#fff",
-    }}
-  >
-    {editingPostId === post.id ? (
-      // 編集モード
-      <div>
-        <input
-          value={editRestaurant}
-          onChange={(e) => setEditRestaurant(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "8px",
-            marginBottom: "8px",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
-            boxSizing: "border-box",
-            color: "#111",
-          }}
-        />
-        <textarea
-          value={editComment}
-          onChange={(e) => setEditComment(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "8px",
-            marginBottom: "8px",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
-            boxSizing: "border-box",
-            height: "80px",
-            color: "#111",
-          }}
-        />
-      {/* 評価 */}
-        <div style={{ marginBottom: "10px" }}>
-          <p style={{ fontSize: "12px", color: "#666", marginBottom: "6px" }}>評価</p>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
-            {[1, 2, 3, 4, 5].map((star) => {
-              const filled = Math.min(Math.max(Number(editRating) - (star - 1), 0), 1);
-              return (
-                <svg key={star} viewBox="0 0 36 36" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
-                  <defs>
-                    <linearGradient id={`edit-grad${star}`} x1="0" x2="1" y1="0" y2="0">
-                      <stop offset={`${filled * 100}%`} stopColor="#f5a623" />
-                      <stop offset={`${filled * 100}%`} stopColor="#ddd" />
-                    </linearGradient>
-                  </defs>
-                  <path
-                    d="M18 4l3.9 7.9 8.7 1.3-6.3 6.1 1.5 8.7L18 23.8l-7.8 4.1 1.5-8.7-6.3-6.1 8.7-1.3z"
-                    fill={`url(#edit-grad${star})`}
-                    stroke="#f5a623"
-                    strokeWidth="0.5"
-                  />
-                </svg>
-              );
-            })}
-            <span style={{ fontSize: "14px", fontWeight: "600", color: "#f5a623" }}>
-              {Number(editRating).toFixed(1)}
-            </span>
-          </div>
-          <input
-            type="range"
-            min={1}
-            max={5}
-            step={0.1}
-            value={editRating}
-            onChange={(e) => setEditRating(Number(e.target.value))}
-            style={{ width: "100%", accentColor: "#f5a623" }}
-          />
-        </div>
-        {/* ジャンル選択 */}
-        <div style={{ marginBottom: "10px" }}>
-          <p style={{ fontSize: "12px", color: "#666", marginBottom: "6px" }}>シーン</p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "8px" }}>
-           {["🌞 ランチ", "🌙 ディナー", "☕ カフェ", "🍺 飲み", "👫 デート", "👥 グループ", "🥂 2次会"].map((genre) => (
-              <button
-                key={genre}
-                onClick={() => setEditGenres(
-                  editGenres.includes(genre)
-                    ? editGenres.filter(g => g !== genre)
-                    : [...editGenres, genre]
-                )}
-                style={{
-                  padding: "4px 10px",
-                  borderRadius: "20px",
-                  border: "none",
-                  backgroundColor: editGenres.includes(genre) ? "#111" : "#f0f0f0",
-                  color: editGenres.includes(genre) ? "#fff" : "#666",
-                  fontSize: "11px",
-                  cursor: "pointer",
-                }}
-              >
-                {genre}
-              </button>
-            ))}
-          </div>
-          <p style={{ fontSize: "12px", color: "#666", marginBottom: "6px" }}>料理ジャンル</p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-         {["🍣 和食", "🍜 ラーメン", "🍝 つけ麺", "🫕 うどん", "🍜 蕎麦", "🍱 鮨", "🦞 海鮮", "🍛 カレー", "🥘 韓国料理", "🍗 焼き鳥", "🥟 餃子・点心", "🍻 居酒屋", "🥂 ワインバー", "🍦 デザート", "🍡 うなぎ", "🥘 スパニッシュ", "🍝 洋食", "🍕 イタリアン", "🍷 ビストロ", "🍜 中華", "🌮 エスニック", "🍖 焼肉", "🦌 ジビエ", "🥗 ヘルシー", "🍔 ファストフード", "🍰 スイーツ", "🍺 クラフトビール"].map((genre) => (
-              <button
-                key={genre}
-                onClick={() => setEditGenres(
-                  editGenres.includes(genre)
-                    ? editGenres.filter(g => g !== genre)
-                    : [...editGenres, genre]
-                )}
-                style={{
-                  padding: "4px 10px",
-                  borderRadius: "20px",
-                  border: "none",
-                  backgroundColor: editGenres.includes(genre) ? "#111" : "#f0f0f0",
-                  color: editGenres.includes(genre) ? "#fff" : "#666",
-                  fontSize: "11px",
-                  cursor: "pointer",
-                }}
-              >
-                {genre}
-              </button>
-            ))}
-          </div>
-        </div>
-{/* おすすめメニュー */}
-<div style={{ marginBottom: "10px" }}>
-  <p style={{ fontSize: "12px", color: "#666", marginBottom: "6px" }}>🍽️ おすすめメニュー（任意・最大3件）</p>
-  {[
-    { label: "🥇 No.1", value: editMustMenu1, setter: setEditMustMenu1 },
-    { label: "🥈 No.2", value: editMustMenu2, setter: setEditMustMenu2 },
-    { label: "🥉 No.3", value: editMustMenu3, setter: setEditMustMenu3 },
-  ].map(({ label, value, setter }) => (
-    <div key={label} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-      <span style={{ fontSize: "12px", color: "#666", minWidth: "40px" }}>{label}</span>
-      <input
-        placeholder="例: 黒毛和牛のサーロイン"
-        value={value}
-        onChange={(e) => setter(e.target.value)}
-        style={{
-          flex: 1,
-          padding: "8px 12px",
-          borderRadius: "8px",
-          border: "1px solid #ccc",
-          boxSizing: "border-box",
-          fontSize: "13px",
-          color: "#111",
-        }}
-      />
-    </div>
-  ))}
-</div>
-
-        {/* 画像 */}
-        <div style={{ marginBottom: "10px" }}>
-          <p style={{ fontSize: "12px", color: "#666", marginBottom: "6px" }}>画像（最大5枚）</p>
-          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "8px" }}>
-            {editImages.map((url, index) => (
-              <div key={index} style={{ position: "relative" }}>
-                <img
-                  src={url}
-                  style={{ width: "80px", height: "80px", objectFit: "cover", borderRadius: "8px", border: "1px solid #ddd" }}
-                />
-                <button
-                  onClick={() => setEditImages(editImages.filter((_, i) => i !== index))}
-                  style={{
-                    position: "absolute", top: "2px", right: "2px",
-                    width: "18px", height: "18px", borderRadius: "50%",
-                    border: "none", backgroundColor: "rgba(0,0,0,0.5)",
-                    color: "#fff", fontSize: "10px", cursor: "pointer",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                  }}
-                >×</button>
-              </div>
-            ))}
-            {editImages.length < 5&& (
-              <label style={{
-                width: "80px", height: "80px", borderRadius: "8px",
-                border: "1px dashed #ccc", display: "flex", alignItems: "center",
-                justifyContent: "center", cursor: "pointer", fontSize: "24px", color: "#ccc",
-              }}>
-                +
-                <input type="file" accept="image/*" multiple onChange={handleEditImage} style={{ display: "none" }} />
-              </label>
-            )}
-          </div>
-        </div>
-
-        <div style={{ display: "flex", gap: "8px" }}>
-          <button
-            onClick={() => saveEdit(post.id)}
-            style={{
-              padding: "8px 16px",
-              borderRadius: "20px",
-              border: "none",
-              backgroundColor: "#111",
-              color: "#fff",
-              fontSize: "13px",
-              cursor: "pointer",
-            }}
-          >
-            保存
-          </button>
-          <button
-            onClick={() => setEditingPostId(null)}
-            style={{
-              padding: "8px 16px",
-              borderRadius: "20px",
-              border: "0.5px solid #ddd",
-              backgroundColor: "#fff",
-              color: "#555",
-              fontSize: "13px",
-              cursor: "pointer",
-            }}
-          >
-            キャンセル
-          </button>
-        </div>
-      </div>
-    ) : null}
-  </div>
-))}
 
 {[
   { label: "S", color: "#ff4444", bg: "#fff0f0" },
@@ -1139,6 +915,132 @@ setLoading(false);
           </>
         )}
       </section>
+      {editingPostId !== null && (
+  <div
+    onClick={() => setEditingPostId(null)}
+    style={{
+      position: "fixed",
+      top: 0, left: 0, right: 0, bottom: 0,
+      backgroundColor: "rgba(0,0,0,0.6)",
+      zIndex: 1000,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "16px",
+    }}
+  >
+    <div
+      onClick={(e) => e.stopPropagation()}
+      style={{
+        backgroundColor: "#fff",
+        borderRadius: "20px",
+        padding: "24px",
+        width: "100%",
+        maxWidth: "480px",
+        maxHeight: "85vh",
+        overflowY: "auto",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
+        <p style={{ fontSize: "17px", fontWeight: "700", color: "#111" }}>投稿を編集</p>
+        <button onClick={() => setEditingPostId(null)} style={{ background: "none", border: "none", fontSize: "20px", color: "#999", cursor: "pointer" }}>×</button>
+      </div>
+      <input
+        value={editRestaurant}
+        onChange={(e) => setEditRestaurant(e.target.value)}
+        style={{ width: "100%", padding: "10px 14px", borderRadius: "10px", border: "0.5px solid #e0e0e0", backgroundColor: "#fafafa", boxSizing: "border-box", fontSize: "14px", color: "#111", marginBottom: "10px" }}
+      />
+      <textarea
+        value={editComment}
+        onChange={(e) => setEditComment(e.target.value)}
+        style={{ width: "100%", padding: "10px 14px", borderRadius: "10px", border: "0.5px solid #e0e0e0", backgroundColor: "#fafafa", boxSizing: "border-box", fontSize: "14px", color: "#111", marginBottom: "10px", height: "80px", resize: "none" }}
+      />
+      <div style={{ marginBottom: "12px" }}>
+        <p style={{ fontSize: "12px", color: "#666", marginBottom: "6px" }}>評価</p>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
+          {[1, 2, 3, 4, 5].map((star) => {
+            const filled = Math.min(Math.max(Number(editRating) - (star - 1), 0), 1);
+            return (
+              <svg key={star} viewBox="0 0 36 36" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id={`edit-grad${star}`} x1="0" x2="1" y1="0" y2="0">
+                    <stop offset={`${filled * 100}%`} stopColor="#f5a623" />
+                    <stop offset={`${filled * 100}%`} stopColor="#ddd" />
+                  </linearGradient>
+                </defs>
+                <path d="M18 4l3.9 7.9 8.7 1.3-6.3 6.1 1.5 8.7L18 23.8l-7.8 4.1 1.5-8.7-6.3-6.1 8.7-1.3z" fill={`url(#edit-grad${star})`} stroke="#f5a623" strokeWidth="0.5" />
+              </svg>
+            );
+          })}
+          <span style={{ fontSize: "14px", fontWeight: "600", color: "#f5a623" }}>{Number(editRating).toFixed(1)}</span>
+        </div>
+        <input type="range" min={1} max={5} step={0.1} value={editRating} onChange={(e) => setEditRating(Number(e.target.value))} style={{ width: "100%", accentColor: "#f5a623" }} />
+      </div>
+      <div style={{ marginBottom: "10px" }}>
+        <p style={{ fontSize: "12px", color: "#666", marginBottom: "6px" }}>シーン</p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "8px" }}>
+          {["🌞 ランチ", "🌙 ディナー", "☕ カフェ", "🍺 飲み", "👫 デート", "👥 グループ", "🥂 2次会"].map((genre) => (
+            <button key={genre} onClick={() => setEditGenres(editGenres.includes(genre) ? editGenres.filter(g => g !== genre) : [...editGenres, genre])}
+              style={{ padding: "4px 10px", borderRadius: "20px", border: "none", backgroundColor: editGenres.includes(genre) ? "#111" : "#f0f0f0", color: editGenres.includes(genre) ? "#fff" : "#666", fontSize: "11px", cursor: "pointer" }}>
+              {genre}
+            </button>
+          ))}
+        </div>
+        <p style={{ fontSize: "12px", color: "#666", marginBottom: "6px" }}>料理ジャンル</p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+          {["🍣 和食", "🍜 ラーメン", "🍝 つけ麺", "🫕 うどん", "🍜 蕎麦", "🍱 鮨", "🦞 海鮮", "🍛 カレー", "🥘 韓国料理", "🍗 焼き鳥", "🥟 餃子・点心", "🍻 居酒屋", "🥂 ワインバー", "🍦 デザート", "🍡 うなぎ", "🥘 スパニッシュ", "🍝 洋食", "🍕 イタリアン", "🍷 ビストロ", "🍜 中華", "🌮 エスニック", "🍖 焼肉", "🦌 ジビエ", "🥗 ヘルシー", "🍔 ファストフード", "🍰 スイーツ", "🍺 クラフトビール"].map((genre) => (
+            <button key={genre} onClick={() => setEditGenres(editGenres.includes(genre) ? editGenres.filter(g => g !== genre) : [...editGenres, genre])}
+              style={{ padding: "4px 10px", borderRadius: "20px", border: "none", backgroundColor: editGenres.includes(genre) ? "#111" : "#f0f0f0", color: editGenres.includes(genre) ? "#fff" : "#666", fontSize: "11px", cursor: "pointer" }}>
+              {genre}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div style={{ marginBottom: "10px" }}>
+        <p style={{ fontSize: "12px", color: "#666", marginBottom: "6px" }}>🍽️ おすすめメニュー</p>
+        {[
+          { label: "🥇 No.1", value: editMustMenu1, setter: setEditMustMenu1 },
+          { label: "🥈 No.2", value: editMustMenu2, setter: setEditMustMenu2 },
+          { label: "🥉 No.3", value: editMustMenu3, setter: setEditMustMenu3 },
+        ].map(({ label, value, setter }) => (
+          <div key={label} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+            <span style={{ fontSize: "12px", color: "#666", minWidth: "40px" }}>{label}</span>
+            <input placeholder="例: 黒毛和牛のサーロイン" value={value} onChange={(e) => setter(e.target.value)}
+              style={{ flex: 1, padding: "8px 12px", borderRadius: "8px", border: "1px solid #ccc", boxSizing: "border-box", fontSize: "13px", color: "#111" }} />
+          </div>
+        ))}
+      </div>
+      <div style={{ marginBottom: "16px" }}>
+        <p style={{ fontSize: "12px", color: "#666", marginBottom: "6px" }}>画像（最大5枚）</p>
+        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "8px" }}>
+          {editImages.map((url, index) => (
+            <div key={index} style={{ position: "relative" }}>
+              <img src={url} style={{ width: "80px", height: "80px", objectFit: "cover", borderRadius: "8px", border: "1px solid #ddd" }} />
+              <button onClick={() => setEditImages(editImages.filter((_, i) => i !== index))}
+                style={{ position: "absolute", top: "2px", right: "2px", width: "18px", height: "18px", borderRadius: "50%", border: "none", backgroundColor: "rgba(0,0,0,0.5)", color: "#fff", fontSize: "10px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>×</button>
+            </div>
+          ))}
+          {editImages.length < 5 && (
+            <label style={{ width: "80px", height: "80px", borderRadius: "8px", border: "1px dashed #ccc", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: "24px", color: "#ccc" }}>
+              +
+              <input type="file" accept="image/*" multiple onChange={handleEditImage} style={{ display: "none" }} />
+            </label>
+          )}
+        </div>
+      </div>
+      <div style={{ display: "flex", gap: "10px" }}>
+        <button
+          onClick={() => { if (editingPostId !== null) saveEdit(editingPostId); }}
+          style={{ flex: 1, padding: "13px", borderRadius: "12px", border: "none", backgroundColor: "#111", color: "#fff", fontSize: "14px", fontWeight: "600", cursor: "pointer" }}
+        >保存</button>
+        <button
+          onClick={() => setEditingPostId(null)}
+          style={{ flex: 1, padding: "13px", borderRadius: "12px", border: "0.5px solid #ddd", backgroundColor: "#fff", color: "#666", fontSize: "14px", cursor: "pointer" }}
+        >キャンセル</button>
+      </div>
+    </div>
+  </div>
+)}
       {selectedPost && (
   <div
     onClick={() => setSelectedPost(null)}
