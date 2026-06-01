@@ -108,6 +108,7 @@ const [postCommunityIds, setPostCommunityIds] = useState<string[]>([]);
 const [myCommunities, setMyCommunities] = useState<any[]>([]);
 const [signingIn, setSigningIn] = useState(false);
 const [showPostSheet, setShowPostSheet] = useState(false);
+const [showUserMenu, setShowUserMenu] = useState(false);
 
   const fetchProfile = async (userId: string) => {
     const { data, error } = await supabase
@@ -1171,24 +1172,49 @@ const toggleLike = async (postId: number) => {
   </div>
 
   <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-    {/* ユーザーアイコン＋名前 */}
+  {/* ユーザーアイコン＋名前 */}
     {user && (
-      <div
-        onClick={() => window.location.href = "/profile"}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "6px",
-          cursor: "pointer",
-          padding: "4px 10px",
-          borderRadius: "20px",
-          backgroundColor: "#f0f0f0",
-        }}
-      >
-        <span style={{ fontSize: "16px" }}>👤</span>
-        <span style={{ fontSize: "12px", fontWeight: "600", color: "#111" }}>
-          {username || "マイページ"}
-        </span>
+      <div style={{ position: "relative" }}>
+        <div
+          onClick={() => setShowUserMenu(!showUserMenu)}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            cursor: "pointer",
+            padding: "4px 10px",
+            borderRadius: "20px",
+            backgroundColor: "#f0f0f0",
+          }}
+        >
+          <span style={{ fontSize: "16px" }}>👤</span>
+          <span style={{ fontSize: "12px", fontWeight: "600", color: "#111" }}>
+            {username || "マイページ"}
+          </span>
+        </div>
+        {showUserMenu && (
+          <div style={{
+            position: "absolute",
+            right: 0,
+            top: "40px",
+            backgroundColor: "#fff",
+            border: "0.5px solid #eee",
+            borderRadius: "12px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            zIndex: 100,
+            overflow: "hidden",
+            minWidth: "140px",
+          }}>
+            <button
+              onClick={() => { window.location.href = "/profile"; setShowUserMenu(false); }}
+              style={{ display: "block", width: "100%", padding: "12px 16px", border: "none", backgroundColor: "#fff", color: "#111", fontSize: "13px", cursor: "pointer", textAlign: "left", borderBottom: "0.5px solid #f0f0f0" }}
+            >👤 マイページ</button>
+            <button
+              onClick={() => { signOut(); setShowUserMenu(false); }}
+              style={{ display: "block", width: "100%", padding: "12px 16px", border: "none", backgroundColor: "#fff", color: "#cc0000", fontSize: "13px", cursor: "pointer", textAlign: "left" }}
+            >ログアウト</button>
+          </div>
+        )}
       </div>
     )}
 
@@ -1647,101 +1673,7 @@ const toggleLike = async (postId: number) => {
   </section>
 )}
 
-      {user && (
-  <section style={{
-    backgroundColor: "#fff",
-    border: "0.5px solid #eee",
-    borderRadius: "16px",
-    padding: "16px",
-    marginBottom: "20px",
-  }}>
-    {/* ユーザー情報 */}
-    <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
-      <div style={{
-        width: "40px",
-        height: "40px",
-        borderRadius: "50%",
-        backgroundColor: "#f0f0f0",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontSize: "18px",
-        flexShrink: 0,
-      }}>
-        🍽️
-      </div>
-      <div>
-        <p style={{ fontSize: "14px", fontWeight: "600", color: "#111" }}>
-          {username || "未設定"}
-        </p>
-        <p style={{ fontSize: "11px", color: "#999" }}>{user.email}</p>
-      </div>
-      
-        <span onClick={() => window.location.href = "/profile"}
-      style={{
-          marginLeft: "auto",
-          fontSize: "12px",
-          color: "#2563eb",
-          textDecoration: "none",
-          padding: "4px 10px",
-          borderRadius: "20px",
-          border: "0.5px solid #ddd",
-        }}
-      >
-        編集
-      </span>
-    </div>
-
-    {/* 表示名入力 */}
-    <input
-      placeholder="表示名を入力"
-      value={username}
-      onChange={(e) => setUsername(e.target.value)}
-      style={{
-        width: "100%",
-        padding: "10px 14px",
-        marginBottom: "10px",
-        borderRadius: "10px",
-        border: "0.5px solid #e0e0e0",
-        backgroundColor: "#fafafa",
-        boxSizing: "border-box",
-        fontSize: "14px",
-      }}
-    />
-
-    <div style={{ display: "flex", gap: "8px" }}>
-      <button
-        onClick={updateProfile}
-        style={{
-          padding: "9px 20px",
-          borderRadius: "20px",
-          border: "none",
-          backgroundColor: "#111",
-          color: "#fff",
-          cursor: "pointer",
-          fontSize: "13px",
-          fontWeight: "500",
-        }}
-      >
-        {profileLoading ? "保存中..." : "表示名を保存"}
-      </button>
-      <button
-        onClick={signOut}
-        style={{
-          padding: "9px 20px",
-          borderRadius: "20px",
-          border: "0.5px solid #ddd",
-          backgroundColor: "#fff",
-          color: "#555",
-          cursor: "pointer",
-          fontSize: "13px",
-        }}
-      >
-        ログアウト
-      </button>
-    </div>
-  </section>
-)}
+     
 
       {/* 投稿ボタン */}
 <button
