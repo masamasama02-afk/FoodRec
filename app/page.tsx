@@ -1675,16 +1675,16 @@ const toggleLike = async (postId: number) => {
 
      
 
-      {/* 投稿ボタン */}
+{/* 投稿ボタン */}
 <button
   onClick={() => setShowPostSheet(true)}
   style={{
     width: "100%",
-    padding: "14px",
+    padding: "16px",
     borderRadius: "16px",
-    border: "none",
-    backgroundColor: "#111",
-    color: "#fff",
+    border: "1.5px solid #e0e0e0",
+    background: "linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%)",
+    color: "#111",
     fontSize: "15px",
     fontWeight: "600",
     cursor: "pointer",
@@ -1692,10 +1692,23 @@ const toggleLike = async (postId: number) => {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: "8px",
+    gap: "10px",
+    boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+    letterSpacing: "0.3px",
   }}
 >
-  ✏️ レストランを投稿する
+  <span style={{
+    width: "32px",
+    height: "32px",
+    borderRadius: "50%",
+    backgroundColor: "#111",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "14px",
+    flexShrink: 0,
+  }}>✏️</span>
+  レストランを投稿する
 </button>
 
 {/* ボトムシート */}
