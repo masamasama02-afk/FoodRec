@@ -32,6 +32,7 @@ export default function UserPage() {
         setIsFollowing(!!follow);
 
         if (follow) {
+          console.log("followCheck OK:", follow);
   // my_restaurantsから取得
   const { data: myData } = await supabase
     .from("my_restaurants")
