@@ -1708,7 +1708,7 @@ const toggleLike = async (postId: number) => {
     fontSize: "14px",
     flexShrink: 0,
   }}>✏️</span>
-  レストランを投稿する
+  投稿する
 </button>
 
 {/* ボトムシート */}
