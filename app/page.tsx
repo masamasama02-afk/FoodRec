@@ -1136,7 +1136,7 @@ const toggleLike = async (postId: number) => {
     boxSizing: "border-box",
   }}
 >
-      <div style={{
+<div style={{
   borderBottom: "0.5px solid #eee",
   marginBottom: "24px",
   paddingBottom: "16px",
@@ -1169,6 +1169,28 @@ const toggleLike = async (postId: number) => {
       </p>
     </div>
   </div>
+
+  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+    {/* ユーザーアイコン＋名前 */}
+    {user && (
+      <div
+        onClick={() => window.location.href = "/profile"}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "6px",
+          cursor: "pointer",
+          padding: "4px 10px",
+          borderRadius: "20px",
+          backgroundColor: "#f0f0f0",
+        }}
+      >
+        <span style={{ fontSize: "16px" }}>👤</span>
+        <span style={{ fontSize: "12px", fontWeight: "600", color: "#111" }}>
+          {username || "マイページ"}
+        </span>
+      </div>
+    )}
 
   {/* 通知ベル */}
   {user && (
@@ -1381,6 +1403,7 @@ const toggleLike = async (postId: number) => {
     ) : (
       <span style={{ fontSize: "11px", color: "#999" }}>✓ フォロー中</span>
     )}
+    
   </div>
                    ) : notif.type === "new_post" ? (
                 <p style={{ fontSize: "13px", color: "#111", marginBottom: "2px" }}>
@@ -1417,6 +1440,7 @@ const toggleLike = async (postId: number) => {
       )}
     </div>
   )}
+</div>
 </div>
 
     {!user && (
