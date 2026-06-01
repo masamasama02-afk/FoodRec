@@ -58,6 +58,10 @@ export default function UserPage() {
   }));
 
   setWishlist([...(myData || []), ...wishList]);
+  console.log("myData:", myData);
+  console.log("wishData:", wishData);
+  console.log("wishList:", wishList);
+  setWishlist([...(myData || []), ...wishList]);
 }
       }
 
