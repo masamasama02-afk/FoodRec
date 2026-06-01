@@ -32,14 +32,33 @@ export default function UserPage() {
         setIsFollowing(!!follow);
 
         if (follow) {
-          const { data: wishlistData } = await supabase
-            .from("my_restaurants")
-            .select("*")
-            .eq("user_id", userId)
-            .eq("status", "want")
-            .order("created_at", { ascending: false });
-          setWishlist(wishlistData || []);
-        }
+  // my_restaurantsから取得
+  const { data: myData } = await supabase
+    .from("my_restaurants")
+    .select("*")
+    .eq("user_id", userId)
+    .eq("status", "want")
+    .order("created_at", { ascending: false });
+
+  // wishlistsから取得
+  const { data: wishData } = await supabase
+    .from("wishlists")
+    .select("post_id, posts(id, restaurant, place_id, area)")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+
+  // wishlistsをmy_restaurantsと同じ形式に変換
+  const wishList = (wishData || []).map((w: any) => ({
+    id: `wish_${w.post_id}`,
+    restaurant: w.posts?.restaurant,
+    place_id: w.posts?.place_id,
+    area: w.posts?.area,
+    status: "want",
+    memo: null,
+  }));
+
+  setWishlist([...(myData || []), ...wishList]);
+}
       }
 
       const { data: profileData } = await supabase
